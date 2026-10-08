@@ -1,82 +1,61 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme.dart';
 
+// --- QUICK ACTIONS ---
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Container(
-        padding: const EdgeInsets.only(top: 16),
-        margin: const EdgeInsets.only(bottom: 2),
-        width: double.infinity,
-        child: Row(
-          children: [
-            _buildActionItem(
-              title: "Tempel\nTeks",
-              imageUrl: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/Vnf0UJfLdi/5pvxgzg9_expires_30_days.png",
-              marginRight: 8,
-            ),
-            _buildActionItem(
-              title: "Masukkan\nTeks",
-              imageUrl: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/Vnf0UJfLdi/m6t7vi9s_expires_30_days.png",
-              marginRight: 8,
-            ),
-            _buildActionItem(
-              title: "Lihat\nRiwayat",
-              imageUrl: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/Vnf0UJfLdi/vcf8pqaf_expires_30_days.png",
-              marginRight: 8,
-            ),
-            _buildActionItem(
-              title: "Panduan\nDeteksi",
-              imageUrl: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/Vnf0UJfLdi/h6hitk5a_expires_30_days.png",
-              marginRight: 0, // Item terakhir tidak perlu margin kanan
-            ),
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text("Aksi Cepat", style: TextStyle(color: AppColors.inverted, fontSize: 16, fontWeight: FontWeight.bold)),
           ],
         ),
-      ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(child: _buildActionCard(Icons.paste, "Tempel Teks", "Analisis cepat", AppColors.primary)),
+            const SizedBox(width: 12),
+            Expanded(child: _buildActionCard(Icons.edit_note, "Ketik Manual", "Tulis klaim", AppColors.tertiary)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(child: _buildActionCard(Icons.history, "Lihat Riwayat", "Jejak verifikasi", AppColors.neutral)),
+            const SizedBox(width: 12),
+            Expanded(child: _buildActionCard(Icons.menu_book, "Panduan", "Pedoman Pers", AppColors.primary)),
+          ],
+        ),
+      ],
     );
   }
 
-  Widget _buildActionItem({required String title, required String imageUrl, required double marginRight}) {
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0x4DC4C5D5), width: 1),
-          borderRadius: BorderRadius.circular(12),
-          color: const Color(0xFFFFFFFF),
-        ),
-        // PERBAIKAN: Kurangi padding horizontal menjadi 2 agar teks punya ruang
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
-        margin: EdgeInsets.only(right: marginRight),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 40,
-              height: 40, // Sedikit disesuaikan agar proporsional
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(imageUrl, fit: BoxFit.contain),
-              ),
-            ),
-            const SizedBox(height: 6), // Jarak antara ikon dan teks
-            // PERBAIKAN: Gunakan FittedBox agar teks mengecil jika kehabisan ruang
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                title,
-                style: const TextStyle(
-                  color: Color(0xFF0B1C30),
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  height: 1.2, // Mengatur jarak antar baris teks
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
+  Widget _buildActionCard(IconData icon, String title, String subtitle, Color iconColor) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(color: iconColor.withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
+            child: Icon(icon, color: iconColor, size: 20),
+          ),
+          const SizedBox(height: 12),
+          Text(title, style: const TextStyle(color: AppColors.inverted, fontSize: 13, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text(subtitle, style: const TextStyle(color: AppColors.neutral, fontSize: 11)),
+        ],
       ),
     );
   }

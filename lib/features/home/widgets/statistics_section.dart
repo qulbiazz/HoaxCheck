@@ -1,194 +1,126 @@
 import 'package:flutter/material.dart';
+import 'package:hoaxcheck_app/app/theme.dart';
 
 class StatisticsSection extends StatelessWidget {
   const StatisticsSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Container(
-        padding: const EdgeInsets.only(top: 16),
-        margin: const EdgeInsets.only(bottom: 1),
-        width: double.infinity,
-        child: Column(
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text("Statistik Pemeriksaanmu", style: TextStyle(color: AppColors.inverted, fontSize: 16, fontWeight: FontWeight.bold)),
+            Text("30 Hari Terakhir", style: TextStyle(color: AppColors.neutral, fontSize: 12)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 2),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // KARTU 1: Total Uji
+            _buildStatCard(
+              title: "Total Uji",
+              value: "48",
+              bgColor: AppColors.surface,
+              textColor: AppColors.inverted,
+              bottomWidget: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
-                  Text(
-                    "Statistik Personal",
-                    style: TextStyle(color: Color(0xFF0B1C30), fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "Akumulasi Bulan Ini",
-                    style: TextStyle(color: Color(0xFF444653), fontSize: 11, fontWeight: FontWeight.bold),
-                  ),
+                  Icon(Icons.insights, size: 14, color: AppColors.neutral),
+                  SizedBox(width: 4),
+                  Text("Semua\nklaim", style: TextStyle(color: AppColors.neutral, fontSize: 11, height: 1.1), textAlign: TextAlign.center),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: Row(
-                children: [
-                  _buildStatCard(
-                    title: "Total Periksa",
-                    value: "24",
-                    unit: "kali",
-                    valueColor: const Color(0xFF00288E),
-                    iconUrl: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/Vnf0UJfLdi/6dj5ipgq_expires_30_days.png",
-                    marginRight: 10,
-                  ),
-                  _buildStatCard(
-                    title: "Hoaks",
-                    value: "8",
-                    unit: "kasus",
-                    valueColor: const Color(0xFF700006),
-                    iconUrl: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/Vnf0UJfLdi/1tohvrlf_expires_30_days.png",
-                    marginRight: 10,
-                  ),
-                  _buildStatCard(
-                    title: "Valid",
-                    value: "16",
-                    unit: "fakta",
-                    valueColor: const Color(0xFF006A61),
-                    iconUrl: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/Vnf0UJfLdi/6pfzvmmr_expires_30_days.png",
-                    marginRight: 0,
-                  ),
-                ],
+            const SizedBox(width: 8),
+            
+            // KARTU 2: Hoaks
+            _buildStatCard(
+              title: "Hoaks",
+              value: "14",
+              bgColor: AppColors.danger.withOpacity(0.08),
+              textColor: AppColors.danger,
+              bottomWidget: _buildBadge(
+                text: "Bahaya",
+                icon: Icons.warning_amber_rounded,
+                textColor: AppColors.danger,
+                bgColor: AppColors.danger.withOpacity(0.15),
               ),
             ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: const Color(0x4DC4C5D5), width: 1),
-                borderRadius: BorderRadius.circular(12),
-                color: const Color(0xFFFFFFFF),
-              ),
-              padding: const EdgeInsets.all(13),
-              margin: const EdgeInsets.only(top: 10),
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(9999), color: const Color(0xFF700006)),
-                            margin: const EdgeInsets.only(right: 6),
-                            width: 8, height: 8,
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(right: 6),
-                            child: Text("33% Hoaks", style: TextStyle(color: Color(0xFF700006), fontSize: 11, fontWeight: FontWeight.bold)),
-                          ),
-                          const Text("(8)", style: TextStyle(color: Color(0xFF0B1C30), fontSize: 11, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(right: 7),
-                            child: Text("67% Valid", style: TextStyle(color: Color(0xFF006A61), fontSize: 11, fontWeight: FontWeight.bold)),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: Text("(16)", style: TextStyle(color: Color(0xFF0B1C30), fontSize: 11, fontWeight: FontWeight.bold)),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(9999), color: const Color(0xFF006A61)),
-                            width: 7, height: 8,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Container(
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(9999), color: const Color(0xFFE5EEFF)),
-                    margin: const EdgeInsets.only(top: 6),
-                    width: double.infinity,
-                    child: Row(
-                      children: [
-                        Container(
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.only(topLeft: Radius.circular(9999), bottomLeft: Radius.circular(9999)),
-                            color: Color(0xFF700006),
-                          ),
-                          width: 110, height: 8,
-                        ),
-                        Expanded(
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.only(topRight: Radius.circular(9999), bottomRight: Radius.circular(9999)),
-                              color: Color(0xFF006A61),
-                            ),
-                            height: 8, width: double.infinity,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+            const SizedBox(width: 8),
+            
+            // KARTU 3: Valid
+            _buildStatCard(
+              title: "Valid",
+              value: "34",
+              bgColor: AppColors.primary.withOpacity(0.15),
+              textColor: const Color(0xFF047857), // Menggunakan warna hijau yang lebih gelap agar kontras
+              bottomWidget: _buildBadge(
+                text: "Akurat",
+                icon: Icons.check_circle_outline,
+                textColor: const Color(0xFF047857),
+                bgColor: AppColors.primary.withOpacity(0.3),
               ),
             ),
+          ],
+        )
+      ],
+    );
+  }
+
+  // Widget builder yang diperbarui untuk menerima bottomWidget dinamis
+  Widget _buildStatCard({
+    required String title,
+    required String value,
+    required Color bgColor,
+    required Color textColor,
+    required Widget bottomWidget,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: bgColor == AppColors.surface
+              ? const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]
+              : null,
+        ),
+        child: Column(
+          children: [
+            Text(title, style: TextStyle(color: textColor.withOpacity(0.8), fontSize: 12, fontWeight: FontWeight.w500)),
+            const SizedBox(height: 8),
+            Text(value, style: TextStyle(color: textColor, fontSize: 32, fontWeight: FontWeight.bold, height: 1.0)),
+            const SizedBox(height: 12),
+            bottomWidget, // Widget bagian bawah dirender di sini
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStatCard({required String title, required String value, required String unit, required Color valueColor, required String iconUrl, required double marginRight}) {
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0x4DC4C5D5), width: 1),
-          borderRadius: BorderRadius.circular(12),
-          color: const Color(0xFFFFFFFF),
-        ),
-        // PERBAIKAN 1: Padding internal dikurangi dari 13 menjadi 10 agar ruang lebih lega
-        padding: const EdgeInsets.all(10),
-        margin: EdgeInsets.only(right: marginRight),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // PERBAIKAN 2: Bungkus teks dengan Expanded agar teks turun baris saat ruang sempit
-                Expanded(
-                  child: Text(
-                    title,
-                    style: const TextStyle(color: Color(0xFF444653), fontSize: 11, fontWeight: FontWeight.bold, height: 1.2),
-                  ),
-                ),
-                const SizedBox(width: 4), // Ruang pemisah antara teks dan ikon
-                SizedBox(
-                  width: 12,
-                  height: 12,
-                  child: Image.network(iconUrl, fit: BoxFit.fill),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Text(value, style: TextStyle(color: valueColor, fontSize: 22, fontWeight: FontWeight.bold, height: 1.0)),
-                  ),
-                  Text(unit, style: const TextStyle(color: Color(0xFF444653), fontSize: 11, fontWeight: FontWeight.bold, height: 1.4)),
-                ],
-              ),
-            ),
-          ],
-        ),
+  // Helper untuk membuat desain badge seperti pil pada kartu Hoaks & Valid
+  Widget _buildBadge({
+    required String text,
+    required IconData icon,
+    required Color textColor,
+    required Color bgColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: textColor),
+          const SizedBox(width: 4),
+          Text(text, style: TextStyle(color: textColor, fontSize: 10, fontWeight: FontWeight.bold)),
+        ],
       ),
     );
   }

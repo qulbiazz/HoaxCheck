@@ -1,49 +1,83 @@
 import 'package:flutter/material.dart';
 
+class AppColors {
+  // Palet Utama dari Guideline
+  static const Color primary = Color(0xFF1CA379);
+  static const Color secondary = Color(0xFF5AC596);
+  static const Color tertiary = Color(0xFF7BB3E6);
+  static const Color neutral = Color(0xFF6B7280);
+
+  // Warna pendukung untuk komponen (berdasarkan visual gambar)
+  static const Color inverted = Color(0xFF1F2937); // Gelap kebiruan untuk tombol Inverted
+  static const Color background = Color(0xFFF0F4F8); // Latar belakang abu-abu terang
+  static const Color surface = Colors.white;
+  static const Color danger = Color(0xFFD32F2F); // Untuk ikon/tombol hapus
+}
+
 class AppTheme {
-  // Tema Terang (Light Theme)
-  static ThemeData get light {
+  static var light;
+
+  static ThemeData get lightTheme {
     return ThemeData(
-      useMaterial3: true,
-      scaffoldBackgroundColor: const Color(0xFFF8F9FF),
-      primaryColor: const Color(0xFF00288E),
-      
-      // Konfigurasi ColorScheme
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF00288E),
-        primary: const Color(0xFF00288E),
-        secondary: const Color(0xFF86F2E4), // Warna toska dari badge UI
-        surface: const Color(0xFFFFFFFF),
-        error: const Color(0xFFBA1A1A), // Warna merah error/hoaks
+      fontFamily: 'Inter',
+      scaffoldBackgroundColor: AppColors.background,
+      colorScheme: const ColorScheme.light(
+        primary: AppColors.primary,
+        secondary: AppColors.secondary,
+        tertiary: AppColors.tertiary,
+        surface: AppColors.surface,
+        error: AppColors.danger,
       ),
       
-      // Konfigurasi AppBar Default
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFFFFFFFF),
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: IconThemeData(color: Color(0xFF0B1C30)),
-        titleTextStyle: TextStyle(
-          color: Color(0xFF0B1C30),
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
+      // Tipografi (Headline, Body, Label)
+      textTheme: const TextTheme(
+        displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppColors.inverted), // Headline
+        bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: AppColors.inverted), // Body
+        labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.neutral), // Label
+      ),
+
+      // Gaya Komponen: Input Field (Search)
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+        ),
+        hintStyle: const TextStyle(color: AppColors.neutral, fontSize: 14),
+      ),
+
+      // Gaya Komponen: ElevatedButton (Primary & Inverted)
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Inter'),
         ),
       ),
-      
-      // Konfigurasi Text Default
-      textTheme: const TextTheme(
-        bodyLarge: TextStyle(color: Color(0xFF0B1C30)), // Warna teks utama
-        bodyMedium: TextStyle(color: Color(0xFF444653)), // Warna teks sekunder
+
+      // Gaya Komponen: OutlinedButton
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.inverted,
+          side: const BorderSide(color: AppColors.neutral),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Inter'),
+        ),
       ),
     );
   }
-
-  // Jika nanti Anda butuh Dark Mode, Anda bisa menambahkannya di sini
-  /*
-  static ThemeData get dark {
-    return ThemeData(
-      // ... konfigurasi dark theme
-    );
-  }
-  */
 }
