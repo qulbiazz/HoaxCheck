@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
-
-import '../navigation/main_navigation.dart'; // Import navigation yang baru
+import '../navigation/main_navigation.dart';
 import 'theme.dart';
+
+final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
 class HoaxCheckApp extends StatelessWidget {
   const HoaxCheckApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'HoaxCheck',
-      theme: AppTheme.light,
-      home: const MainNavigation(), // Gunakan MainNavigation sebagai entry point
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (_, ThemeMode currentMode, __) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'HoaxCheck',
+          theme: AppTheme.lightTheme, 
+          darkTheme: AppTheme.darkTheme, 
+          themeMode: currentMode, 
+          home: const MainNavigation(),
+        );
+      },
     );
   }
 }

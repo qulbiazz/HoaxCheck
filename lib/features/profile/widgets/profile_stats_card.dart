@@ -6,10 +6,12 @@ class ProfileStatsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface, // PERBAIKAN: Dinamis mengikuti tema
         borderRadius: BorderRadius.circular(20),
         boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))],
       ),
@@ -19,7 +21,7 @@ class ProfileStatsCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("STATISTIK PEMERIKSAAN", style: TextStyle(color: AppColors.neutral, fontSize: 11, fontWeight: FontWeight.bold)),
+              Text("STATISTIK PEMERIKSAAN", style: TextStyle(color: isDark ? Colors.white54 : AppColors.neutral, fontSize: 11, fontWeight: FontWeight.bold)),
               Row(
                 children: const [
                   Text("Bulan Ini", style: TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.bold)),
@@ -32,11 +34,12 @@ class ProfileStatsCard extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              _buildStatItem("48", "Total Cek", const Color(0xFFF0F5FF), const Color(0xFF2563EB)),
+              // PERBAIKAN: Background transparan berdasarkan warna teks agar serasi di Dark Mode
+              _buildStatItem("48", "Total Cek", isDark ? AppColors.tertiary : const Color(0xFF2563EB)),
               const SizedBox(width: 8),
-              _buildStatItem("14", "Hoaks", AppColors.danger.withOpacity(0.08), AppColors.danger),
+              _buildStatItem("14", "Hoaks", AppColors.danger),
               const SizedBox(width: 8),
-              _buildStatItem("34", "Valid", AppColors.primary.withOpacity(0.15), const Color(0xFF047857)),
+              _buildStatItem("34", "Valid", AppColors.primary),
             ],
           )
         ],
@@ -44,16 +47,19 @@ class ProfileStatsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String value, String label, Color bgColor, Color textColor) {
+  Widget _buildStatItem(String value, String label, Color color) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(12)),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1), // Dinamis
+          borderRadius: BorderRadius.circular(12)
+        ),
         child: Column(
           children: [
-            Text(value, style: TextStyle(color: textColor, fontSize: 22, fontWeight: FontWeight.bold)),
+            Text(value, style: TextStyle(color: color, fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
-            Text(label, style: TextStyle(color: textColor.withOpacity(0.8), fontSize: 10, fontWeight: FontWeight.w600)),
+            Text(label, style: TextStyle(color: color.withOpacity(0.8), fontSize: 10, fontWeight: FontWeight.w600)),
           ],
         ),
       ),

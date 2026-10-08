@@ -6,11 +6,13 @@ class ProfileInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface, // PERBAIKAN: Warna kartu
         borderRadius: BorderRadius.circular(24),
         boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))],
       ),
@@ -18,24 +20,24 @@ class ProfileInfoCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 40,
-            // Memberikan warna dasar hijau transparan dari primary
             backgroundColor: AppColors.primary.withOpacity(0.15), 
             backgroundImage: const NetworkImage('https://via.placeholder.com/150'),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             "Qulbi Khutsi Azzumi", 
-            style: TextStyle(color: AppColors.inverted, fontSize: 18, fontWeight: FontWeight.bold),
+            // PERBAIKAN: Warna nama dari tema
+            style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             "qulbi@hoaxcheck.id",
-            style: TextStyle(color: AppColors.neutral, fontSize: 12),
+            style: TextStyle(color: isDark ? Colors.white54 : AppColors.neutral, fontSize: 12),
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: () {},
-            icon: const Icon(Icons.edit_outlined, size: 16, color: AppColors.primary),
+            icon: const Icon(Icons.edit_outlined, size: 16),
             label: const Text("Edit Profil", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary.withOpacity(0.1), 

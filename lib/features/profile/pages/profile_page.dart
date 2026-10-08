@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hoaxcheck_app/app/app.dart';
 import '../../../../app/theme.dart';
+// import '../../../../main.dart';
 
 import '../widgets/profile_info_card.dart';
 import '../widgets/profile_stats_card.dart';
@@ -11,7 +13,6 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -19,11 +20,13 @@ class ProfilePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Bar
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("Profile", style: TextStyle(color: AppColors.inverted, fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text(
+                      "Profile", 
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 20)
+                    ),
                     Row(
                       children: [
                         IconButton(icon: const Icon(Icons.notifications_outlined, color: AppColors.neutral), onPressed: () {}),
@@ -44,26 +47,47 @@ class ProfilePage extends StatelessWidget {
                 const ProfileStatsCard(),
                 const SizedBox(height: 28),
                 
-                // --- PREFERENSI ---
                 const Text("PREFERENSI", style: TextStyle(color: AppColors.neutral, fontSize: 11, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 Container(
-                  decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16), boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]),
-                  child: ProfileMenuItem(
-                    icon: Icons.dark_mode_outlined,
-                    title: "Mode Gelap",
-                    subtitle: "Tampilan redup untuk mata",
-                    trailing: Switch(value: false, onChanged: (val) {}, activeColor: AppColors.primary),
-                    onTap: () {},
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface, 
+                    borderRadius: BorderRadius.circular(16), 
+                    boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]
+                  ),
+                  child: ValueListenableBuilder<ThemeMode>(
+                    valueListenable: themeNotifier,
+                    builder: (context, currentMode, child) {
+                      final isDarkMode = currentMode == ThemeMode.dark;
+                      
+                      return ProfileMenuItem(
+                        icon: Icons.dark_mode_outlined,
+                        title: "Mode Gelap",
+                        subtitle: "Tampilan redup untuk mata",
+                        trailing: Switch(
+                          value: isDarkMode,
+                          onChanged: (value) {
+                            themeNotifier.value = value ? ThemeMode.dark : ThemeMode.light;
+                          },
+                          activeColor: AppColors.primary,
+                        ),
+                        onTap: () {
+                          themeNotifier.value = isDarkMode ? ThemeMode.light : ThemeMode.dark;
+                        },
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(height: 24),
 
-                // --- TENTANG APLIKASI ---
                 const Text("TENTANG APLIKASI", style: TextStyle(color: AppColors.neutral, fontSize: 11, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 Container(
-                  decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16), boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface, 
+                    borderRadius: BorderRadius.circular(16), 
+                    boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]
+                  ),
                   child: Column(
                     children: [
                       ProfileMenuItem(icon: Icons.info_outline, title: "Tentang HoaxCheck", onTap: () {}),
@@ -74,16 +98,18 @@ class ProfilePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // --- BANTUAN ---
                 const Text("BANTUAN", style: TextStyle(color: AppColors.neutral, fontSize: 11, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 Container(
-                  decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16), boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface, 
+                    borderRadius: BorderRadius.circular(16), 
+                    boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]
+                  ),
                   child: ProfileMenuItem(icon: Icons.flag_outlined, title: "Laporkan Masalah", onTap: () {}),
                 ),
                 const SizedBox(height: 32),
 
-                // --- LOGOUT BUTTON ---
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -101,7 +127,6 @@ class ProfilePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 
-                // Versi Aplikasi
                 const Center(child: Text("HoaxCheck v1.0.0", style: TextStyle(color: AppColors.neutral, fontSize: 10, fontWeight: FontWeight.bold))),
                 const SizedBox(height: 100), 
               ],

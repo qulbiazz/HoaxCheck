@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../features/history/pages/history_page.dart';
-import '../features/profile/pages/profile_page.dart';
 import '../features/home/pages/home_page.dart';
 import '../features/detection/pages/detection_page.dart';
+import '../features/history/pages/history_page.dart'; // Sesuaikan import jika perlu
+import '../features/profile/pages/profile_page.dart'; // Sesuaikan import jika perlu
 import '../app/theme.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -18,7 +18,7 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Widget> _pages = [
     const HomePage(),
     const DetectionPage(),
-    const HistoryPage(),
+    const Center(child: Text('Halaman Riwayat')), // Gunakan HistoryPage() jika sudah siap
     const ProfilePage(),
   ];
 
@@ -30,24 +30,27 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      extendBody: true, // Memastikan konten bisa discroll hingga ke balik navbar
+      extendBody: true,
       body: Stack(
         children: [
-          _pages[_selectedIndex], // Halaman utama
+          _pages[_selectedIndex],
           
           Align(
-            alignment: Alignment.bottomCenter, // Selalu mengunci navbar di bawah
+            alignment: Alignment.bottomCenter,
             child: SafeArea(
               child: Container(
                 margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                 padding: const EdgeInsets.symmetric(vertical: 10), 
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  // PERBAIKAN: Gunakan warna surface dari Theme agar bisa berubah gelap/terang
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(40),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -55,10 +58,10 @@ class _MainNavigationState extends State<MainNavigation> {
                 ),
                 child: Row(
                   children: [
-                    _buildNavItem(index: 0, icon: Icons.home_outlined, label: 'Beranda'),
-                    _buildNavItem(index: 1, icon: Icons.document_scanner_outlined, label: 'Deteksi'),
-                    _buildNavItem(index: 2, icon: Icons.history, label: 'Riwayat'),
-                    _buildNavItem(index: 3, icon: Icons.person_outline, label: 'Profile'),
+                    _buildNavItem(index: 0, icon: Icons.home_outlined, label: 'Beranda', context: context),
+                    _buildNavItem(index: 1, icon: Icons.document_scanner_outlined, label: 'Deteksi', context: context),
+                    _buildNavItem(index: 2, icon: Icons.history, label: 'Riwayat', context: context),
+                    _buildNavItem(index: 3, icon: Icons.person_outline, label: 'Profile', context: context),
                   ],
                 ),
               ),
@@ -69,23 +72,24 @@ class _MainNavigationState extends State<MainNavigation> {
     );
   }
 
-  Widget _buildNavItem({required int index, required IconData icon, required String label}) {
+  Widget _buildNavItem({required int index, required IconData icon, required String label, required BuildContext context}) {
     final bool isSelected = _selectedIndex == index;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Expanded(
       child: GestureDetector(
         onTap: () => _onItemTapped(index),
-        behavior: HitTestBehavior.opaque, // Memastikan seluruh area bisa diklik
+        behavior: HitTestBehavior.opaque,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               curve: Curves.easeInOut,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Diperlebar agar seimbang
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primary.withOpacity(0.15) : Colors.transparent,
-                borderRadius: BorderRadius.circular(100), // Diubah menjadi 100 agar membulat sempurna
+                borderRadius: BorderRadius.circular(100), 
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -93,13 +97,15 @@ class _MainNavigationState extends State<MainNavigation> {
                   Icon(
                     icon,
                     size: 24,
-                    color: isSelected ? AppColors.primary : AppColors.inverted,
+                    // PERBAIKAN: Warna ikon menyesuaikan tema
+                    color: isSelected ? AppColors.primary : (isDark ? Colors.white54 : AppColors.inverted),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     label,
                     style: TextStyle(
-                      color: isSelected ? AppColors.primary : AppColors.inverted,
+                      // PERBAIKAN: Warna teks menyesuaikan tema
+                      color: isSelected ? AppColors.primary : (isDark ? Colors.white54 : AppColors.inverted),
                       fontSize: 11,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                     ),
