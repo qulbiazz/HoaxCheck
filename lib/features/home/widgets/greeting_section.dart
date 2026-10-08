@@ -26,26 +26,6 @@ class GreetingSection extends StatelessWidget {
             ],
           ),
         ),
-        Stack(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(color: AppColors.surface, shape: BoxShape.circle),
-              child: const Icon(Icons.campaign_outlined, color: AppColors.inverted, size: 20),
-            ),
-            Positioned(
-              right: 2, top: 2,
-              child: Container(
-                width: 10, height: 10,
-                decoration: BoxDecoration(
-                  color: AppColors.danger, // <-- Titik merah menggunakan danger
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.surface, width: 2),
-                ),
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }

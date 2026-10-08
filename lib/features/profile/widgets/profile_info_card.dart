@@ -21,7 +21,11 @@ class ProfileInfoCard extends StatelessWidget {
           CircleAvatar(
             radius: 40,
             backgroundColor: AppColors.primary.withOpacity(0.15), 
-            backgroundImage: const NetworkImage('https://via.placeholder.com/150'),
+            child: const Icon(
+              Icons.person,
+              size: 40,
+              color: AppColors.primary,
+            ),
           ),
           const SizedBox(height: 16),
           Text(
