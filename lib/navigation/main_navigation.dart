@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../features/history/pages/history_page.dart';
+import '../features/profile/pages/profile_page.dart';
 import '../features/home/pages/home_page.dart';
 import '../features/detection/pages/detection_page.dart';
 import '../app/theme.dart';
@@ -18,7 +19,7 @@ class _MainNavigationState extends State<MainNavigation> {
     const HomePage(),
     const DetectionPage(),
     const HistoryPage(),
-    const Center(child: Text('Halaman Profil (Segera Hadir)')),
+    const ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
