@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../features/history/pages/history_page.dart';
 import '../features/home/pages/home_page.dart';
 import '../features/detection/pages/detection_page.dart';
 import '../app/theme.dart';
@@ -16,7 +17,7 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Widget> _pages = [
     const HomePage(),
     const DetectionPage(),
-    const Center(child: Text('Halaman Riwayat (Segera Hadir)')),
+    const HistoryPage(),
     const Center(child: Text('Halaman Profil (Segera Hadir)')),
   ];
 
