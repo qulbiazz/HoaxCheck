@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../app/theme.dart';
+import '../../../../../app/theme.dart';
 
 class DetectionHeader extends StatelessWidget {
   const DetectionHeader({super.key});

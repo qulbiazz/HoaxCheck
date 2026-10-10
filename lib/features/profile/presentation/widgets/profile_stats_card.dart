@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../app/theme.dart';
+import '../../../../../app/theme.dart';
 
 class ProfileStatsCard extends StatelessWidget {
   const ProfileStatsCard({super.key});

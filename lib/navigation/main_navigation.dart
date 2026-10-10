@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../features/home/pages/home_page.dart';
-import '../features/detection/pages/detection_page.dart';
-import '../features/history/pages/history_page.dart'; // Sesuaikan import jika perlu
-import '../features/profile/pages/profile_page.dart'; // Sesuaikan import jika perlu
+import '../features/home/presentation/pages/home_page.dart';
+import '../features/detection/presentation/pages/detection_page.dart';
+import '../features/history/presentation/pages/history_page.dart'; // Sesuaikan import jika perlu
+import '../features/profile/presentation/pages/profile_page.dart'; // Sesuaikan import jika perlu
 import '../app/theme.dart';
 
 class MainNavigation extends StatefulWidget {

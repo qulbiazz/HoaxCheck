@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hoaxcheck_app/app/app.dart';
-import '../../../../app/theme.dart';
+import '../../../../../app/theme.dart';
 // import '../../../../main.dart';
 
 import '../widgets/profile_info_card.dart';

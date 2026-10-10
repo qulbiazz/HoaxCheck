@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../../app/theme.dart';
+import '../../../../../app/theme.dart';
 
 import '../widgets/detection_header.dart';
 import '../widgets/clipboard_banner.dart';

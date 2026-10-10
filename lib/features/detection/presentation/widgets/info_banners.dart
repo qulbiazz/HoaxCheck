@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../app/theme.dart';
+import '../../../../../app/theme.dart';
 
 class InfoBanners extends StatelessWidget {
   const InfoBanners({super.key});
