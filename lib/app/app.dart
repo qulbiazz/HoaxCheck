@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../navigation/main_navigation.dart';
+import '../features/splash/pages/splash_page.dart';
 import 'theme.dart';
 
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
@@ -18,7 +18,7 @@ class HoaxCheckApp extends StatelessWidget {
           theme: AppTheme.lightTheme, 
           darkTheme: AppTheme.darkTheme, 
           themeMode: currentMode, 
-          home: const MainNavigation(),
+          home: const SplashPage(),
         );
       },
     );

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../features/home/pages/home_page.dart';
 import '../features/detection/pages/detection_page.dart';
-import '../features/history/pages/history_page.dart'; // Sesuaikan import jika perlu
-import '../features/profile/pages/profile_page.dart'; // Sesuaikan import jika perlu
+import '../features/history/pages/history_page.dart';
+import '../features/profile/pages/profile_page.dart';
 import '../app/theme.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -18,7 +18,7 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Widget> _pages = [
     const HomePage(),
     const DetectionPage(),
-    const Center(child: Text('Halaman Riwayat')), // Gunakan HistoryPage() jika sudah siap
+    const HistoryPage(),
     const ProfilePage(),
   ];
 
