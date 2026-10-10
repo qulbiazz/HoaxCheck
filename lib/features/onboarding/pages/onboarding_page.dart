@@ -1127,30 +1127,30 @@ class _OnboardingPageState extends State<OnboardingPage> {
   Widget _buildStep3Feature(bool isDark) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: isDark ? AppDarkColors.surface : const Color(0xFFEFF6FF),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFDBEAFE),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.gpp_good_outlined, color: Color(0xFF1E40AF), size: 22),
+            child: const Icon(Icons.verified_user_outlined, color: Color(0xFF1E40AF), size: 18),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Selalu periksa informasi melalui sumber terpercaya sebelum mempercayai atau membagikannya.',
+              'Selalu periksa informasi melalui sumber terpercaya\nsebelum mempercayai atau membagikannya.',
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 12.5,
                 color: isDark ? AppDarkColors.textPrimary : const Color(0xFF1E3A8A),
-                height: 1.45,
+                height: 1.4,
               ),
             ),
           ),
