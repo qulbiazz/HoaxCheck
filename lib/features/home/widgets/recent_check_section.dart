@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../detection/pages/analysis_detail_page.dart';
 
 class RecentCheckSection extends StatelessWidget {
   const RecentCheckSection({super.key});
@@ -28,11 +29,21 @@ class RecentCheckSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))],
           ),
-          child: IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(width: 4, color: const Color(0xFFDC2626)),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const AnalysisDetailPage(),
+                  ),
+                );
+              },
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(width: 4, color: const Color(0xFFDC2626)),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -85,8 +96,10 @@ class RecentCheckSection extends StatelessWidget {
             ),
           ),
         ),
-      ],
-    );
+      ),
+    ),
+  ],
+);
   }
 
   Widget _buildBadge(String text, Color bgColor, Color textColor, IconData? icon) {
