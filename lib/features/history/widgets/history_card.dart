@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
+import '../pages/history_detail_page.dart';
 
 class HistoryCard extends StatelessWidget {
   final bool isHoax;
@@ -8,6 +9,7 @@ class HistoryCard extends StatelessWidget {
   final String text;
   final String analysisType;
   final String source;
+  final VoidCallback? onTap;
 
   const HistoryCard({
     super.key,
@@ -17,6 +19,7 @@ class HistoryCard extends StatelessWidget {
     required this.text,
     required this.analysisType,
     required this.source,
+    this.onTap,
   });
 
   @override
@@ -31,11 +34,30 @@ class HistoryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          decoration: BoxDecoration(border: Border(left: BorderSide(color: statusColor, width: 4))),
-          padding: const EdgeInsets.all(16),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap ??
+              () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => HistoryDetailPage(
+                      title: source,
+                      text: text,
+                      time: time,
+                      confidence: confidence,
+                      isHoax: isHoax,
+                      source: source,
+                    ),
+                  ),
+                );
+              },
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border(left: BorderSide(color: statusColor, width: 4)),
+            ),
+            padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -53,7 +75,7 @@ class HistoryCard extends StatelessWidget {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(color: statusColor.withOpacity(0.15), borderRadius: BorderRadius.circular(20)),
+                          decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -127,6 +149,7 @@ class HistoryCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

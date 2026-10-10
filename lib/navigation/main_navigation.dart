@@ -6,19 +6,26 @@ import '../features/profile/pages/profile_page.dart'; // Sesuaikan import jika p
 import '../app/theme.dart';
 
 class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+  final int initialIndex;
+  const MainNavigation({super.key, this.initialIndex = 0});
 
   @override
   State<MainNavigation> createState() => _MainNavigationState();
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
 
   final List<Widget> _pages = [
     const HomePage(),
     const DetectionPage(),
-    const Center(child: Text('Halaman Riwayat')), // Gunakan HistoryPage() jika sudah siap
+    const HistoryPage(),
     const ProfilePage(),
   ];
 

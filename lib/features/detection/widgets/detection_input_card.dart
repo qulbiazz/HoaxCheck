@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
+import '../pages/analysis_detail_page.dart';
 
 class DetectionInputCard extends StatelessWidget {
   final TextEditingController controller;
@@ -94,7 +95,13 @@ class DetectionInputCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const AnalysisDetailPage(),
+                  ),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF047857),
                 padding: const EdgeInsets.symmetric(vertical: 14),
