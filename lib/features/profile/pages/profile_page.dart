@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hoaxcheck_app/app/app.dart';
 import '../../../../app/theme.dart';
+import 'tentang_hoaxcheck_page.dart';
+import 'kebijakan_privasi_page.dart';
+import 'laporkan_masalah_page.dart';
 // import '../../../../main.dart';
 
 import '../widgets/profile_info_card.dart';
@@ -90,9 +93,31 @@ class ProfilePage extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      ProfileMenuItem(icon: Icons.info_outline, title: "Tentang HoaxCheck", onTap: () {}),
+                      ProfileMenuItem(
+                        icon: Icons.info_outline,
+                        title: "Tentang HoaxCheck",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const TentangHoaxCheckPage(),
+                            ),
+                          );
+                        },
+                      ),
                       const Divider(height: 1, color: Color(0xFFF3F4F6), indent: 64),
-                      ProfileMenuItem(icon: Icons.lock_outline, title: "Kebijakan Privasi", onTap: () {}),
+                      ProfileMenuItem(
+                        icon: Icons.lock_outline,
+                        title: "Kebijakan Privasi",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const KebijakanPrivasiPage(),
+                            ),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -106,7 +131,18 @@ class ProfilePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16), 
                     boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]
                   ),
-                  child: ProfileMenuItem(icon: Icons.flag_outlined, title: "Laporkan Masalah", onTap: () {}),
+                  child: ProfileMenuItem(
+                    icon: Icons.flag_outlined,
+                    title: "Laporkan Masalah",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LaporkanMasalahPage(),
+                        ),
+                      );
+                    },
+                  ),
                 ),
                 const SizedBox(height: 32),
 
