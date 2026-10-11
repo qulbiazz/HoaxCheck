@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../../app/theme.dart';
-import '../../detection/pages/analysis_detail_page.dart';
+import '../../../../../app/theme.dart';
+import '../../../detection/presentation/pages/analysis_detail_page.dart';
 
 class HistoryDetailPage extends StatelessWidget {
   final String title;

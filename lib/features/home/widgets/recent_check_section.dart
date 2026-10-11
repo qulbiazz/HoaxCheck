@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../detection/pages/analysis_detail_page.dart';
+import '../../detection/presentation/pages/analysis_detail_page.dart';
 
 class RecentCheckSection extends StatelessWidget {
   const RecentCheckSection({super.key});
