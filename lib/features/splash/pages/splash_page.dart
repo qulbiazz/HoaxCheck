@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../app/theme.dart';
 import '../../../core/widgets/hoaxcheck_logo.dart';
-import '../../onboarding/pages/onboarding_page.dart';
+import '../../onboarding/presentation/pages/onboarding_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
