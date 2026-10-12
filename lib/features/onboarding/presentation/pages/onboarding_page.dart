@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
-import '../../../auth/pages/login_page.dart';
+import '../../../auth/presentation/pages/login_page.dart';
 import '../widgets/onboarding_content.dart';
 import '../widgets/onboarding_indicator.dart';
 import '../widgets/onboarding_navigation.dart';
