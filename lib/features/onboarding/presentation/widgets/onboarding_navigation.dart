@@ -31,7 +31,7 @@ class OnboardingNavigation extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
         ),
-        child: Row(
+       child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
@@ -39,8 +39,9 @@ class OnboardingNavigation extends StatelessWidget {
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(width: 8),
-            Icon(
-              isLastPage ? Icons.check_circle_outline : Icons.arrow_forward_rounded,
+            // Ubah bagian ini: Gunakan Icons.arrow_forward_rounded untuk semua halaman
+            const Icon(
+              Icons.arrow_forward_rounded,
               size: 20,
               color: Colors.white, 
             ),

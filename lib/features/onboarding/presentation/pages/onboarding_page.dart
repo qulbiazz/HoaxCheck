@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
+import '../../../auth/pages/login_page.dart';
 import '../widgets/onboarding_content.dart';
 import '../widgets/onboarding_indicator.dart';
 import '../widgets/onboarding_navigation.dart';
+
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -16,7 +18,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
   int _currentIndex = 0;
 
   void _onFinishOnboarding() {
-    debugPrint("Onboarding Selesai!");
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => const LoginPage(),
+      ),
+    );
   }
 
   void _nextPage() {
