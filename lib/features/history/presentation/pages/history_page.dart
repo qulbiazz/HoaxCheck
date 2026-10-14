@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../app/theme.dart';
 import '../../../../app/app_header.dart';
 import '../widgets/history_card.dart';
@@ -16,7 +17,40 @@ class _HistoryPageState extends State<HistoryPage> {
   String selectedFilter = 'Semua';
   String searchQuery = '';
 
-  final List<Map<String, dynamic>> historyData = [
+  @override
+  void initState() {
+    super.initState();
+    _fetchHistoryFromSupabase();
+  }
+
+  Future<void> _fetchHistoryFromSupabase() async {
+    try {
+      final client = Supabase.instance.client;
+      final response = await client
+          .from('user_histories')
+          .select()
+          .order('tested_at', ascending: false);
+
+      if (mounted && response.isNotEmpty) {
+        setState(() {
+          historyData = response.map<Map<String, dynamic>>((row) {
+            return {
+              'isHoax': row['is_hoax'] ?? false,
+              'confidence': row['confidence_str'] ?? '80%',
+              'time': 'Tersimpan di Supabase',
+              'text': row['snippet'] ?? row['title'] ?? '',
+              'analysisType': row['classification'] ?? 'Analisis NLP',
+              'source': row['source'] ?? 'Cloud DB',
+            };
+          }).toList();
+        });
+      }
+    } catch (e) {
+      debugPrint('Info: Menggunakan data riwayat lokal ($e)');
+    }
+  }
+
+  List<Map<String, dynamic>> historyData = [
     {
       'isHoax': true,
       'confidence': '87%',

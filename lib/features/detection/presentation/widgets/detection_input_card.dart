@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../app/theme.dart';
+import '../pages/analysis_detail_page.dart';
 
 class DetectionInputCard extends StatelessWidget {
   final TextEditingController controller;
@@ -94,7 +96,27 @@ class DetectionInputCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                final text = controller.text.trim();
+                if (text.isNotEmpty) {
+                  try {
+                    Supabase.instance.client.from('user_histories').insert({
+                      'title': text.length > 35 ? '${text.substring(0, 35)}...' : text,
+                      'snippet': text,
+                      'classification': 'Terindikasi Hoaks',
+                      'confidence_str': '87%',
+                      'is_hoax': true,
+                      'source': 'Pemeriksaan Mandiri',
+                    });
+                  } catch (_) {}
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AnalysisDetailPage(),
+                  ),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF047857),
                 padding: const EdgeInsets.symmetric(vertical: 14),
