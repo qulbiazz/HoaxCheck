@@ -29,10 +29,7 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20.0,
-              vertical: 16.0,
-            ),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -45,7 +42,6 @@ class HomePage extends StatelessWidget {
 
                 const SizedBox(height: 24),
 
-                
                 QuickActions(
                   onTapDetection: onNavigateToDetection,
                   onTapRiwayat: onNavigateToHistory,
