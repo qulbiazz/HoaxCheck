@@ -1,4 +1,7 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hoaxcheck_app/features/auth/presentation/pages/forgot_password_page.dart';
 import '../../../../../app/theme.dart';
 import '../../../../../core/widgets/hoaxcheck_logo.dart';
@@ -19,22 +22,113 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordObscured = true;
+  bool _isLoading = false;
+  StreamSubscription<AuthState>? _authSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _setupAuthListener();
+  }
+
+  void _setupAuthListener() {
+    try {
+      _authSubscription =
+          Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+        if (mounted && data.event == AuthChangeEvent.signedIn) {
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (_, __, ___) => const MainNavigation(),
+              transitionDuration: const Duration(milliseconds: 500),
+            ),
+          );
+        }
+      });
+    } catch (_) {}
+  }
 
   @override
   void dispose() {
+    _authSubscription?.cancel();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  void _onLogin() {
-    if (_formKey.currentState!.validate()) {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const MainNavigation(),
-          transitionDuration: const Duration(milliseconds: 500),
+  Future<void> _onGoogleSignIn() async {
+    setState(() => _isLoading = true);
+    try {
+      await Supabase.instance.client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: kIsWeb ? null : 'io.supabase.hoaxcheck://login-callback',
+      );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          backgroundColor: AppColors.danger,
         ),
       );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal masuk dengan Google: $e'),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _onLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      final res = await Supabase.instance.client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+
+      if (!mounted) return;
+
+      if (res.user != null) {
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => const MainNavigation(),
+            transitionDuration: const Duration(milliseconds: 500),
+          ),
+        );
+      }
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.message.contains('Invalid login credentials')
+                ? 'Email atau kata sandi salah.'
+                : e.message,
+          ),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal masuk: $e'),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -167,14 +261,14 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 24),
                       PrimaryAuthButton(
-                        label: 'Masuk',
-                        onPressed: _onLogin,
+                        label: _isLoading ? 'Memeriksa...' : 'Masuk',
+                        onPressed: _isLoading ? () {} : _onLogin,
                         hasShadow: true,
                       ),
                       const SizedBox(height: 16),
                       GoogleAuthButton(
                         label: 'Masuk dengan Google',
-                        onPressed: () {},
+                        onPressed: _isLoading ? () {} : _onGoogleSignIn,
                       ),
                     ],
                   ),

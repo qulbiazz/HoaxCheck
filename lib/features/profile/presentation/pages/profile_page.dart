@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hoaxcheck_app/app/app.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../app/theme.dart';
 import '../../../../app/app_header.dart';
-import '../../../../app/theme.dart';
+import '../../../auth/presentation/pages/login_page.dart';
 import 'tentang_hoaxcheck_page.dart';
 import 'kebijakan_privasi_page.dart';
 import 'laporkan_masalah_page.dart';
@@ -123,10 +124,10 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 32),
-                SizedBox(
+                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () => _handleSignOut(context),
                     icon: const Icon(Icons.logout, size: 18, color: AppColors.danger),
                     label: const Text("Keluar Akun", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
@@ -147,5 +148,37 @@ class ProfilePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _handleSignOut(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Keluar Akun'),
+        content: const Text('Apakah Anda yakin ingin keluar dari akun ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Keluar', style: TextStyle(color: AppColors.danger)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await Supabase.instance.client.auth.signOut();
+      } catch (_) {}
+      if (context.mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginPage()),
+          (route) => false,
+        );
+      }
+    }
   }
 }

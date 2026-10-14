@@ -1,5 +1,8 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../app/theme.dart';
 import '../../../../../core/widgets/hoaxcheck_logo.dart';
 import '../../../../../navigation/main_navigation.dart';
@@ -25,9 +28,34 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isPasswordObscured = true;
   bool _isConfirmObscured = true;
   bool _agreeTerms = false;
+  bool _isLoading = false;
+  StreamSubscription<AuthState>? _authSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _setupAuthListener();
+  }
+
+  void _setupAuthListener() {
+    try {
+      _authSubscription =
+          Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+        if (mounted && data.event == AuthChangeEvent.signedIn) {
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (_, __, ___) => const MainNavigation(),
+              transitionDuration: const Duration(milliseconds: 500),
+            ),
+          );
+        }
+      });
+    } catch (_) {}
+  }
 
   @override
   void dispose() {
+    _authSubscription?.cancel();
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -35,20 +63,90 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  void _onRegister() {
-    if (_formKey.currentState!.validate()) {
-      if (!_agreeTerms) {
+  Future<void> _onGoogleSignIn() async {
+    setState(() => _isLoading = true);
+    try {
+      await Supabase.instance.client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: kIsWeb ? null : 'io.supabase.hoaxcheck://login-callback',
+      );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal mendaftar dengan Google: $e'),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _onRegister() async {
+    if (!_formKey.currentState!.validate()) return;
+    if (!_agreeTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Harap menyetujui Kebijakan Privasi.'),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+      final name = _nameController.text.trim();
+
+      final res = await Supabase.instance.client.auth.signUp(
+        email: email,
+        password: password,
+        data: {'full_name': name},
+      );
+
+      if (!mounted) return;
+
+      if (res.user != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Harap menyetujui Kebijakan Privasi.'),
-            backgroundColor: AppColors.danger,
+            content: Text('Pendaftaran berhasil! Akun tersimpan di Supabase.'),
+            backgroundColor: AppColors.primary,
           ),
         );
-        return;
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(pageBuilder: (_, __, ___) => const MainNavigation()),
+        );
       }
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(pageBuilder: (_, __, ___) => const MainNavigation()),
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          backgroundColor: AppColors.danger,
+        ),
       );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal mendaftar: $e'),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -274,13 +372,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 20),
                       PrimaryAuthButton(
-                        label: 'Daftar Akun',
-                        onPressed: _onRegister,
+                        label: _isLoading ? 'Mendaftarkan...' : 'Daftar Akun',
+                        onPressed: _isLoading ? () {} : _onRegister,
                       ),
                       const SizedBox(height: 12),
                       GoogleAuthButton(
-                        label: 'Register dengan Google',
-                        onPressed: () {},
+                        label: 'Lanjutkan dengan Google',
+                        onPressed: _isLoading ? () {} : _onGoogleSignIn,
                       ),
                     ],
                   ),
