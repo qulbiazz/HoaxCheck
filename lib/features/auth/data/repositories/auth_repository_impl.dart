@@ -9,6 +9,11 @@ class AuthRepositoryImpl implements AuthRepository {
       : remoteDataSource = remoteDataSource ?? AuthRemoteDataSourceImpl();
 
   @override
+  UserEntity? getCurrentUserSync() {
+    return remoteDataSource.getCurrentUser();
+  }
+
+  @override
   Future<UserEntity?> getCurrentUser() async {
     return remoteDataSource.getCurrentUser();
   }

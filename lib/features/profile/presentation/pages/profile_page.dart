@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hoaxcheck_app/app/app.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../app/theme.dart';
 import '../../../../app/app_header.dart';
+import '../../../../core/usecases/usecase.dart';
+import '../../../auth/data/repositories/auth_repository_impl.dart';
+import '../../../auth/domain/usecases/sign_out_usecase.dart';
 import '../../../auth/presentation/pages/login_page.dart';
 import 'tentang_hoaxcheck_page.dart';
 import 'kebijakan_privasi_page.dart';
@@ -171,7 +173,7 @@ class ProfilePage extends StatelessWidget {
 
     if (confirmed == true) {
       try {
-        await Supabase.instance.client.auth.signOut();
+        await SignOutUseCase(AuthRepositoryImpl())(const NoParams());
       } catch (_) {}
       if (context.mounted) {
         Navigator.of(context).pushAndRemoveUntil(

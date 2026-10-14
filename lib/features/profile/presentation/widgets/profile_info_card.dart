@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../app/theme.dart';
+import '../../../auth/data/repositories/auth_repository_impl.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 import '../pages/edit_profile_page.dart';
 
 class ProfileInfoCard extends StatelessWidget {
@@ -10,21 +11,19 @@ class ProfileInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    // Ambil data user dari sesi Supabase Auth (jika ada)
-    User? currentUser;
+    // Clean Architecture: Ambil entitas user dari AuthRepository
+    UserEntity? currentUser;
     try {
-      currentUser = Supabase.instance.client.auth.currentUser;
+      currentUser = AuthRepositoryImpl().getCurrentUserSync();
     } catch (_) {}
 
-    final rawName = currentUser?.userMetadata?['full_name'] as String? ??
-        currentUser?.userMetadata?['name'] as String?;
-    final displayName = (rawName != null && rawName.trim().isNotEmpty)
-        ? rawName.trim()
-        : (currentUser?.email != null
-            ? currentUser!.email!.split('@').first
-            : "Qulbi Khutsi Azzumi");
-    final displayEmail = currentUser?.email ?? "qulbi@hoaxcheck.id";
-    final avatarUrl = currentUser?.userMetadata?['avatar_url'] as String?;
+    final displayName = (currentUser?.name != null && currentUser!.name!.trim().isNotEmpty)
+        ? currentUser.name!
+        : "Qulbi Khutsi Azzumi";
+    final displayEmail = (currentUser?.email != null && currentUser!.email.isNotEmpty)
+        ? currentUser.email
+        : "qulbi@hoaxcheck.id";
+    final avatarUrl = currentUser?.avatarUrl;
 
     return Container(
       width: double.infinity,
