@@ -25,11 +25,7 @@ class TentangHeaderSection extends StatelessWidget {
               ),
             ],
           ),
-          child: const Icon(
-            Icons.verified_user,
-            color: Colors.white,
-            size: 44,
-          ),
+          child: const Icon(Icons.verified_user, color: Colors.white, size: 44),
         ),
         const SizedBox(height: 14),
 
@@ -93,7 +89,6 @@ class TentangHeaderSection extends StatelessWidget {
         ),
         const SizedBox(height: 20),
 
-        // Gambar ilustrasi (placeholder)
         Container(
           width: double.infinity,
           height: 160,
@@ -101,23 +96,10 @@ class TentangHeaderSection extends StatelessWidget {
             color: isDark ? AppDarkColors.surface : const Color(0xFFE2E8F0),
             borderRadius: BorderRadius.circular(16),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.groups_outlined,
-                size: 48,
-                color: isDark ? Colors.white38 : Colors.grey.shade500,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Ilustrasi Tim",
-                style: TextStyle(
-                  color: isDark ? Colors.white38 : Colors.grey.shade500,
-                  fontSize: 11,
-                ),
-              ),
-            ],
+          clipBehavior: Clip.hardEdge,
+          child: Image.asset(
+            'assets/images/team_image.png', // Sesuaikan path asset gambarmu
+            fit: BoxFit.cover,
           ),
         ),
       ],

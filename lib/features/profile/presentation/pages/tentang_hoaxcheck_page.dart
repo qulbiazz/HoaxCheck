@@ -45,8 +45,6 @@ class TentangHoaxCheckPage extends StatelessWidget {
             children: const [
               TentangHeaderSection(),
               SizedBox(height: 28),
-              TentangProfileCard(),
-              SizedBox(height: 28),
               TentangApaItuSection(),
               SizedBox(height: 24),
               TentangCaraKerjaSection(),

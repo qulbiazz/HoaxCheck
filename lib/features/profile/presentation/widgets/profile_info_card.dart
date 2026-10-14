@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
+import '../pages/edit_profile_page.dart';
 
 class ProfileInfoCard extends StatelessWidget {
   const ProfileInfoCard({super.key});
@@ -14,43 +15,64 @@ class ProfileInfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface, // PERBAIKAN: Warna kartu
         borderRadius: BorderRadius.circular(24),
-        boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x08000000),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
           CircleAvatar(
             radius: 40,
-            backgroundColor: AppColors.primary.withOpacity(0.15), 
-            child: const Icon(
-              Icons.person,
-              size: 40,
-              color: AppColors.primary,
-            ),
+            backgroundColor: AppColors.primary.withOpacity(0.15),
+            backgroundImage: const AssetImage('assets/images/img_profile.png'),
           ),
           const SizedBox(height: 16),
           Text(
-            "Qulbi Khutsi Azzumi", 
+            "Qulbi Khutsi Azzumi",
             // PERBAIKAN: Warna nama dari tema
-            style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             "qulbi@hoaxcheck.id",
-            style: TextStyle(color: isDark ? Colors.white54 : AppColors.neutral, fontSize: 12),
+            style: TextStyle(
+              color: isDark ? Colors.white54 : AppColors.neutral,
+              fontSize: 12,
+            ),
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const EditProfilePage(),
+                ),
+              );
+            },
             icon: const Icon(Icons.edit_outlined, size: 16),
-            label: const Text("Edit Profil", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            label: const Text(
+              "Edit Profil",
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary.withOpacity(0.1), 
-              foregroundColor: AppColors.primary, 
+              backgroundColor: AppColors.primary.withOpacity(0.1),
+              foregroundColor: AppColors.primary,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
-          )
+          ),
         ],
       ),
     );

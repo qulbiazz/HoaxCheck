@@ -5,7 +5,6 @@ import '../widgets/laporkan/laporkan_footer.dart';
 import '../widgets/laporkan/laporkan_form.dart';
 import '../widgets/laporkan/laporkan_hero_card.dart';
 
-
 class LaporkanMasalahPage extends StatefulWidget {
   const LaporkanMasalahPage({super.key});
 
@@ -137,26 +136,20 @@ class _LaporkanMasalahPageState extends State<LaporkanMasalahPage> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _isFormValid ? _submitLaporan : null,
-                  icon: const Icon(
-                    Icons.send_outlined,
-                    size: 16,
-                  ),
+                  icon: const Icon(Icons.send_outlined, size: 16),
                   label: const Text(
                     "Kirim Laporan",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor: isDark
-                        ? const Color(0xFF334155)
-                        : const Color(0xFFE2E8F0),
-                    disabledForegroundColor: isDark
-                        ? Colors.white38
-                        : AppColors.neutral,
+                    disabledBackgroundColor:
+                        isDark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFE2E8F0),
+                    disabledForegroundColor:
+                        isDark ? Colors.white38 : AppColors.neutral,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
