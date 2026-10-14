@@ -2,11 +2,15 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 import '../../../../../app/theme.dart';
 import '../../../../../core/widgets/hoaxcheck_logo.dart';
 import '../../../../../navigation/main_navigation.dart';
 import '../../../privacy_policy/presentation/pages/privacy_policy_page.dart';
+import '../../data/repositories/auth_repository_impl.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../../domain/usecases/register_with_email_usecase.dart';
+import '../../domain/usecases/sign_in_with_google_usecase.dart';
 import '../widgets/auth_buttons.dart';
 import '../widgets/custom_text_field.dart';
 import 'login_page.dart';
@@ -29,7 +33,14 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isConfirmObscured = true;
   bool _agreeTerms = false;
   bool _isLoading = false;
-  StreamSubscription<AuthState>? _authSubscription;
+  StreamSubscription? _authSubscription;
+
+  // Clean Architecture: Injeksi UseCase & Repository
+  late final AuthRepository _authRepository = AuthRepositoryImpl();
+  late final RegisterWithEmailUseCase _registerUseCase =
+      RegisterWithEmailUseCase(_authRepository);
+  late final SignInWithGoogleUseCase _googleSignInUseCase =
+      SignInWithGoogleUseCase(_authRepository);
 
   @override
   void initState() {
@@ -39,9 +50,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _setupAuthListener() {
     try {
-      _authSubscription =
-          Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-        if (mounted && data.event == AuthChangeEvent.signedIn) {
+      _authSubscription = _authRepository.authStateChanges.listen((user) {
+        if (mounted && user != null) {
           Navigator.of(context).pushReplacement(
             PageRouteBuilder(
               pageBuilder: (_, __, ___) => const MainNavigation(),
@@ -66,9 +76,8 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> _onGoogleSignIn() async {
     setState(() => _isLoading = true);
     try {
-      await Supabase.instance.client.auth.signInWithOAuth(
-        OAuthProvider.google,
-        redirectTo: kIsWeb ? null : 'io.supabase.hoaxcheck://login-callback',
+      await _googleSignInUseCase(
+        kIsWeb ? null : 'io.supabase.hoaxcheck://login-callback',
       );
     } on AuthException catch (e) {
       if (!mounted) return;
@@ -110,25 +119,21 @@ class _RegisterPageState extends State<RegisterPage> {
       final password = _passwordController.text;
       final name = _nameController.text.trim();
 
-      final res = await Supabase.instance.client.auth.signUp(
-        email: email,
-        password: password,
-        data: {'full_name': name},
+      await _registerUseCase(
+        RegisterParams(email: email, password: password, name: name),
       );
 
       if (!mounted) return;
 
-      if (res.user != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Pendaftaran berhasil! Akun tersimpan di Supabase.'),
-            backgroundColor: AppColors.primary,
-          ),
-        );
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(pageBuilder: (_, __, ___) => const MainNavigation()),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pendaftaran berhasil! Akun tersimpan di Supabase.'),
+          backgroundColor: AppColors.primary,
+        ),
+      );
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(pageBuilder: (_, __, ___) => const MainNavigation()),
+      );
     } on AuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
