@@ -6,7 +6,6 @@ import '../widgets/detection_header.dart';
 import '../widgets/clipboard_banner.dart';
 import '../widgets/detection_input_card.dart';
 import '../widgets/info_banners.dart';
-import '../widgets/literacy_tips_card.dart';
 
 class DetectionPage extends StatefulWidget {
   const DetectionPage({super.key});
@@ -76,8 +75,6 @@ class _DetectionPageState extends State<DetectionPage> {
                 
                 const InfoBanners(),
                 const SizedBox(height: 20),
-                
-                const LiteracyTipsCard(),
                 
                 const SizedBox(height: 100), 
               ],
