@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../app/theme.dart';
+import '../../data/repositories/detection_repository_impl.dart';
+import '../../domain/usecases/analyze_text_usecase.dart';
 import '../pages/analysis_detail_page.dart';
 
 class DetectionInputCard extends StatelessWidget {
@@ -10,6 +11,8 @@ class DetectionInputCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Clean Architecture: Injeksi UseCase
+    final analyzeTextUseCase = AnalyzeTextUseCase(DetectionRepositoryImpl());
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -99,16 +102,7 @@ class DetectionInputCard extends StatelessWidget {
               onPressed: () {
                 final text = controller.text.trim();
                 if (text.isNotEmpty) {
-                  try {
-                    Supabase.instance.client.from('user_histories').insert({
-                      'title': text.length > 35 ? '${text.substring(0, 35)}...' : text,
-                      'snippet': text,
-                      'classification': 'Terindikasi Hoaks',
-                      'confidence_str': '87%',
-                      'is_hoax': true,
-                      'source': 'Pemeriksaan Mandiri',
-                    });
-                  } catch (_) {}
+                  analyzeTextUseCase(text);
                 }
                 Navigator.push(
                   context,
