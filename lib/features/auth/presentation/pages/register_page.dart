@@ -1,9 +1,16 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 import '../../../../../app/theme.dart';
 import '../../../../../core/widgets/hoaxcheck_logo.dart';
 import '../../../../../navigation/main_navigation.dart';
 import '../../../privacy_policy/presentation/pages/privacy_policy_page.dart';
+import '../../data/repositories/auth_repository_impl.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../../domain/usecases/register_with_email_usecase.dart';
+import '../../domain/usecases/sign_in_with_google_usecase.dart';
 import '../widgets/auth_buttons.dart';
 import '../widgets/custom_text_field.dart';
 import 'login_page.dart';
@@ -25,9 +32,40 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isPasswordObscured = true;
   bool _isConfirmObscured = true;
   bool _agreeTerms = false;
+  bool _isLoading = false;
+  StreamSubscription? _authSubscription;
+
+  // Clean Architecture: Injeksi UseCase & Repository
+  late final AuthRepository _authRepository = AuthRepositoryImpl();
+  late final RegisterWithEmailUseCase _registerUseCase =
+      RegisterWithEmailUseCase(_authRepository);
+  late final SignInWithGoogleUseCase _googleSignInUseCase =
+      SignInWithGoogleUseCase(_authRepository);
+
+  @override
+  void initState() {
+    super.initState();
+    _setupAuthListener();
+  }
+
+  void _setupAuthListener() {
+    try {
+      _authSubscription = _authRepository.authStateChanges.listen((user) {
+        if (mounted && user != null) {
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (_, __, ___) => const MainNavigation(),
+              transitionDuration: const Duration(milliseconds: 500),
+            ),
+          );
+        }
+      });
+    } catch (_) {}
+  }
 
   @override
   void dispose() {
+    _authSubscription?.cancel();
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -35,20 +73,85 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  void _onRegister() {
-    if (_formKey.currentState!.validate()) {
-      if (!_agreeTerms) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Harap menyetujui Kebijakan Privasi.'),
-            backgroundColor: AppColors.danger,
-          ),
-        );
-        return;
-      }
+  Future<void> _onGoogleSignIn() async {
+    setState(() => _isLoading = true);
+    try {
+      await _googleSignInUseCase(
+        kIsWeb ? null : 'io.supabase.hoaxcheck://login-callback',
+      );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal mendaftar dengan Google: $e'),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _onRegister() async {
+    if (!_formKey.currentState!.validate()) return;
+    if (!_agreeTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Harap menyetujui Kebijakan Privasi.'),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+      final name = _nameController.text.trim();
+
+      await _registerUseCase(
+        RegisterParams(email: email, password: password, name: name),
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pendaftaran berhasil! Akun tersimpan di Supabase.'),
+          backgroundColor: AppColors.primary,
+        ),
+      );
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(pageBuilder: (_, __, ___) => const MainNavigation()),
       );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal mendaftar: $e'),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -274,13 +377,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 20),
                       PrimaryAuthButton(
-                        label: 'Daftar Akun',
-                        onPressed: _onRegister,
+                        label: _isLoading ? 'Mendaftarkan...' : 'Daftar Akun',
+                        onPressed: _isLoading ? () {} : _onRegister,
                       ),
                       const SizedBox(height: 12),
                       GoogleAuthButton(
-                        label: 'Register dengan Google',
-                        onPressed: () {},
+                        label: 'Lanjutkan dengan Google',
+                        onPressed: _isLoading ? () {} : _onGoogleSignIn,
                       ),
                     ],
                   ),

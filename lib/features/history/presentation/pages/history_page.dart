@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../../../app/theme.dart';
 import '../../../../app/app_header.dart';
+import '../../../../core/usecases/usecase.dart';
+import '../../data/repositories/history_repository_impl.dart';
+import '../../domain/repositories/history_repository.dart';
+import '../../domain/usecases/get_user_history_usecase.dart';
 import '../widgets/history_card.dart';
 import '../widgets/history_tips_banner.dart';
 import '../widgets/history_delete_dialog.dart';
@@ -16,7 +19,31 @@ class _HistoryPageState extends State<HistoryPage> {
   String selectedFilter = 'Semua';
   String searchQuery = '';
 
-  final List<Map<String, dynamic>> historyData = [
+  // Clean Architecture: Injeksi UseCase & Repository
+  late final HistoryRepository _historyRepository = HistoryRepositoryImpl();
+  late final GetUserHistoryUseCase _getUserHistoryUseCase =
+      GetUserHistoryUseCase(_historyRepository);
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchHistoryFromSupabase();
+  }
+
+  Future<void> _fetchHistoryFromSupabase() async {
+    try {
+      final items = await _getUserHistoryUseCase(const NoParams());
+      if (mounted && items.isNotEmpty) {
+        setState(() {
+          historyData = items.map((item) => item.toMap()).toList();
+        });
+      }
+    } catch (e) {
+      debugPrint('Info: Menggunakan data riwayat lokal ($e)');
+    }
+  }
+
+  List<Map<String, dynamic>> historyData = [
     {
       'isHoax': true,
       'confidence': '87%',

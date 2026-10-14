@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
+import '../../../auth/data/repositories/auth_repository_impl.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 import '../pages/edit_profile_page.dart';
 
 class ProfileInfoCard extends StatelessWidget {
@@ -8,6 +10,20 @@ class ProfileInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    // Clean Architecture: Ambil entitas user dari AuthRepository
+    UserEntity? currentUser;
+    try {
+      currentUser = AuthRepositoryImpl().getCurrentUserSync();
+    } catch (_) {}
+
+    final displayName = (currentUser?.name != null && currentUser!.name!.trim().isNotEmpty)
+        ? currentUser.name!
+        : "Qulbi Khutsi Azzumi";
+    final displayEmail = (currentUser?.email != null && currentUser!.email.isNotEmpty)
+        ? currentUser.email
+        : "qulbi@hoaxcheck.id";
+    final avatarUrl = currentUser?.avatarUrl;
 
     return Container(
       width: double.infinity,
@@ -28,11 +44,13 @@ class ProfileInfoCard extends StatelessWidget {
           CircleAvatar(
             radius: 40,
             backgroundColor: AppColors.primary.withOpacity(0.15),
-            backgroundImage: const AssetImage('assets/images/img_profile.png'),
+            backgroundImage: avatarUrl != null
+                ? NetworkImage(avatarUrl) as ImageProvider
+                : const AssetImage('assets/images/img_profile.png'),
           ),
           const SizedBox(height: 16),
           Text(
-            "Qulbi Khutsi Azzumi",
+            displayName,
             // PERBAIKAN: Warna nama dari tema
             style: TextStyle(
               color: Theme.of(context).textTheme.bodyLarge?.color,
@@ -42,7 +60,7 @@ class ProfileInfoCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            "qulbi@hoaxcheck.id",
+            displayEmail,
             style: TextStyle(
               color: isDark ? Colors.white54 : AppColors.neutral,
               fontSize: 12,

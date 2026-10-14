@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
+import '../../data/repositories/detection_repository_impl.dart';
+import '../../domain/usecases/analyze_text_usecase.dart';
+import '../pages/analysis_detail_page.dart';
 
 class DetectionInputCard extends StatelessWidget {
   final TextEditingController controller;
@@ -8,6 +11,8 @@ class DetectionInputCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Clean Architecture: Injeksi UseCase
+    final analyzeTextUseCase = AnalyzeTextUseCase(DetectionRepositoryImpl());
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -94,7 +99,18 @@ class DetectionInputCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                final text = controller.text.trim();
+                if (text.isNotEmpty) {
+                  analyzeTextUseCase(text);
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AnalysisDetailPage(),
+                  ),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF047857),
                 padding: const EdgeInsets.symmetric(vertical: 14),
