@@ -131,11 +131,10 @@ class _LaporkanMasalahPageState extends State<LaporkanMasalahPage> {
               ),
               const SizedBox(height: 24),
 
-              // Tombol Kirim Laporan (auto-disable)
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: _isFormValid ? _submitLaporan : null,
+                  onPressed: _submitLaporan,
                   icon: const Icon(Icons.send_outlined, size: 16),
                   label: const Text(
                     "Kirim Laporan",
@@ -144,12 +143,6 @@ class _LaporkanMasalahPageState extends State<LaporkanMasalahPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor:
-                        isDark
-                            ? const Color(0xFF334155)
-                            : const Color(0xFFE2E8F0),
-                    disabledForegroundColor:
-                        isDark ? Colors.white38 : AppColors.neutral,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
