@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../detection/presentation/pages/analysis_detail_page.dart';
 
 class RecentCheckSection extends StatelessWidget {
-  const RecentCheckSection({super.key});
+  const RecentCheckSection({super.key, VoidCallback? onViewAllPressed});
 
   @override
   Widget build(BuildContext context) {

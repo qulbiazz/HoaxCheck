@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 
 class DetectionBanner extends StatelessWidget {
-  const DetectionBanner({super.key});
+  final VoidCallback? onNavigateToDetection;
+
+  const DetectionBanner({super.key, this.onNavigateToDetection});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +63,7 @@ class DetectionBanner extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: onNavigateToDetection,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 foregroundColor: AppColors.primary,

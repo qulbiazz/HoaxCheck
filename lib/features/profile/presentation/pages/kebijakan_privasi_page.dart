@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
-import '../../widgets/kebijakan/kebijakan_chip_nav.dart';
-import '../../widgets/kebijakan/kebijakan_data_disimpan.dart';
-import '../../widgets/kebijakan/kebijakan_hero_card.dart';
-import '../../widgets/kebijakan/kebijakan_keamanan_data.dart';
-import '../../widgets/kebijakan/kebijakan_kontak.dart';
-import '../../widgets/kebijakan/kebijakan_penggunaan_data.dart';
-import '../../widgets/kebijakan/kebijakan_penghapusan_data.dart';
-import '../../widgets/kebijakan/kebijakan_perubahan.dart';
-import '../../widgets/kebijakan/kebijakan_riwayat.dart';
+import '../widgets/kebijakan/kebijakan_chip_nav.dart';
+import '../widgets/kebijakan/kebijakan_data_disimpan.dart';
+import '../widgets/kebijakan/kebijakan_hero_card.dart';
+import '../widgets/kebijakan/kebijakan_keamanan_data.dart';
+import '../widgets/kebijakan/kebijakan_kontak.dart';
+import '../widgets/kebijakan/kebijakan_penggunaan_data.dart';
+import '../widgets/kebijakan/kebijakan_penghapusan_data.dart';
+import '../widgets/kebijakan/kebijakan_perubahan.dart';
+import '../widgets/kebijakan/kebijakan_riwayat.dart';
 
 class KebijakanPrivasiPage extends StatefulWidget {
   const KebijakanPrivasiPage({super.key});

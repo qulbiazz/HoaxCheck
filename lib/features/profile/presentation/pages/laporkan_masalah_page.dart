@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
-import '../../widgets/laporkan/laporkan_dukungan_card.dart';
-import '../../widgets/laporkan/laporkan_footer.dart';
-import '../../widgets/laporkan/laporkan_form.dart';
-import '../../widgets/laporkan/laporkan_hero_card.dart';
+import '../widgets/laporkan/laporkan_dukungan_card.dart';
+import '../widgets/laporkan/laporkan_footer.dart';
+import '../widgets/laporkan/laporkan_form.dart';
+import '../widgets/laporkan/laporkan_hero_card.dart';
 
 
 class LaporkanMasalahPage extends StatefulWidget {

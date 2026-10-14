@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../features/home/presentation/pages/home_page.dart';
 import '../features/detection/presentation/pages/detection_page.dart';
-import '../features/history/presentation/pages/history_page.dart'; 
-import '../features/profile/presentation/pages/profile_page.dart'; 
+import '../features/history/presentation/pages/history_page.dart';
+import '../features/profile/presentation/pages/profile_page.dart';
 import '../app/theme.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -22,11 +22,14 @@ class _MainNavigationState extends State<MainNavigation> {
     _selectedIndex = widget.initialIndex;
   }
 
-  final List<Widget> _pages = [
-    const HomePage(),
-    const DetectionPage(),
-    const HistoryPage(),
-    const ProfilePage(),
+  List<Widget> get _pages => [
+    HomePage(
+      onNavigateToDetection: () => _onItemTapped(1),
+      onNavigateToHistory: () => _onItemTapped(2),
+    ), // Tab 0: Home (Kirim callback)
+    const DetectionPage(), // Tab 1: Deteksi
+    const HistoryPage(), // Tab 2: Riwayat
+    const ProfilePage(), // Tab 3: Profile
   ];
 
   void _onItemTapped(int index) {
@@ -44,20 +47,23 @@ class _MainNavigationState extends State<MainNavigation> {
       body: Stack(
         children: [
           _pages[_selectedIndex],
-          
+
           Align(
             alignment: Alignment.bottomCenter,
             child: SafeArea(
               child: Container(
                 margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                padding: const EdgeInsets.symmetric(vertical: 10), 
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                   // PERBAIKAN: Gunakan warna surface dari Theme agar bisa berubah gelap/terang
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(40),
                   boxShadow: [
                     BoxShadow(
-                      color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.05),
+                      color:
+                          isDark
+                              ? Colors.black.withOpacity(0.3)
+                              : Colors.black.withOpacity(0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -65,10 +71,30 @@ class _MainNavigationState extends State<MainNavigation> {
                 ),
                 child: Row(
                   children: [
-                    _buildNavItem(index: 0, icon: Icons.home_outlined, label: 'Beranda', context: context),
-                    _buildNavItem(index: 1, icon: Icons.document_scanner_outlined, label: 'Deteksi', context: context),
-                    _buildNavItem(index: 2, icon: Icons.history, label: 'Riwayat', context: context),
-                    _buildNavItem(index: 3, icon: Icons.person_outline, label: 'Profile', context: context),
+                    _buildNavItem(
+                      index: 0,
+                      icon: Icons.home_outlined,
+                      label: 'Beranda',
+                      context: context,
+                    ),
+                    _buildNavItem(
+                      index: 1,
+                      icon: Icons.document_scanner_outlined,
+                      label: 'Deteksi',
+                      context: context,
+                    ),
+                    _buildNavItem(
+                      index: 2,
+                      icon: Icons.history,
+                      label: 'Riwayat',
+                      context: context,
+                    ),
+                    _buildNavItem(
+                      index: 3,
+                      icon: Icons.person_outline,
+                      label: 'Profile',
+                      context: context,
+                    ),
                   ],
                 ),
               ),
@@ -79,7 +105,12 @@ class _MainNavigationState extends State<MainNavigation> {
     );
   }
 
-  Widget _buildNavItem({required int index, required IconData icon, required String label, required BuildContext context}) {
+  Widget _buildNavItem({
+    required int index,
+    required IconData icon,
+    required String label,
+    required BuildContext context,
+  }) {
     final bool isSelected = _selectedIndex == index;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -95,8 +126,11 @@ class _MainNavigationState extends State<MainNavigation> {
               curve: Curves.easeInOut,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary.withOpacity(0.15) : Colors.transparent,
-                borderRadius: BorderRadius.circular(100), 
+                color:
+                    isSelected
+                        ? AppColors.primary.withOpacity(0.15)
+                        : Colors.transparent,
+                borderRadius: BorderRadius.circular(100),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -105,16 +139,23 @@ class _MainNavigationState extends State<MainNavigation> {
                     icon,
                     size: 24,
                     // PERBAIKAN: Warna ikon menyesuaikan tema
-                    color: isSelected ? AppColors.primary : (isDark ? Colors.white54 : AppColors.inverted),
+                    color:
+                        isSelected
+                            ? AppColors.primary
+                            : (isDark ? Colors.white54 : AppColors.inverted),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     label,
                     style: TextStyle(
                       // PERBAIKAN: Warna teks menyesuaikan tema
-                      color: isSelected ? AppColors.primary : (isDark ? Colors.white54 : AppColors.inverted),
+                      color:
+                          isSelected
+                              ? AppColors.primary
+                              : (isDark ? Colors.white54 : AppColors.inverted),
                       fontSize: 11,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.w600,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
