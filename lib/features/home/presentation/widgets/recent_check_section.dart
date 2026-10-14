@@ -5,7 +5,7 @@ import '../../../detection/presentation/pages/analysis_detail_page.dart';
 class RecentCheckCard extends StatelessWidget {
   final VoidCallback? onNavigateToDetection;
 
-  const RecentCheckCard({super.key, this.onNavigateToDetection});
+  const RecentCheckCard({super.key, this.onNavigateToDetection, VoidCallback? onViewAllPressed});
 
   @override
   Widget build(BuildContext context) {

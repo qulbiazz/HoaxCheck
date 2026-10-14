@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../../app/theme.dart';
-
-import '../widgets/detection_header.dart';
+import '../../../../app/app_header.dart';
 import '../widgets/clipboard_banner.dart';
 import '../widgets/detection_input_card.dart';
 import '../widgets/info_banners.dart';
@@ -16,7 +15,7 @@ class DetectionPage extends StatefulWidget {
 
 class _DetectionPageState extends State<DetectionPage> {
   final TextEditingController _textController = TextEditingController();
-  
+
   String? _clipboardText;
   bool _isClipboardBannerVisible = false;
 
@@ -28,8 +27,10 @@ class _DetectionPageState extends State<DetectionPage> {
 
   Future<void> _checkClipboard() async {
     final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
-    
-    if (clipboardData != null && clipboardData.text != null && clipboardData.text!.trim().isNotEmpty) {
+
+    if (clipboardData != null &&
+        clipboardData.text != null &&
+        clipboardData.text!.trim().isNotEmpty) {
       setState(() {
         _clipboardText = clipboardData.text;
         _isClipboardBannerVisible = true;
@@ -50,13 +51,23 @@ class _DetectionPageState extends State<DetectionPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 16.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const DetectionHeader(),
+                const AppHeader(title: "Deteksi"),
+                const Text(
+                  "Masukkan teks yang ingin kamu periksa dengan model AI & NLP terverifikasi.",
+                  style: TextStyle(
+                    color: AppColors.neutral,
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
                 const SizedBox(height: 24),
-                
                 if (_isClipboardBannerVisible && _clipboardText != null) ...[
                   ClipboardBanner(
                     detectedText: _clipboardText!,
@@ -69,14 +80,14 @@ class _DetectionPageState extends State<DetectionPage> {
                   ),
                   const SizedBox(height: 20),
                 ],
-                
+
                 DetectionInputCard(controller: _textController),
                 const SizedBox(height: 20),
-                
+
                 const InfoBanners(),
                 const SizedBox(height: 20),
-                
-                const SizedBox(height: 100), 
+
+                const SizedBox(height: 100),
               ],
             ),
           ),

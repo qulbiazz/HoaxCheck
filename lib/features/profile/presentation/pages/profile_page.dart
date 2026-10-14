@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hoaxcheck_app/app/app.dart';
 import '../../../../../app/theme.dart';
+import '../../../../app/app_header.dart';
 import '../../../../app/theme.dart';
 import 'tentang_hoaxcheck_page.dart';
 import 'kebijakan_privasi_page.dart';
 import 'laporkan_masalah_page.dart';
-// import '../../../../main.dart';
 
 import '../widgets/profile_info_card.dart';
 import '../widgets/profile_stats_card.dart';
@@ -24,33 +24,12 @@ class ProfilePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Profile", 
-                      style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 20)
-                    ),
-                    Row(
-                      children: [
-                        IconButton(icon: const Icon(Icons.notifications_outlined, color: AppColors.neutral), onPressed: () {}),
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundColor: AppColors.primary.withOpacity(0.2),
-                          backgroundImage: const NetworkImage('https://via.placeholder.com/150'),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
+                const AppHeader(title: "Profile"),
                 const SizedBox(height: 20),
-                
                 const ProfileInfoCard(),
                 const SizedBox(height: 24),
-                
                 const ProfileStatsCard(),
                 const SizedBox(height: 28),
-                
                 const Text("PREFERENSI", style: TextStyle(color: AppColors.neutral, fontSize: 11, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 Container(
@@ -83,7 +62,6 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-
                 const Text("TENTANG APLIKASI", style: TextStyle(color: AppColors.neutral, fontSize: 11, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 Container(
@@ -123,7 +101,6 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-
                 const Text("BANTUAN", style: TextStyle(color: AppColors.neutral, fontSize: 11, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 Container(
@@ -146,7 +123,6 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 32),
-
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -163,7 +139,6 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
                 const Center(child: Text("HoaxCheck v1.0.0", style: TextStyle(color: AppColors.neutral, fontSize: 10, fontWeight: FontWeight.bold))),
                 const SizedBox(height: 100), 
               ],

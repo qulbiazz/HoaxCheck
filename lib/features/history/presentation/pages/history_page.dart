@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
-
-import '../widgets/history_header.dart';
+import '../../../../app/app_header.dart';
 import '../widgets/history_card.dart';
 import '../widgets/history_tips_banner.dart';
+import '../widgets/history_delete_dialog.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -21,7 +21,8 @@ class _HistoryPageState extends State<HistoryPage> {
       'isHoax': true,
       'confidence': '87%',
       'time': 'Hari Ini, 10:42 WIB',
-      'text': 'Beredar pesan berantai mengklaim vaksinasi booster gratis dibatalkan pemerintah dan...',
+      'text':
+          'Beredar pesan berantai mengklaim vaksinasi booster gratis dibatalkan pemerintah dan...',
       'analysisType': 'Analisis NLP',
       'source': 'WhatsApp Forward',
     },
@@ -29,7 +30,8 @@ class _HistoryPageState extends State<HistoryPage> {
       'isHoax': false,
       'confidence': '94%',
       'time': 'Kemarin, 15:20 WIB',
-      'text': 'BMKG merilis peringatan dini potensi hujan lebat disertai kilat di wilayah Jabodetabek pada...',
+      'text':
+          'BMKG merilis peringatan dini potensi hujan lebat disertai kilat di wilayah Jabodetabek pada...',
       'analysisType': 'Terverifikasi Sumber',
       'source': 'Portal Berita',
     },
@@ -37,7 +39,8 @@ class _HistoryPageState extends State<HistoryPage> {
       'isHoax': true,
       'confidence': '91%',
       'time': '14 Okt 2026, 09:15 WIB',
-      'text': 'Membagikan link subsidi kuota internet 100GB mengatasnamakan Kemendikbudristek melalui...',
+      'text':
+          'Membagikan link subsidi kuota internet 100GB mengatasnamakan Kemendikbudristek melalui...',
       'analysisType': 'Phishing / Manipulasi',
       'source': 'Tautan URL',
     },
@@ -45,17 +48,33 @@ class _HistoryPageState extends State<HistoryPage> {
       'isHoax': false,
       'confidence': '89%',
       'time': '12 Okt 2026, 18:05 WIB',
-      'text': 'Kementerian Perhubungan mengumumkan penyesuaian tarif LRT Jabodebek per 1...',
+      'text':
+          'Kementerian Perhubungan mengumumkan penyesuaian tarif LRT Jabodebek per 1...',
       'analysisType': 'Media Kredibel',
       'source': 'Siaran Pers Resmi',
     },
   ];
 
+  void _showDeleteDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => HistoryDeleteDialog(
+            onDeleteAll: () {
+              setState(() {
+                historyData.clear();
+              });
+            },
+          ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final int allCount = historyData.length;
     final int hoaxCount = historyData.where((e) => e['isHoax'] == true).length;
-    final int validCount = historyData.where((e) => e['isHoax'] == false).length;
+    final int validCount =
+        historyData.where((e) => e['isHoax'] == false).length;
 
     List<Map<String, dynamic>> getFilteredData() {
       List<Map<String, dynamic>> list = historyData;
@@ -67,7 +86,14 @@ class _HistoryPageState extends State<HistoryPage> {
       }
 
       if (searchQuery.isNotEmpty) {
-        list = list.where((item) => item['text'].toLowerCase().contains(searchQuery.toLowerCase())).toList();
+        list =
+            list
+                .where(
+                  (item) => item['text'].toLowerCase().contains(
+                    searchQuery.toLowerCase(),
+                  ),
+                )
+                .toList();
       }
 
       return list;
@@ -80,11 +106,83 @@ class _HistoryPageState extends State<HistoryPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 16.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const HistoryHeader(),
+                const AppHeader(title: "Riwayat"),
+                const SizedBox(height: 8), // Dibuat lebih rapat
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 4),
+                                    const Text(
+                                      "- Data riwayat pemeriksaan akan hilang setelah 30 hari.\n - Arsip analisis teks yang pernah kamu lakukan.",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Color(0xFF64748B),
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              GestureDetector(
+                                onTap: _showDeleteDialog,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFEE2E2),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: const [
+                                      Icon(
+                                        Icons.delete_outline_rounded,
+                                        size: 14,
+                                        color: Color(0xFFDC2626),
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        "Hapus",
+                                        style: TextStyle(
+                                          color: Color(0xFFDC2626),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 16),
                 Container(
                   decoration: BoxDecoration(
@@ -100,11 +198,18 @@ class _HistoryPageState extends State<HistoryPage> {
                     },
                     decoration: const InputDecoration(
                       hintText: "Cari riwayat pemeriksaan...",
-                      hintStyle: TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+                      hintStyle: TextStyle(
+                        color: Color(0xFF94A3B8),
+                        fontSize: 13,
+                      ),
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
-                      prefixIcon: Icon(Icons.search, color: Color(0xFF64748B), size: 20),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Color(0xFF64748B),
+                        size: 20,
+                      ),
                     ),
                   ),
                 ),
@@ -115,35 +220,47 @@ class _HistoryPageState extends State<HistoryPage> {
                     children: [
                       _buildFilterChip('Semua', allCount, null),
                       const SizedBox(width: 8),
-                      _buildFilterChip('Terindikasi Hoaks', hoaxCount, const Color(0xFFDC2626)),
+                      _buildFilterChip(
+                        'Terindikasi Hoaks',
+                        hoaxCount,
+                        const Color(0xFFDC2626),
+                      ),
                       const SizedBox(width: 8),
-                      _buildFilterChip('Valid', validCount, const Color(0xFF059669)),
+                      _buildFilterChip(
+                        'Valid',
+                        validCount,
+                        const Color(0xFF059669),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
                 filteredList.isEmpty
                     ? const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 30),
-                        child: Center(
-                          child: Text(
-                            "Tidak ada riwayat ditemukan.",
-                            style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12),
+                      padding: EdgeInsets.symmetric(vertical: 30),
+                      child: Center(
+                        child: Text(
+                          "Tidak ada riwayat ditemukan.",
+                          style: TextStyle(
+                            color: Color(0xFF94A3B8),
+                            fontSize: 12,
                           ),
                         ),
-                      )
-                    : Column(
-                        children: filteredList.map((item) {
-                          return HistoryCard(
-                            isHoax: item['isHoax'],
-                            confidence: item['confidence'],
-                            time: item['time'],
-                            text: item['text'],
-                            analysisType: item['analysisType'],
-                            source: item['source'],
-                          );
-                        }).toList(),
                       ),
+                    )
+                    : Column(
+                      children:
+                          filteredList.map((item) {
+                            return HistoryCard(
+                              isHoax: item['isHoax'],
+                              confidence: item['confidence'],
+                              time: item['time'],
+                              text: item['text'],
+                              analysisType: item['analysisType'],
+                              source: item['source'],
+                            );
+                          }).toList(),
+                    ),
                 const SizedBox(height: 8),
                 const HistoryTipsBanner(),
                 const SizedBox(height: 100),
@@ -152,26 +269,6 @@ class _HistoryPageState extends State<HistoryPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildStatItem(String label, String value, IconData icon, Color color, Color bg) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(6)),
-              child: Icon(icon, size: 14, color: color),
-            ),
-            const SizedBox(width: 6),
-            Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color)),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
-      ],
     );
   }
 
@@ -201,7 +298,10 @@ class _HistoryPageState extends State<HistoryPage> {
               Container(
                 width: 7,
                 height: 7,
-                decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: dotColor,
+                  shape: BoxShape.circle,
+                ),
               ),
               const SizedBox(width: 6),
             ],
