@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hoaxcheck_app/app/theme.dart';
 import '../../../../app/app_header.dart';
 import '../../../panduan/presentation/pages/guide_detail_page.dart';
 import '../widgets/greeting_section.dart';
@@ -22,7 +21,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(

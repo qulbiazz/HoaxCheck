@@ -129,7 +129,7 @@ class _HistoryPageState extends State<HistoryPage> {
     final filteredList = getFilteredData();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
