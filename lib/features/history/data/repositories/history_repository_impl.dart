@@ -33,4 +33,9 @@ class HistoryRepositoryImpl implements HistoryRepository {
   Future<void> deleteHistory(String id) async {
     await remoteDataSource.deleteHistory(id);
   }
+
+  @override
+  Future<void> clearAllHistory() async {
+    await remoteDataSource.clearAllHistory();
+  }
 }

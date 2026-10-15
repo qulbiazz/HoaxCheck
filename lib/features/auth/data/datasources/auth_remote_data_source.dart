@@ -9,6 +9,7 @@ abstract class AuthRemoteDataSource {
   Future<void> signOut();
   Stream<UserModel?> get authStateChanges;
   Future<UserModel> updateProfile({required String name});
+  Future<void> sendPasswordResetEmail(String email);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -84,5 +85,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw const AuthException('Gagal memperbarui profil.');
     }
     return UserModel.fromSupabase(response.user!);
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    await supabaseClient.auth.resetPasswordForEmail(
+      email,
+      redirectTo: 'io.supabase.hoaxcheck://login-callback',
+    );
   }
 }

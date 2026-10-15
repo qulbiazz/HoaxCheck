@@ -5,6 +5,7 @@ abstract class HistoryRemoteDataSource {
   Future<List<HistoryItemModel>> getUserHistories();
   Future<void> saveHistory(HistoryItemModel item);
   Future<void> deleteHistory(String id);
+  Future<void> clearAllHistory();
 }
 
 class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
@@ -36,5 +37,15 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
   @override
   Future<void> deleteHistory(String id) async {
     await supabaseClient.from('user_histories').delete().eq('id', id);
+  }
+
+  @override
+  Future<void> clearAllHistory() async {
+    final userId = supabaseClient.auth.currentUser?.id;
+    if (userId != null) {
+      await supabaseClient.from('user_histories').delete().eq('user_id', userId);
+    } else {
+      await supabaseClient.from('user_histories').delete().neq('id', '0');
+    }
   }
 }

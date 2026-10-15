@@ -5,4 +5,5 @@ abstract class HistoryRepository {
   Future<List<HistoryItem>> getUserHistories();
   Future<void> saveHistory(HistoryItem item);
   Future<void> deleteHistory(String id);
+  Future<void> clearAllHistory();
 }
