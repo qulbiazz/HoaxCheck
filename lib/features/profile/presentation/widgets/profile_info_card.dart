@@ -4,32 +4,45 @@ import '../../../auth/data/repositories/auth_repository_impl.dart';
 import '../../../auth/domain/entities/user_entity.dart';
 import '../pages/edit_profile_page.dart';
 
-class ProfileInfoCard extends StatelessWidget {
+class ProfileInfoCard extends StatefulWidget {
   const ProfileInfoCard({super.key});
+
+  @override
+  State<ProfileInfoCard> createState() => _ProfileInfoCardState();
+}
+
+class _ProfileInfoCardState extends State<ProfileInfoCard> {
+  UserEntity? _currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  void _loadUser() {
+    try {
+      _currentUser = AuthRepositoryImpl().getCurrentUserSync();
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    // Clean Architecture: Ambil entitas user dari AuthRepository
-    UserEntity? currentUser;
-    try {
-      currentUser = AuthRepositoryImpl().getCurrentUserSync();
-    } catch (_) {}
 
-    final displayName = (currentUser?.name != null && currentUser!.name!.trim().isNotEmpty)
-        ? currentUser.name!
+    final displayName = (_currentUser?.name != null && _currentUser!.name!.trim().isNotEmpty)
+        ? _currentUser!.name!
         : "Qulbi Khutsi Azzumi";
-    final displayEmail = (currentUser?.email != null && currentUser!.email.isNotEmpty)
-        ? currentUser.email
+    final displayEmail = (_currentUser?.email != null && _currentUser!.email.isNotEmpty)
+        ? _currentUser!.email
         : "qulbi@hoaxcheck.id";
-    final avatarUrl = currentUser?.avatarUrl;
+    final avatarUrl = _currentUser?.avatarUrl;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface, // PERBAIKAN: Warna kartu
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: const [
           BoxShadow(
@@ -43,7 +56,7 @@ class ProfileInfoCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 40,
-            backgroundColor: AppColors.primary.withOpacity(0.15),
+            backgroundColor: AppColors.primary.withValues(alpha: 0.15),
             backgroundImage: avatarUrl != null
                 ? NetworkImage(avatarUrl) as ImageProvider
                 : const AssetImage('assets/images/img_profile.png'),
@@ -51,7 +64,6 @@ class ProfileInfoCard extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             displayName,
-            // PERBAIKAN: Warna nama dari tema
             style: TextStyle(
               color: Theme.of(context).textTheme.bodyLarge?.color,
               fontSize: 18,
@@ -68,13 +80,18 @@ class ProfileInfoCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const EditProfilePage(),
                 ),
               );
+              if (result == true && mounted) {
+                setState(() {
+                  _loadUser();
+                });
+              }
             },
             icon: const Icon(Icons.edit_outlined, size: 16),
             label: const Text(
@@ -82,7 +99,7 @@ class ProfileInfoCard extends StatelessWidget {
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary.withOpacity(0.1),
+              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
               foregroundColor: AppColors.primary,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),

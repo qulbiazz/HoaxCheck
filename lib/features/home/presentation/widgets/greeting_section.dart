@@ -6,6 +6,8 @@ class GreetingSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -13,15 +15,23 @@ class GreetingSection extends StatelessWidget {
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text(
                 "Halo, siap memeriksa informasi?",
-                style: TextStyle(color: AppColors.inverted, fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: isDark ? AppDarkColors.textPrimary : AppColors.inverted,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 "Kenali informasi yang meragukan dengan lebih mudah.",
-                style: TextStyle(color: AppColors.neutral, fontSize: 13, height: 1.4),
+                style: TextStyle(
+                  color: isDark ? AppDarkColors.textSecondary : AppColors.neutral,
+                  fontSize: 13,
+                  height: 1.4,
+                ),
               ),
             ],
           ),

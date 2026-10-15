@@ -13,10 +13,12 @@ class DetectionInputCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // Clean Architecture: Injeksi UseCase
     final analyzeTextUseCase = AnalyzeTextUseCase(DetectionRepositoryImpl());
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: isDark ? AppDarkColors.surface : AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))],
       ),
@@ -27,18 +29,18 @@ class DetectionInputCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
-                children: const [
+                children: [
                   Text(
                     "Teks yang ingin\ndiperiksa",
                     style: TextStyle(
-                      color: AppColors.inverted,
+                      color: isDark ? AppDarkColors.textPrimary : AppColors.inverted,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       height: 1.2,
                     ),
                   ),
-                  SizedBox(width: 6),
-                  Icon(Icons.info_outline, size: 14, color: AppColors.neutral),
+                  const SizedBox(width: 6),
+                  const Icon(Icons.info_outline, size: 14, color: AppColors.neutral),
                 ],
               ),
               Row(
@@ -51,7 +53,7 @@ class DetectionInputCard extends StatelessWidget {
           const SizedBox(height: 16),
           Container(
             decoration: BoxDecoration(
-              color: AppColors.background,
+              color: isDark ? AppDarkColors.neutral : AppColors.background,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -59,7 +61,11 @@ class DetectionInputCard extends StatelessWidget {
                 TextField(
                   controller: controller,
                   maxLines: 5,
-                  style: const TextStyle(color: AppColors.inverted, fontSize: 14, height: 1.5),
+                  style: TextStyle(
+                    color: isDark ? AppDarkColors.textPrimary : AppColors.inverted,
+                    fontSize: 14,
+                    height: 1.5,
+                  ),
                   decoration: const InputDecoration(
                     hintText: "Masukkan teks atau link di sini...",
                     hintStyle: TextStyle(color: AppColors.neutral, fontSize: 14),
@@ -76,12 +82,16 @@ class DetectionInputCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
-                        children: const [
-                          Icon(Icons.language, size: 12, color: AppColors.primary),
-                          SizedBox(width: 6),
+                        children: [
+                          const Icon(Icons.language, size: 12, color: AppColors.primary),
+                          const SizedBox(width: 6),
                           Text(
                             "Siap diuji model IndoBERT",
-                            style: TextStyle(color: AppColors.inverted, fontSize: 10, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                              color: isDark ? AppDarkColors.textSecondary : AppColors.inverted,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),

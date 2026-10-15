@@ -9,4 +9,6 @@ abstract class AuthRepository {
   Future<void> signInWithGoogle({String? redirectTo});
   Future<void> signOut();
   Stream<UserEntity?> get authStateChanges;
+  Future<UserEntity> updateProfile({required String name});
+  Future<void> sendPasswordResetEmail(String email);
 }

@@ -6,13 +6,25 @@ class StatisticsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text("Statistik Pemeriksaanmu", style: TextStyle(color: AppColors.inverted, fontSize: 16, fontWeight: FontWeight.bold)),
-            Text("30 Hari Terakhir", style: TextStyle(color: AppColors.neutral, fontSize: 12)),
+          children: [
+            Text(
+              "Statistik Pemeriksaanmu",
+              style: TextStyle(
+                color: isDark ? AppDarkColors.textPrimary : AppColors.inverted,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Text(
+              "30 Hari Terakhir",
+              style: TextStyle(color: AppColors.neutral, fontSize: 12),
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -23,40 +35,50 @@ class StatisticsSection extends StatelessWidget {
             _buildStatCard(
               title: "Total Uji",
               value: "48",
-              bgColor: AppColors.surface,
-              textColor: AppColors.inverted,
+              bgColor: isDark ? AppDarkColors.surface : AppColors.surface,
+              textColor: isDark ? AppDarkColors.textPrimary : AppColors.inverted,
               bottomWidget: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   Icon(Icons.insights, size: 14, color: AppColors.neutral),
                   SizedBox(width: 4),
-                  Text("Semua\nklaim", style: TextStyle(color: AppColors.neutral, fontSize: 11, height: 1.1), textAlign: TextAlign.center),
+                  Text(
+                    "Semua\nklaim",
+                    style: TextStyle(
+                      color: AppColors.neutral,
+                      fontSize: 11,
+                      height: 1.1,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),
             const SizedBox(width: 8),
-            
+
             // KARTU 2: Hoaks
             _buildStatCard(
               title: "Hoaks",
               value: "14",
-              bgColor: AppColors.danger.withOpacity(0.08),
-              textColor: AppColors.danger,
+              bgColor: AppColors.danger.withOpacity(isDark ? 0.2 : 0.08),
+              textColor: isDark ? const Color(0xFFFCA5A5) : AppColors.danger,
               bottomWidget: _buildBadge(
                 text: "Bahaya",
                 icon: Icons.warning_amber_rounded,
-                textColor: AppColors.danger,
-                bgColor: AppColors.danger.withOpacity(0.15),
+                textColor: isDark ? const Color(0xFFFCA5A5) : AppColors.danger,
+                bgColor: AppColors.danger.withOpacity(isDark ? 0.3 : 0.15),
               ),
             ),
             const SizedBox(width: 8),
-            
+
             // KARTU 3: Valid
             _buildStatCard(
               title: "Valid",
               value: "34",
-              bgColor: AppColors.primary.withOpacity(0.15),
-              textColor: const Color(0xFF047857), // Menggunakan warna hijau yang lebih gelap agar kontras
+              bgColor: AppColors.primary.withOpacity(isDark ? 0.2 : 0.15),
+              textColor: isDark
+                  ? const Color(0xFF6EE7B7)
+                  : const Color(0xFF047857),
               bottomWidget: _buildBadge(
                 text: "Akurat",
                 icon: Icons.check_circle_outline,
@@ -84,7 +106,7 @@ class StatisticsSection extends StatelessWidget {
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: bgColor == AppColors.surface
+          boxShadow: (bgColor == AppColors.surface || bgColor == AppDarkColors.surface)
               ? const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]
               : null,
         ),

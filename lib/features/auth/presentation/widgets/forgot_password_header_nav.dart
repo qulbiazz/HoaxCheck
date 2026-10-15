@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
+import '../../../../../app/theme.dart';
 
 class ForgotPasswordHeaderNav extends StatelessWidget {
   const ForgotPasswordHeaderNav({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         TextButton.icon(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, size: 16, color: Color(0xFF334155)),
-          label: const Text(
+          icon: Icon(
+            Icons.arrow_back,
+            size: 16,
+            color: isDark ? AppDarkColors.textPrimary : const Color(0xFF334155),
+          ),
+          label: Text(
             "Kembali",
-            style: TextStyle(color: Color(0xFF334155), fontSize: 13, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: isDark ? AppDarkColors.textPrimary : const Color(0xFF334155),
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,
@@ -24,7 +35,7 @@ class ForgotPasswordHeaderNav extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: const Color(0xFFEFF6FF),
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFEFF6FF),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Row(
@@ -39,10 +50,10 @@ class ForgotPasswordHeaderNav extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 6),
-              const Text(
+              Text(
                 "PEMULIHAN AKUN",
                 style: TextStyle(
-                  color: Color(0xFF1D4ED8),
+                  color: isDark ? const Color(0xFF93C5FD) : const Color(0xFF1D4ED8),
                   fontSize: 9.5,
                   fontWeight: FontWeight.bold,
                 ),

@@ -19,6 +19,7 @@ class AppDarkColors {
   
   static const Color neutral = Color(0xFF171A1C);
   static const Color surface = Color(0xFF22262A);
+  static const Color border = Color(0xFF33383F);
   static const Color textPrimary = Colors.white;
   static const Color textSecondary = Color(0xFFA1A1AA);
   static const Color danger = Color(0xFFF87171);

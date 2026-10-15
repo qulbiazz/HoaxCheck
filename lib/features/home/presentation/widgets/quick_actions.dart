@@ -16,15 +16,17 @@ class QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             Text(
               "Aksi Cepat",
               style: TextStyle(
-                color: AppColors.inverted,
+                color: isDark ? AppDarkColors.textPrimary : AppColors.inverted,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -60,6 +62,7 @@ class QuickActions extends StatelessWidget {
           children: [
             Expanded(
               child: _buildActionCard(
+                context,
                 Icons.history,
                 "Lihat Riwayat",
                 "Jejak verifikasi",
@@ -70,6 +73,7 @@ class QuickActions extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _buildActionCard(
+                context,
                 Icons.menu_book,
                 "Panduan",
                 "Pedoman Pers",
@@ -91,12 +95,15 @@ class QuickActions extends StatelessWidget {
   }
 
   Widget _buildActionCard(
+    BuildContext context,
     IconData icon,
     String title,
     String subtitle,
     Color iconColor, {
     required VoidCallback? onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -105,7 +112,7 @@ class QuickActions extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: isDark ? AppDarkColors.surface : AppColors.surface,
             borderRadius: BorderRadius.circular(16),
             boxShadow: const [
               BoxShadow(
@@ -129,8 +136,8 @@ class QuickActions extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 title,
-                style: const TextStyle(
-                  color: AppColors.inverted,
+                style: TextStyle(
+                  color: isDark ? AppDarkColors.textPrimary : AppColors.inverted,
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
@@ -138,7 +145,10 @@ class QuickActions extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: const TextStyle(color: AppColors.neutral, fontSize: 11),
+                style: TextStyle(
+                  color: isDark ? AppDarkColors.textSecondary : AppColors.neutral,
+                  fontSize: 11,
+                ),
               ),
             ],
           ),

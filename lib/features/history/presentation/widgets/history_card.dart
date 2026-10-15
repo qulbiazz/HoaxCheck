@@ -22,13 +22,14 @@ class HistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final Color statusColor = isHoax ? AppColors.danger : AppColors.primary;
     final IconData statusIcon = isHoax ? Icons.warning_amber_rounded : Icons.check_circle;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: isDark ? AppDarkColors.surface : AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))],
       ),
@@ -87,7 +88,12 @@ class HistoryCard extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text(
                     text, 
-                    style: const TextStyle(color: AppColors.inverted, fontSize: 13, height: 1.4, fontWeight: FontWeight.w500), 
+                    style: TextStyle(
+                      color: isDark ? AppDarkColors.textPrimary : AppColors.inverted, 
+                      fontSize: 13, 
+                      height: 1.4, 
+                      fontWeight: FontWeight.w500,
+                    ), 
                     maxLines: 2, 
                     overflow: TextOverflow.ellipsis
                   ),

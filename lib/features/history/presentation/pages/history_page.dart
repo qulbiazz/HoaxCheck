@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme.dart';
 import '../../../../app/app_header.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../data/repositories/history_repository_impl.dart';
@@ -87,10 +88,23 @@ class _HistoryPageState extends State<HistoryPage> {
       context: context,
       builder:
           (context) => HistoryDeleteDialog(
-            onDeleteAll: () {
+            onDeleteAll: () async {
               setState(() {
                 historyData.clear();
               });
+              try {
+                await _historyRepository.clearAllHistory();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Semua riwayat berhasil dihapus dari cloud.'),
+                      backgroundColor: AppColors.primary,
+                    ),
+                  );
+                }
+              } catch (e) {
+                debugPrint('Info: Gagal menghapus riwayat cloud: $e');
+              }
             },
           ),
     );
@@ -129,7 +143,7 @@ class _HistoryPageState extends State<HistoryPage> {
     final filteredList = getFilteredData();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(

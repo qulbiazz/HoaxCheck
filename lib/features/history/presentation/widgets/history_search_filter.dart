@@ -6,23 +6,40 @@ class HistorySearchFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       children: [
         TextField(
+          style: TextStyle(
+            color: isDark ? AppDarkColors.textPrimary : AppColors.inverted,
+            fontSize: 14,
+          ),
           decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.search, color: AppColors.neutral, size: 20),
+            prefixIcon: Icon(
+              Icons.search,
+              color: isDark ? AppDarkColors.textSecondary : AppColors.neutral,
+              size: 20,
+            ),
             hintText: "Cari riwayat pemeriksaan...",
-            hintStyle: const TextStyle(color: AppColors.neutral, fontSize: 14),
+            hintStyle: TextStyle(
+              color: isDark ? AppDarkColors.textSecondary : AppColors.neutral,
+              fontSize: 14,
+            ),
             filled: true,
-            fillColor: AppColors.surface,
+            fillColor: isDark ? AppDarkColors.surface : AppColors.surface,
             contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderSide: BorderSide(
+                color: isDark ? AppDarkColors.border : Colors.grey.shade200,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderSide: BorderSide(
+                color: isDark ? AppDarkColors.border : Colors.grey.shade200,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
@@ -35,16 +52,17 @@ class HistorySearchFilter extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              _buildFilterChip("Semua", "49", true, null),
+              _buildFilterChip("Semua", "49", true, null, isDark),
               const SizedBox(width: 8),
               _buildFilterChip(
                 "Terindikasi Hoaks",
                 "14",
                 false,
                 AppColors.danger,
+                isDark,
               ),
               const SizedBox(width: 8),
-              _buildFilterChip("Valid", "34", false, AppColors.primary),
+              _buildFilterChip("Valid", "34", false, AppColors.primary, isDark),
             ],
           ),
         ),
@@ -57,14 +75,19 @@ class HistorySearchFilter extends StatelessWidget {
     String count,
     bool isActive,
     Color? dotColor,
+    bool isDark,
   ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: isActive ? AppColors.primary : AppColors.surface,
+        color: isActive
+            ? AppColors.primary
+            : (isDark ? AppDarkColors.surface : AppColors.surface),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isActive ? AppColors.primary : Colors.grey.shade300,
+          color: isActive
+              ? AppColors.primary
+              : (isDark ? AppDarkColors.border : Colors.grey.shade300),
         ),
       ),
       child: Row(
@@ -84,7 +107,9 @@ class HistorySearchFilter extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: isActive ? Colors.white : AppColors.inverted,
+              color: isActive
+                  ? Colors.white
+                  : (isDark ? AppDarkColors.textPrimary : AppColors.inverted),
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -93,7 +118,9 @@ class HistorySearchFilter extends StatelessWidget {
           Text(
             "($count)",
             style: TextStyle(
-              color: isActive ? Colors.white70 : AppColors.neutral,
+              color: isActive
+                  ? Colors.white70
+                  : (isDark ? AppDarkColors.textSecondary : AppColors.neutral),
               fontSize: 12,
             ),
           ),
