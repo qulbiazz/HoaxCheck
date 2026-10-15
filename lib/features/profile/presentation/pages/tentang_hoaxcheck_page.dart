@@ -5,8 +5,6 @@ import '../widgets/tentang/tentang_cara_kerja_section.dart';
 import '../widgets/tentang/tentang_disclaimer_section.dart';
 import '../widgets/tentang/tentang_header_section.dart';
 import '../widgets/tentang/tentang_memahami_hasil_section.dart';
-import '../widgets/tentang/tentang_profile_card.dart';
-
 
 class TentangHoaxCheckPage extends StatelessWidget {
   const TentangHoaxCheckPage({super.key});

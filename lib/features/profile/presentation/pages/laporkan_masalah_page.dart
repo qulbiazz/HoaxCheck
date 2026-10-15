@@ -134,7 +134,7 @@ class _LaporkanMasalahPageState extends State<LaporkanMasalahPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: _submitLaporan,
+                  onPressed: _isFormValid ? _submitLaporan : null,
                   icon: const Icon(Icons.send_outlined, size: 16),
                   label: const Text(
                     "Kirim Laporan",

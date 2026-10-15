@@ -8,6 +8,7 @@ abstract class AuthRemoteDataSource {
   Future<void> signInWithGoogle({String? redirectTo});
   Future<void> signOut();
   Stream<UserModel?> get authStateChanges;
+  Future<UserModel> updateProfile({required String name});
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -72,5 +73,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (user == null) return null;
       return UserModel.fromSupabase(user);
     });
+  }
+
+  @override
+  Future<UserModel> updateProfile({required String name}) async {
+    final response = await supabaseClient.auth.updateUser(
+      UserAttributes(data: {'full_name': name}),
+    );
+    if (response.user == null) {
+      throw const AuthException('Gagal memperbarui profil.');
+    }
+    return UserModel.fromSupabase(response.user!);
   }
 }

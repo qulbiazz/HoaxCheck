@@ -44,4 +44,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Stream<UserEntity?> get authStateChanges => remoteDataSource.authStateChanges;
+
+  @override
+  Future<UserEntity> updateProfile({required String name}) async {
+    return await remoteDataSource.updateProfile(name: name);
+  }
 }
