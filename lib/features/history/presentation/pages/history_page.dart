@@ -234,7 +234,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   child: TextField(
                     onChanged: (value) {
                       setState(() {
-                        searchQuery = value;
+                        searchQuery = value.trim();
                       });
                     },
                     decoration: const InputDecoration(
