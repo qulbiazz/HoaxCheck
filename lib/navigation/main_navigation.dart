@@ -62,8 +62,8 @@ class _MainNavigationState extends State<MainNavigation> {
                     BoxShadow(
                       color:
                           isDark
-                              ? Colors.black.withOpacity(0.3)
-                              : Colors.black.withOpacity(0.05),
+                              ? Colors.black.withValues(alpha: 0.3)
+                              : Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -128,7 +128,7 @@ class _MainNavigationState extends State<MainNavigation> {
               decoration: BoxDecoration(
                 color:
                     isSelected
-                        ? AppColors.primary.withOpacity(0.15)
+                        ? AppColors.primary.withValues(alpha: 0.15)
                         : Colors.transparent,
                 borderRadius: BorderRadius.circular(100),
               ),

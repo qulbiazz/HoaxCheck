@@ -209,7 +209,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         children: [
           Container(
             padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(color: isDark ? const Color(0xFF1E3A8A).withOpacity(0.3) : const Color(0xFFDBEAFE), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFDBEAFE), borderRadius: BorderRadius.circular(8)),
             child: const Icon(Icons.verified_user_outlined, color: Color(0xFF1E40AF), size: 18),
           ),
           const SizedBox(width: 12),
@@ -228,7 +228,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9).withOpacity(0.8),
+        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9).withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0), width: 1),
       ),
@@ -236,7 +236,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: isDark ? iconColor.withOpacity(0.2) : bg, borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: isDark ? iconColor.withValues(alpha: 0.2) : bg, borderRadius: BorderRadius.circular(10)),
             child: Icon(icon, size: 20, color: iconColor),
           ),
           const SizedBox(width: 10),
@@ -263,7 +263,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         color: isDark ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9), width: 1),
-        boxShadow: [if (!isDark) BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2))],
+        boxShadow: [if (!isDark) BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 4, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,7 +274,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               Text(stepNum, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF047857))),
               Container(
                 padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(color: isDark ? iconColor.withOpacity(0.2) : (iconContainerBg ?? iconBg), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: isDark ? iconColor.withValues(alpha: 0.2) : (iconContainerBg ?? iconBg), borderRadius: BorderRadius.circular(8)),
                 child: Icon(icon, size: 16, color: iconContainerBg != null ? Colors.white : iconColor),
               ),
             ],

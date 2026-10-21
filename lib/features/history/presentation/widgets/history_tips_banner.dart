@@ -16,7 +16,7 @@ class HistoryTipsBanner extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: AppColors.secondary.withOpacity(0.3), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: AppColors.secondary.withValues(alpha: 0.3), shape: BoxShape.circle),
             child: const Icon(Icons.lightbulb, color: AppColors.primary, size: 20),
           ),
           const SizedBox(width: 16),

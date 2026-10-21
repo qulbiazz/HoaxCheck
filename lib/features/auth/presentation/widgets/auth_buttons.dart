@@ -18,7 +18,7 @@ class PrimaryAuthButton extends StatelessWidget {
       height: 52,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
-        boxShadow: hasShadow && !isDark ? [BoxShadow(color: primaryColor.withOpacity(0.3), blurRadius: 16, offset: const Offset(0, 8))] : [],
+        boxShadow: hasShadow && !isDark ? [BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 8))] : [],
       ),
       child: ElevatedButton(
         onPressed: onPressed,

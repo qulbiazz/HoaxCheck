@@ -25,7 +25,7 @@ class SplashLoading extends StatelessWidget {
               width: 230,
               height: 6,
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF2D3748) : const Color(0xFFE2E8F0).withOpacity(0.8),
+                color: isDark ? const Color(0xFF2D3748) : const Color(0xFFE2E8F0).withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Align(

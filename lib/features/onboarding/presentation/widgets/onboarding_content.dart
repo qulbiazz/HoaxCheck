@@ -62,7 +62,7 @@ class OnboardingContent extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: isDark ? primaryColor.withOpacity(0.2) : const Color(0xFFD1FAE5),
+                color: isDark ? primaryColor.withValues(alpha: 0.2) : const Color(0xFFD1FAE5),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(

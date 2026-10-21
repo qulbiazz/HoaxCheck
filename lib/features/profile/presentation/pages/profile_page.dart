@@ -133,7 +133,7 @@ class ProfilePage extends StatelessWidget {
                     icon: const Icon(Icons.logout, size: 18, color: AppColors.danger),
                     label: const Text("Keluar Akun", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.danger.withOpacity(0.08),
+                      backgroundColor: AppColors.danger.withValues(alpha: 0.08),
                       foregroundColor: AppColors.danger,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(vertical: 16),

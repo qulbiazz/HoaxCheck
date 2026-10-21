@@ -60,13 +60,13 @@ class StatisticsSection extends StatelessWidget {
             _buildStatCard(
               title: "Hoaks",
               value: "14",
-              bgColor: AppColors.danger.withOpacity(isDark ? 0.2 : 0.08),
+              bgColor: AppColors.danger.withValues(alpha: isDark ? 0.2 : 0.08),
               textColor: isDark ? const Color(0xFFFCA5A5) : AppColors.danger,
               bottomWidget: _buildBadge(
                 text: "Bahaya",
                 icon: Icons.warning_amber_rounded,
                 textColor: isDark ? const Color(0xFFFCA5A5) : AppColors.danger,
-                bgColor: AppColors.danger.withOpacity(isDark ? 0.3 : 0.15),
+                bgColor: AppColors.danger.withValues(alpha: isDark ? 0.3 : 0.15),
               ),
             ),
             const SizedBox(width: 8),
@@ -75,7 +75,7 @@ class StatisticsSection extends StatelessWidget {
             _buildStatCard(
               title: "Valid",
               value: "34",
-              bgColor: AppColors.primary.withOpacity(isDark ? 0.2 : 0.15),
+              bgColor: AppColors.primary.withValues(alpha: isDark ? 0.2 : 0.15),
               textColor: isDark
                   ? const Color(0xFF6EE7B7)
                   : const Color(0xFF047857),
@@ -83,7 +83,7 @@ class StatisticsSection extends StatelessWidget {
                 text: "Akurat",
                 icon: Icons.check_circle_outline,
                 textColor: const Color(0xFF047857),
-                bgColor: AppColors.primary.withOpacity(0.3),
+                bgColor: AppColors.primary.withValues(alpha: 0.3),
               ),
             ),
           ],
@@ -112,7 +112,7 @@ class StatisticsSection extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Text(title, style: TextStyle(color: textColor.withOpacity(0.8), fontSize: 12, fontWeight: FontWeight.w500)),
+            Text(title, style: TextStyle(color: textColor.withValues(alpha: 0.8), fontSize: 12, fontWeight: FontWeight.w500)),
             const SizedBox(height: 8),
             Text(value, style: TextStyle(color: textColor, fontSize: 32, fontWeight: FontWeight.bold, height: 1.0)),
             const SizedBox(height: 12),
