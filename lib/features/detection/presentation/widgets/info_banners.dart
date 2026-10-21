@@ -19,7 +19,7 @@ class InfoBanners extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.15), shape: BoxShape.circle),
+                decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.15), shape: BoxShape.circle),
                 child: const Icon(Icons.lightbulb_outline, color: AppColors.primary, size: 16),
               ),
               const SizedBox(width: 12),

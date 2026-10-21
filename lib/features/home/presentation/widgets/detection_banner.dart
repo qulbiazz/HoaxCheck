@@ -21,7 +21,7 @@ class DetectionBanner extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -54,7 +54,7 @@ class DetectionBanner extends StatelessWidget {
           Text(
             "Gunakan HoaxCheck untuk mendapatkan indikasi awal, rasio kepastian klaim, dan rujukan kredibel dari sebuah teks berita.",
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               fontSize: 14,
               height: 1.5,
             ),

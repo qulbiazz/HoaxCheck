@@ -104,13 +104,13 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                   radius: 1.2,
                   colors: isDark
                       ? [
-                          primaryColor.withOpacity(0.25),
-                          backgroundColor.withOpacity(0.0),
+                          primaryColor.withValues(alpha: 0.25),
+                          backgroundColor.withValues(alpha: 0.0),
                         ]
                       : [
                           const Color(0xFFD8F3EA),
                           const Color(0xFFEEF9F5),
-                          backgroundColor.withOpacity(0.0),
+                          backgroundColor.withValues(alpha: 0.0),
                         ],
                   stops: const [0.0, 0.5, 1.0],
                 ),

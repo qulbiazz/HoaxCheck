@@ -52,14 +52,14 @@ class ProfileStatsCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1), // Dinamis
+          color: color.withValues(alpha: 0.1), // Dinamis
           borderRadius: BorderRadius.circular(12)
         ),
         child: Column(
           children: [
             Text(value, style: TextStyle(color: color, fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
-            Text(label, style: TextStyle(color: color.withOpacity(0.8), fontSize: 10, fontWeight: FontWeight.w600)),
+            Text(label, style: TextStyle(color: color.withValues(alpha: 0.8), fontSize: 10, fontWeight: FontWeight.w600)),
           ],
         ),
       ),

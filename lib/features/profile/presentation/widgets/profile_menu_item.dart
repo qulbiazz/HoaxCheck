@@ -29,7 +29,7 @@ class ProfileMenuItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: isDark ? Colors.white.withOpacity(0.05) : const Color(0xFFF4F7FF), // PERBAIKAN Latar ikon
+                color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF4F7FF), // PERBAIKAN Latar ikon
                 shape: BoxShape.circle
               ),
               child: Icon(icon, size: 18, color: isDark ? Colors.white70 : const Color(0xFF374151)),
