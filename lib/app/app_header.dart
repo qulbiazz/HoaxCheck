@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
+import '../../notification/presentation/pages/notification_page.dart'; // TAMBAHAN IMPORT
 
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -33,7 +34,13 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
             children: [
               IconButton(
                 onPressed: () {
-                  // Aksi ketika tombol lonceng notifikasi diklik
+                  // PERBAIKAN: Routing ke halaman Notifikasi
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NotificationPage(),
+                    ),
+                  );
                 },
                 icon: Icon(
                   Icons.notifications_outlined,

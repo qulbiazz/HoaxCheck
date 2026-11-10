@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
-import '../../../detection/presentation/pages/detection_page.dart';
+import '../../../../navigation/main_navigation.dart'; // TAMBAHAN IMPORT UNTUK BOTTOM NAV
 
 class GuideActionFooter extends StatelessWidget {
   const GuideActionFooter({super.key});
@@ -58,11 +58,12 @@ class GuideActionFooter extends StatelessWidget {
                 height: 48,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
+                    // PERBAIKAN: Routing ke MainNavigation (Tab Deteksi / Index 1)
+                    Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                        builder: (context) => const DetectionPage(),
+                        builder: (context) => const MainNavigation(initialIndex: 1),
                       ),
+                      (route) => false,
                     );
                   },
                   style: ElevatedButton.styleFrom(
