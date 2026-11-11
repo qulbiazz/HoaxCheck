@@ -162,7 +162,7 @@ class DetectionRemoteDataSourceImpl implements DetectionRemoteDataSource {
       'is_hoax': entity.isHoax,
       'confidence_str': '${(entity.confidenceScore * 100).toInt()}%',
       'classification': entity.status,
-      'source': 'Analisis Mobile',
+      'source': 'Bernoulli Naive Bayes',
     };
 
     try {

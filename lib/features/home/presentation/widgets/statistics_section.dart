@@ -10,9 +10,9 @@ class StatisticsSection extends StatefulWidget {
 }
 
 class _StatisticsSectionState extends State<StatisticsSection> {
-  int _totalChecks = 48;
-  int _hoaxCount = 14;
-  int _validCount = 34;
+  int _totalChecks = 0;
+  int _hoaxCount = 0;
+  int _validCount = 0;
 
   @override
   void initState() {
@@ -23,7 +23,7 @@ class _StatisticsSectionState extends State<StatisticsSection> {
   Future<void> _fetchStats() async {
     try {
       final items = await HistoryRepositoryImpl().getUserHistories();
-      if (mounted && items.isNotEmpty) {
+      if (mounted) {
         setState(() {
           _totalChecks = items.length;
           _hoaxCount = items.where((item) => item.isHoax).length;

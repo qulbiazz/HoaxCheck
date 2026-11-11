@@ -14,11 +14,13 @@ class AnalysisDetailPage extends StatelessWidget {
   final int confidence;
   final double analysisTimeSeconds;
   final bool isHoax;
+  final String text;
   final List<String> indicators;
   final String? explanation;
 
   const AnalysisDetailPage({
     super.key,
+    this.text = '',
     this.analysisId = "#HC-98234",
     this.classification = "Terindikasi Hoaks",
     this.confidence = 87,
@@ -84,9 +86,13 @@ class AnalysisDetailPage extends StatelessWidget {
                 isHoax: isHoax,
               ),
               const SizedBox(height: 20),
-              const ModelInfoCard(),
+              ModelInfoCard(
+                text: text,
+                confidence: confidence,
+                isHoax: isHoax,
+              ),
               const SizedBox(height: 20),
-              const EducationCard(),
+              EducationCard(isHoax: isHoax),
               const SizedBox(height: 24),
               const AnalysisActionButtons(),
               const SizedBox(height: 20),

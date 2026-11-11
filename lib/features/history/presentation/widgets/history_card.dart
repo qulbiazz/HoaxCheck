@@ -45,6 +45,7 @@ class HistoryCard extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AnalysisDetailPage(
+                    text: text,
                     classification: analysisType.isNotEmpty
                         ? analysisType
                         : (isHoax ? "Terindikasi Hoaks" : "Informasi Valid"),

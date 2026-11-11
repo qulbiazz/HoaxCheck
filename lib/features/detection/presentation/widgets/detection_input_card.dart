@@ -65,6 +65,7 @@ class _DetectionInputCardState extends State<DetectionInputCard> {
         context,
         MaterialPageRoute(
           builder: (_) => AnalysisDetailPage(
+            text: text,
             analysisId: result.analysisId,
             classification: result.status,
             confidence: (result.confidenceScore * 100).toInt(),
@@ -200,7 +201,7 @@ class _DetectionInputCardState extends State<DetectionInputCard> {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            "Model AI & Heuristik Aktif",
+                            "Model Bernoulli Naive Bayes Aktif",
                             style: TextStyle(
                               color: isDark
                                   ? AppDarkColors.textSecondary

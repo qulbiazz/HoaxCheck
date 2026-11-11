@@ -115,7 +115,7 @@ class PredictionHeroCard extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           Text(
-            "Tingkat Keyakinan Model IndoBERT",
+            "Tingkat Keyakinan Model Bernoulli Naive Bayes",
             style: TextStyle(
               color: isDark ? Colors.white : AppColors.inverted,
               fontSize: 16,
@@ -125,7 +125,9 @@ class PredictionHeroCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            "Klasifikasi probabilitas mengindikasikan struktur pesan manipulatif secara signifikan.",
+            isHoax
+                ? "Klasifikasi probabilitas model Bernoulli Naive Bayes mengindikasikan pola pesan manipulatif secara signifikan."
+                : "Klasifikasi probabilitas model Bernoulli Naive Bayes mengindikasikan pola informasi objektif dan faktual.",
             style: TextStyle(
               color: isDark ? AppDarkColors.textSecondary : AppColors.neutral,
               fontSize: 12,

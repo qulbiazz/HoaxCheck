@@ -113,14 +113,16 @@ class _LoginPageState extends State<LoginPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
+      final isInvalidCreds = e.message.contains('Invalid login credentials');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            e.message.contains('Invalid login credentials')
-                ? 'Email atau kata sandi salah.'
+            isInvalidCreds
+                ? 'Email atau kata sandi salah. Pastikan password benar atau email telah dikonfirmasi di Supabase.'
                 : e.message,
           ),
           backgroundColor: AppColors.danger,
+          duration: const Duration(seconds: 4),
         ),
       );
     } catch (e) {

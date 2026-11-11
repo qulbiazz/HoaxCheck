@@ -2,11 +2,35 @@ import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 
 class ModelInfoCard extends StatelessWidget {
-  const ModelInfoCard({super.key});
+  final String text;
+  final int confidence;
+  final bool isHoax;
+  final String modelName;
+  final String trainingParam;
+
+  const ModelInfoCard({
+    super.key,
+    this.text = '',
+    this.confidence = 87,
+    this.isHoax = true,
+    this.modelName = "Bernoulli Naive Bayes (NB_Bernoulli)",
+    this.trainingParam = "Binary Feature Extraction (Presence/Absence)",
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Hitung panjang karakter dan kata secara dinamis
+    final trimmed = text.trim();
+    final int charCount = text.length;
+    final int wordCount = trimmed.isEmpty ? 0 : trimmed.split(RegExp(r'\s+')).length;
+    final String textLengthDisplay = "$wordCount kata | $charCount karakter";
+
+    final Color statusColor =
+        isHoax ? const Color(0xFFDC2626) : const Color(0xFF047857);
+    final String statusText =
+        isHoax ? "$confidence% Probabilitas Hoaks" : "$confidence% Probabilitas Valid";
 
     return Container(
       width: double.infinity,
@@ -31,7 +55,7 @@ class ModelInfoCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                "Informasi Model NLP",
+                "Informasi Model Machine Learning",
                 style: TextStyle(
                   color: isDark ? Colors.white : AppColors.inverted,
                   fontSize: 15,
@@ -41,11 +65,11 @@ class ModelInfoCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          _buildInfoRow(isDark, "Arsitektur Model", "IndoBERT Text Classifier v2.4"),
+          _buildInfoRow(isDark, "Arsitektur Model", modelName),
           const Divider(height: 18, thickness: 0.5),
-          _buildInfoRow(isDark, "Parameter Pelatihan", "Fine-tuned (Civic News Corpus)"),
+          _buildInfoRow(isDark, "Parameter Pelatihan", trainingParam),
           const Divider(height: 18, thickness: 0.5),
-          _buildInfoRow(isDark, "Panjang Input Teks", "135 kata | 642 karakter"),
+          _buildInfoRow(isDark, "Panjang Input Teks", textLengthDisplay),
           const Divider(height: 18, thickness: 0.5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -66,18 +90,18 @@ class ModelInfoCard extends StatelessWidget {
                     Container(
                       width: 6,
                       height: 6,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFDC2626),
+                      decoration: BoxDecoration(
+                        color: statusColor,
                         shape: BoxShape.circle,
                       ),
                     ),
                     const SizedBox(width: 6),
-                    const Flexible(
+                    Flexible(
                       child: Text(
-                        "87% Probabilitas Anomali",
+                        statusText,
                         textAlign: TextAlign.right,
                         style: TextStyle(
-                          color: Color(0xFFDC2626),
+                          color: statusColor,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
@@ -105,11 +129,11 @@ class ModelInfoCard extends StatelessWidget {
             fontSize: 12,
           ),
         ),
-        const SizedBox(width: 12), // Memberikan jarak aman antara label dan value
+        const SizedBox(width: 12),
         Expanded(
           child: Text(
             value,
-            textAlign: TextAlign.right, // Menggeser teks ke kanan
+            textAlign: TextAlign.right,
             style: TextStyle(
               color: isDark ? Colors.white : AppColors.inverted,
               fontSize: 12,
