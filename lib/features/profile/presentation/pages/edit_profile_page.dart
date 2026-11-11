@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
+import '../../../../core/widgets/user_avatar.dart';
 import '../../../auth/data/repositories/auth_repository_impl.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
 
@@ -117,28 +118,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   children: [
                     Stack(
                       children: [
-                        Container(
-                          width: 90,
-                          height: 90,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isDark ? AppDarkColors.border : Colors.white,
-                              width: 3,
-                            ),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color(0x0F000000),
-                                blurRadius: 8,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                            image: DecorationImage(
-                              image: _avatarUrl != null
-                                  ? NetworkImage(_avatarUrl!) as ImageProvider
-                                  : const AssetImage('assets/images/img_profile.png'),
-                              fit: BoxFit.cover,
-                            ),
+                        UserAvatar(
+                          avatarUrl: _avatarUrl,
+                          size: 90,
+                          borderWidth: 3,
+                          borderColor: isDark ? AppDarkColors.border : Colors.white,
+                          shadow: const BoxShadow(
+                            color: Color(0x0F000000),
+                            blurRadius: 8,
+                            offset: Offset(0, 2),
                           ),
                         ),
                         Positioned(

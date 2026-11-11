@@ -17,11 +17,18 @@ class UserModel extends UserEntity {
         ? rawName.trim()
         : (user.email != null ? user.email!.split('@').first : 'Pengguna');
 
+    final rawAvatar = (user.userMetadata?['avatar_url'] as String?) ??
+        (user.userMetadata?['picture'] as String?) ??
+        (user.userMetadata?['photo_url'] as String?);
+    final avatarUrl = (rawAvatar != null && rawAvatar.trim().isNotEmpty)
+        ? rawAvatar.trim()
+        : null;
+
     return UserModel(
       id: user.id,
       email: user.email ?? '',
       name: displayName,
-      avatarUrl: user.userMetadata?['avatar_url'] as String?,
+      avatarUrl: avatarUrl,
     );
   }
 }

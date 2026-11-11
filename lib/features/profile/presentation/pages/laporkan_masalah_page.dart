@@ -27,6 +27,16 @@ class _LaporkanMasalahPageState extends State<LaporkanMasalahPage> {
     // Dengarkan perubahan input untuk update tombol
     _deskripsiController.addListener(_updateFormState);
     _emailController.addListener(_updateFormState);
+    _prefillUserEmail();
+  }
+
+  void _prefillUserEmail() {
+    try {
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      if (currentUser?.email != null && currentUser!.email!.isNotEmpty) {
+        _emailController.text = currentUser.email!;
+      }
+    } catch (_) {}
   }
 
   @override
@@ -37,21 +47,61 @@ class _LaporkanMasalahPageState extends State<LaporkanMasalahPage> {
   }
 
   void _updateFormState() {
-    setState(() {}); // trigger rebuild untuk refresh tombol
+    setState(() {}); // trigger rebuild untuk refresh status visual tombol
   }
 
   /// Cek apakah form valid untuk tombol aktif
   bool get _isFormValid {
-    final kategoriOk = _selectedKategori != null;
-    final deskripsiOk = _deskripsiController.text.trim().length >= 10;
+    final kategoriOk = _selectedKategori != null && _selectedKategori!.trim().isNotEmpty;
+    final deskripsiOk = _deskripsiController.text.trim().isNotEmpty;
     final email = _emailController.text.trim();
     final emailOk = email.isEmpty || _isValidEmail(email);
     return kategoriOk && deskripsiOk && emailOk;
   }
 
   bool _isValidEmail(String email) {
-    final regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    return regex.hasMatch(email);
+    final cleanEmail = email.trim();
+    if (cleanEmail.isEmpty) return true;
+    final regex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    return regex.hasMatch(cleanEmail);
+  }
+
+  void _handlePressKirim() {
+    if (_selectedKategori == null || _selectedKategori!.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Harap pilih jenis masalah terlebih dahulu"),
+          backgroundColor: AppColors.danger,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    if (_deskripsiController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Harap isi deskripsi masalah terlebih dahulu"),
+          backgroundColor: AppColors.danger,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    final email = _emailController.text.trim();
+    if (email.isNotEmpty && !_isValidEmail(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Format email tidak valid (contoh: nama@domain.com)"),
+          backgroundColor: AppColors.danger,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    _submitLaporan();
   }
 
   Future<void> _submitLaporan() async {
@@ -66,6 +116,9 @@ class _LaporkanMasalahPageState extends State<LaporkanMasalahPage> {
     final deskripsi = _deskripsiController.text.trim();
     final email = _emailController.text.trim();
 
+    bool success = true;
+    String errorMessage = '';
+
     try {
       final user = Supabase.instance.client.auth.currentUser;
       await Supabase.instance.client.from('problem_reports').insert({
@@ -76,26 +129,38 @@ class _LaporkanMasalahPageState extends State<LaporkanMasalahPage> {
       });
     } catch (e) {
       debugPrint('Catatan insert problem_reports ke Supabase: $e');
+      success = false;
+      errorMessage = e.toString();
     }
 
     if (!mounted) return;
     Navigator.of(context).pop(); // close loading
 
-    // Reset form
-    setState(() {
-      _selectedKategori = null;
-      _deskripsiController.clear();
-      _emailController.clear();
-    });
+    if (success) {
+      // Reset form
+      setState(() {
+        _selectedKategori = null;
+        _deskripsiController.clear();
+        _prefillUserEmail();
+      });
 
-    // Snackbar sukses
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Laporan berhasil dikirim ke server. Terima kasih!"),
-        backgroundColor: AppColors.primary,
-        duration: Duration(seconds: 3),
-      ),
-    );
+      // Snackbar sukses
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Laporan berhasil dikirim ke server. Terima kasih!"),
+          backgroundColor: AppColors.primary,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Gagal mengirim laporan: $errorMessage"),
+          backgroundColor: AppColors.danger,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
   }
 
   @override
@@ -150,15 +215,19 @@ class _LaporkanMasalahPageState extends State<LaporkanMasalahPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: _isFormValid ? _submitLaporan : null,
+                  onPressed: _handlePressKirim,
                   icon: const Icon(Icons.send_outlined, size: 16),
                   label: const Text(
                     "Kirim Laporan",
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
+                    backgroundColor: _isFormValid
+                        ? AppColors.primary
+                        : (isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                    foregroundColor: _isFormValid
+                        ? Colors.white
+                        : (isDark ? Colors.white54 : const Color(0xFF64748B)),
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
