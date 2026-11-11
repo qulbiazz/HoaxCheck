@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import '../entities/user_entity.dart';
 
 /// Kontrak Repository Autentikasi (Domain Interface)
@@ -9,6 +10,7 @@ abstract class AuthRepository {
   Future<void> signInWithGoogle({String? redirectTo});
   Future<void> signOut();
   Stream<UserEntity?> get authStateChanges;
-  Future<UserEntity> updateProfile({required String name});
+  Future<UserEntity> updateProfile({String? name, String? avatarUrl});
+  Future<String> uploadAvatar({required Uint8List bytes, required String fileName});
   Future<void> sendPasswordResetEmail(String email);
 }

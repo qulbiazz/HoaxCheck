@@ -1,12 +1,15 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../../app/theme.dart';
 
 /// Widget Avatar Pengguna yang adaptif:
-/// - Menampilkan foto dari URL jika tersedia (misal login dengan akun Google)
+/// - Menampilkan preview dari Uint8List (gambar lokal yang baru dipilih)
+/// - Menampilkan foto dari URL jika tersedia (misal Supabase Storage atau akun Google)
 /// - Menampilkan avatar ikon default yang rapi dan konsisten jika pengguna
 ///   mendaftar langsung dari aplikasi (tanpa foto profil kustom)
 class UserAvatar extends StatelessWidget {
   final String? avatarUrl;
+  final Uint8List? imageBytes;
   final double size;
   final VoidCallback? onTap;
   final Color? borderColor;
@@ -16,6 +19,7 @@ class UserAvatar extends StatelessWidget {
   const UserAvatar({
     super.key,
     this.avatarUrl,
+    this.imageBytes,
     this.size = 36,
     this.onTap,
     this.borderColor,
@@ -29,10 +33,16 @@ class UserAvatar extends StatelessWidget {
     final effectiveBorderColor = borderColor ??
         (isDark ? AppDarkColors.border : Colors.grey.shade300);
 
-    final hasNetworkAvatar = avatarUrl != null && avatarUrl!.trim().isNotEmpty;
-
     Widget avatarContent;
-    if (hasNetworkAvatar) {
+    if (imageBytes != null && imageBytes!.isNotEmpty) {
+      avatarContent = Image.memory(
+        imageBytes!,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => _buildDefaultAvatar(isDark),
+      );
+    } else if (avatarUrl != null && avatarUrl!.trim().isNotEmpty) {
       avatarContent = Image.network(
         avatarUrl!.trim(),
         width: size,

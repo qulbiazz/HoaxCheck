@@ -164,3 +164,39 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+
+-- ==============================================================================
+-- 5. STORAGE BUCKET: avatars (Penyimpanan Foto Profil Pengguna)
+-- ==============================================================================
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('avatars', 'avatars', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- Kebijakan Akses Storage:
+-- a. Publik dapat melihat foto profil (avatar)
+DROP POLICY IF EXISTS "Public Avatar Access" ON storage.objects;
+CREATE POLICY "Public Avatar Access" 
+ON storage.objects FOR SELECT 
+USING (bucket_id = 'avatars');
+
+-- b. Pengguna terautentikasi dapat mengunggah foto profil
+DROP POLICY IF EXISTS "Authenticated users can upload avatars" ON storage.objects;
+CREATE POLICY "Authenticated users can upload avatars" 
+ON storage.objects FOR INSERT 
+TO authenticated 
+WITH CHECK (bucket_id = 'avatars');
+
+-- c. Pengguna terautentikasi dapat memperbarui foto profil mereka
+DROP POLICY IF EXISTS "Authenticated users can update their avatars" ON storage.objects;
+CREATE POLICY "Authenticated users can update their avatars" 
+ON storage.objects FOR UPDATE 
+TO authenticated 
+USING (bucket_id = 'avatars');
+
+-- d. Pengguna terautentikasi dapat menghapus foto profil mereka
+DROP POLICY IF EXISTS "Authenticated users can delete their avatars" ON storage.objects;
+CREATE POLICY "Authenticated users can delete their avatars" 
+ON storage.objects FOR DELETE 
+TO authenticated 
+USING (bucket_id = 'avatars');
