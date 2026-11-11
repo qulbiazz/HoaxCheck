@@ -36,7 +36,7 @@ class SplashFooter extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Didukung NLP & Verifikasi Publik',
+                'Didukung Machine Learning & Verifikasi Publik',
                 style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,

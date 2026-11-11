@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS public.user_histories (
     snippet TEXT NOT NULL,
     is_hoax BOOLEAN NOT NULL DEFAULT false,
     confidence_str VARCHAR(20) NOT NULL DEFAULT '0%',
-    classification VARCHAR(100) NOT NULL DEFAULT 'Analisis NLP',
+    classification VARCHAR(100) NOT NULL DEFAULT 'Machine Learning',
     source VARCHAR(100) DEFAULT 'Cloud DB',
     tested_at TIMESTAMPTZ DEFAULT NOW()
 );

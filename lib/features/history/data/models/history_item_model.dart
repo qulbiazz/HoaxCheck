@@ -20,7 +20,7 @@ class HistoryItemModel extends HistoryItem {
       snippet: map['snippet'] ?? map['title'] ?? '',
       isHoax: map['is_hoax'] ?? false,
       confidence: map['confidence_str'] ?? '80%',
-      analysisType: map['classification'] ?? 'Analisis NLP',
+      analysisType: map['classification'] ?? 'Machine Learning',
       source: map['source'] ?? 'Cloud DB',
       time: _formatTime(map['tested_at']),
     );
