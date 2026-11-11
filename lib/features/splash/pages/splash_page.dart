@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../app/theme.dart';
-// import '../../../onboarding/presentation/pages/onboarding_page.dart';
-
+import '../../../../core/services/storage_service.dart';
+import '../../../../navigation/main_navigation.dart';
+import '../../auth/presentation/pages/login_page.dart';
 import '../../onboarding/presentation/pages/onboarding_page.dart';
 import '../widgets/splash_logo.dart';
 import '../widgets/splash_loading.dart';
@@ -54,16 +56,48 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        _navigateToOnboarding();
+        _navigateToNextScreen();
       }
     });
   }
 
-  void _navigateToOnboarding() {
+  Future<void> _navigateToNextScreen() async {
     if (!mounted) return;
+
+    try {
+      final currentSession = Supabase.instance.client.auth.currentSession;
+      final hasEverLoggedIn = await StorageService.hasLoggedIn();
+      final hasSeenOnboarding = await StorageService.hasSeenOnboarding();
+
+      if (!mounted) return;
+
+      // 1. Jika masih memiliki sesi login aktif -> langsung ke halaman utama
+      if (currentSession != null) {
+        await StorageService.setHasLoggedIn(true);
+        if (!mounted) return;
+        _navigateWithFade(const MainNavigation());
+        return;
+      }
+
+      // 2. Jika user sudah pernah login sebelumnya (atau menyelesaikan onboarding) -> langsung ke Login Page
+      if (hasEverLoggedIn || hasSeenOnboarding) {
+        if (!mounted) return;
+        _navigateWithFade(const LoginPage());
+        return;
+      }
+    } catch (e) {
+      debugPrint('Routing error pada SplashPage: $e');
+    }
+
+    // 3. Pengguna baru (belum pernah login/onboarding) -> tampilkan Onboarding
+    if (!mounted) return;
+    _navigateWithFade(const OnboardingPage());
+  }
+
+  void _navigateWithFade(Widget destination) {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const OnboardingPage(),
+        pageBuilder: (context, animation, secondaryAnimation) => destination,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(
             opacity: animation,

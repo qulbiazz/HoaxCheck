@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 import 'package:hoaxcheck_app/features/auth/presentation/pages/forgot_password_page.dart';
 import '../../../../../app/theme.dart';
+import '../../../../../core/services/storage_service.dart';
 import '../../../../../core/widgets/hoaxcheck_logo.dart';
 import '../../../../../navigation/main_navigation.dart';
 import '../../data/repositories/auth_repository_impl.dart';
@@ -46,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       _authSubscription = _authRepository.authStateChanges.listen((user) {
         if (mounted && user != null) {
+          StorageService.setHasLoggedIn(true);
           Navigator.of(context).pushReplacement(
             PageRouteBuilder(
               pageBuilder: (_, __, ___) => const MainNavigation(),
@@ -102,6 +104,7 @@ class _LoginPageState extends State<LoginPage> {
       final password = _passwordController.text;
 
       await _loginUseCase(LoginParams(email: email, password: password));
+      await StorageService.setHasLoggedIn(true);
 
       if (!mounted) return;
 

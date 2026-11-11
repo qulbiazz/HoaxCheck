@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/services/storage_service.dart';
 import '../../../auth/presentation/pages/login_page.dart';
 import '../widgets/onboarding_content.dart';
 import '../widgets/onboarding_indicator.dart';
@@ -18,6 +19,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   int _currentIndex = 0;
 
   void _onFinishOnboarding() {
+    StorageService.setHasSeenOnboarding(true);
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) => const LoginPage(),
