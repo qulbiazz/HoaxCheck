@@ -103,11 +103,17 @@ ON public.notifications
 FOR SELECT 
 USING (auth.uid() = user_id OR user_id IS NULL);
 
+DROP POLICY IF EXISTS "Anyone can insert notifications" ON public.notifications;
+CREATE POLICY "Anyone can insert notifications" 
+ON public.notifications
+FOR INSERT 
+WITH CHECK (true);
+
 DROP POLICY IF EXISTS "Users can update their notifications" ON public.notifications;
 CREATE POLICY "Users can update their notifications" 
 ON public.notifications
 FOR UPDATE 
-USING (auth.uid() = user_id);
+USING (auth.uid() = user_id OR user_id IS NULL);
 
 
 -- ==============================================================================

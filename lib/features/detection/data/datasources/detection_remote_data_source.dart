@@ -178,5 +178,26 @@ class DetectionRemoteDataSourceImpl implements DetectionRemoteDataSource {
         debugPrint('Peringatan: Gagal menyimpan riwayat ke Supabase: $innerError');
       }
     }
+
+    // Otomatis catat ke tabel notifications untuk Verifikasi Teks (Poin #2)
+    try {
+      final notifTitle = entity.isHoax
+          ? 'Hasil Analisis: Terindikasi Hoaks'
+          : 'Hasil Analisis: Informasi Valid';
+      final confidencePercent = '${(entity.confidenceScore * 100).toInt()}%';
+      final notifDesc =
+          'Pemeriksaan teks "$title" selesai: ${entity.status} ($confidencePercent).';
+
+      await supabaseClient.from('notifications').insert({
+        if (user != null) 'user_id': user.id,
+        'title': notifTitle,
+        'description': notifDesc,
+        'time_label': 'Baru saja',
+        'tag_label': 'Verifikasi Teks',
+        'is_unread': true,
+      });
+    } catch (notifErr) {
+      debugPrint('Catatan insert notification otomatis ke Supabase: $notifErr');
+    }
   }
 }
