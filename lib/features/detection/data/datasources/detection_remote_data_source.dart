@@ -12,14 +12,23 @@ abstract class DetectionRemoteDataSource {
 }
 
 class DetectionRemoteDataSourceImpl implements DetectionRemoteDataSource {
-  final SupabaseClient supabaseClient;
+  final SupabaseClient? _client;
   final http.Client httpClient;
 
   DetectionRemoteDataSourceImpl({
     SupabaseClient? client,
     http.Client? httpClient,
-  })  : supabaseClient = client ?? Supabase.instance.client,
+  })  : _client = client,
         httpClient = httpClient ?? http.Client();
+
+  SupabaseClient? get supabaseClient {
+    if (_client != null) return _client;
+    try {
+      return Supabase.instance.client;
+    } catch (_) {
+      return null;
+    }
+  }
 
   @override
   Future<DetectionEntity> analyzeText(String text) async {
@@ -150,7 +159,9 @@ class DetectionRemoteDataSourceImpl implements DetectionRemoteDataSource {
 
   @override
   Future<void> saveDetection(DetectionEntity entity) async {
-    final user = supabaseClient.auth.currentUser;
+    final client = supabaseClient;
+    if (client == null) return;
+    final user = client.auth.currentUser;
     final title = entity.text.length > 50
         ? '${entity.text.substring(0, 50)}...'
         : entity.text;
@@ -166,13 +177,13 @@ class DetectionRemoteDataSourceImpl implements DetectionRemoteDataSource {
     };
 
     try {
-      await supabaseClient.from('user_histories').insert(payloadWithUser);
+      await client.from('user_histories').insert(payloadWithUser);
     } catch (e) {
       // Jika kolom 'user_id' belum dibuat di Supabase, coba simpan tanpa user_id
       try {
         final payloadFallback = Map<String, dynamic>.from(payloadWithUser)
           ..remove('user_id');
-        await supabaseClient.from('user_histories').insert(payloadFallback);
+        await client.from('user_histories').insert(payloadFallback);
         debugPrint('Tersimpan di user_histories (mode kompatibel tanpa user_id)');
       } catch (innerError) {
         debugPrint('Peringatan: Gagal menyimpan riwayat ke Supabase: $innerError');
@@ -188,7 +199,7 @@ class DetectionRemoteDataSourceImpl implements DetectionRemoteDataSource {
       final notifDesc =
           'Pemeriksaan teks "$title" selesai: ${entity.status} ($confidencePercent).';
 
-      await supabaseClient.from('notifications').insert({
+      await client.from('notifications').insert({
         if (user != null) 'user_id': user.id,
         'title': notifTitle,
         'description': notifDesc,

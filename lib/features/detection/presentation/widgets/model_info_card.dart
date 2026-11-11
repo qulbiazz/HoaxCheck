@@ -54,12 +54,16 @@ class ModelInfoCard extends StatelessWidget {
                 color: AppColors.primary,
               ),
               const SizedBox(width: 8),
-              Text(
-                "Informasi Model Machine Learning",
-                style: TextStyle(
-                  color: isDark ? Colors.white : AppColors.inverted,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Text(
+                  "Informasi Model Machine Learning",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : AppColors.inverted,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],

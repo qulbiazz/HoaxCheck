@@ -112,36 +112,38 @@ class _DetectionInputCardState extends State<DetectionInputCard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Text(
-                    "Teks yang ingin\ndiperiksa",
-                    style: TextStyle(
-                      color: isDark
-                          ? AppDarkColors.textPrimary
-                          : AppColors.inverted,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      height: 1.2,
+              Expanded(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        "Teks yang ingin diperiksa",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: isDark
+                              ? AppDarkColors.textPrimary
+                              : AppColors.inverted,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 6),
-                  const Icon(
-                    Icons.info_outline,
-                    size: 14,
-                    color: AppColors.neutral,
-                  ),
-                ],
+                    const SizedBox(width: 6),
+                    const Icon(
+                      Icons.info_outline,
+                      size: 14,
+                      color: AppColors.neutral,
+                    ),
+                  ],
+                ),
               ),
-              Row(
-                children: [
-                  _buildActionText(
-                    Icons.clear_all,
-                    "Bersihkan",
-                    AppColors.neutral,
-                  ),
-                ],
-              )
+              const SizedBox(width: 8),
+              _buildActionText(
+                Icons.clear_all,
+                "Bersihkan",
+                AppColors.neutral,
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -184,39 +186,46 @@ class _DetectionInputCardState extends State<DetectionInputCard> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    bottom: 12,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.auto_awesome,
-                            size: 12,
-                            color: AppColors.primary,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            "Model Bernoulli Naive Bayes Aktif",
-                            style: TextStyle(
-                              color: isDark
-                                  ? AppDarkColors.textSecondary
-                                  : AppColors.inverted,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
+                      Expanded(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.auto_awesome,
+                              size: 12,
+                              color: AppColors.primary,
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                "Model NB_Bernoulli Aktif",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: isDark
+                                      ? AppDarkColors.textSecondary
+                                      : AppColors.inverted,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Text(
-                        "${widget.controller.text.length} / 2000 karakter",
+                        "${widget.controller.text.length} / 2000",
                         style: const TextStyle(
                           color: AppColors.neutral,
                           fontSize: 10,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -240,6 +249,7 @@ class _DetectionInputCardState extends State<DetectionInputCard> {
               ),
               child: _isAnalyzing
                   ? Row(
+                      mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
                         SizedBox(
@@ -253,17 +263,22 @@ class _DetectionInputCardState extends State<DetectionInputCard> {
                           ),
                         ),
                         SizedBox(width: 10),
-                        Text(
-                          "Menganalisis Konten...",
-                          style: TextStyle(
-                            color: AppColors.surface,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                        Flexible(
+                          child: Text(
+                            "Menganalisis Konten...",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: AppColors.surface,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
                     )
                   : Row(
+                      mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
                         Icon(
@@ -272,12 +287,16 @@ class _DetectionInputCardState extends State<DetectionInputCard> {
                           color: AppColors.surface,
                         ),
                         SizedBox(width: 8),
-                        Text(
-                          "Periksa Sekarang",
-                          style: TextStyle(
-                            color: AppColors.surface,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                        Flexible(
+                          child: Text(
+                            "Periksa Sekarang",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: AppColors.surface,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],

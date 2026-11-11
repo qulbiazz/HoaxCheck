@@ -44,24 +44,31 @@ class DetectedIndicatorsCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    isHoax ? Icons.fact_check_outlined : Icons.verified_outlined,
-                    size: 18,
-                    color: isHoax ? const Color(0xFFDC2626) : AppColors.primary,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    isHoax ? "Indikator yang Terdeteksi" : "Indikator Validitas",
-                    style: TextStyle(
-                      color: isDark ? Colors.white : AppColors.inverted,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(
+                      isHoax ? Icons.fact_check_outlined : Icons.verified_outlined,
+                      size: 18,
+                      color: isHoax ? const Color(0xFFDC2626) : AppColors.primary,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        isHoax ? "Indikator yang Terdeteksi" : "Indikator Validitas",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: isDark ? Colors.white : AppColors.inverted,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                 decoration: BoxDecoration(

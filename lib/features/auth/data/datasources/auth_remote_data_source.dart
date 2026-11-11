@@ -13,14 +13,29 @@ abstract class AuthRemoteDataSource {
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final SupabaseClient supabaseClient;
+  final SupabaseClient? _client;
 
-  AuthRemoteDataSourceImpl({SupabaseClient? client})
-      : supabaseClient = client ?? Supabase.instance.client;
+  AuthRemoteDataSourceImpl({SupabaseClient? client}) : _client = client;
+
+  SupabaseClient get supabaseClient {
+    if (_client != null) return _client;
+    return Supabase.instance.client;
+  }
+
+  SupabaseClient? get _safeSupabaseClient {
+    if (_client != null) return _client;
+    try {
+      return Supabase.instance.client;
+    } catch (_) {
+      return null;
+    }
+  }
 
   @override
   UserModel? getCurrentUser() {
-    final user = supabaseClient.auth.currentUser;
+    final client = _safeSupabaseClient;
+    if (client == null) return null;
+    final user = client.auth.currentUser;
     if (user == null) return null;
     return UserModel.fromSupabase(user);
   }
@@ -69,8 +84,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Stream<UserModel?> get authStateChanges {
-    return supabaseClient.auth.onAuthStateChange.map((data) {
-      final user = data.session?.user ?? supabaseClient.auth.currentUser;
+    final client = _safeSupabaseClient;
+    if (client == null) return const Stream.empty();
+    return client.auth.onAuthStateChange.map((data) {
+      final user = data.session?.user ?? client.auth.currentUser;
       if (user == null) return null;
       return UserModel.fromSupabase(user);
     });
