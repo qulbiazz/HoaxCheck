@@ -20,6 +20,8 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
     final userId = supabaseClient.auth.currentUser?.id;
 
     try {
+      List<dynamic> rows = [];
+
       // 1. Coba ambil riwayat spesifik milik user yang sedang login jika ada
       if (userId != null) {
         try {
@@ -30,24 +32,37 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
               .order('tested_at', ascending: false);
 
           if (response.isNotEmpty) {
-            return response
-                .map((row) => HistoryItemModel.fromMap(row))
-                .toList();
+            rows = response;
           }
         } catch (_) {
           // Kolom user_id belum ada di Supabase, fallback ambil semua data
         }
       }
 
-      // 2. Ambil semua data riwayat yang tersedia
-      final response = await supabaseClient
-          .from('user_histories')
-          .select()
-          .order('tested_at', ascending: false);
+      // 2. Ambil semua data riwayat jika belum didapatkan
+      if (rows.isEmpty) {
+        final response = await supabaseClient
+            .from('user_histories')
+            .select()
+            .order('tested_at', ascending: false);
+        rows = response;
+      }
 
-      return response
-          .map((row) => HistoryItemModel.fromMap(row))
-          .toList();
+      // 3. Deduplikasi cerdas: membersihkan riwayat kembar / duplikat
+      final List<HistoryItemModel> cleanItems = [];
+      for (final row in rows) {
+        final item = HistoryItemModel.fromMap(row);
+        final isDuplicate = cleanItems.any((existing) =>
+            existing.snippet.trim() == item.snippet.trim() &&
+            existing.isHoax == item.isHoax &&
+            (existing.time == item.time || (existing.id != null && existing.id == item.id)));
+
+        if (!isDuplicate) {
+          cleanItems.add(item);
+        }
+      }
+
+      return cleanItems;
     } catch (e) {
       debugPrint('Info HistoryRemoteDataSource: $e');
       return [];

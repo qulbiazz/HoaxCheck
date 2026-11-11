@@ -35,6 +35,8 @@ class _DetectionInputCardState extends State<DetectionInputCard> {
   }
 
   Future<void> _handleAnalyze() async {
+    if (_isAnalyzing) return;
+
     final text = widget.controller.text.trim();
     if (text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -49,14 +51,8 @@ class _DetectionInputCardState extends State<DetectionInputCard> {
     setState(() => _isAnalyzing = true);
 
     try {
+      // AnalyzeTextUseCase sudah otomatis menyimpan riwayat dan notifikasi ke cloud
       final result = await _analyzeTextUseCase(text);
-
-      // Simpan riwayat secara asinkron ke Supabase Cloud
-      try {
-        await _detectionRepository.saveDetectionToCloud(result);
-      } catch (e) {
-        debugPrint('Info simpan cloud: $e');
-      }
 
       if (!mounted) return;
       setState(() => _isAnalyzing = false);

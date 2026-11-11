@@ -15,6 +15,9 @@ class DetectionRemoteDataSourceImpl implements DetectionRemoteDataSource {
   final SupabaseClient? _client;
   final http.Client httpClient;
 
+  static String? _lastSavedText;
+  static DateTime? _lastSavedTime;
+
   DetectionRemoteDataSourceImpl({
     SupabaseClient? client,
     http.Client? httpClient,
@@ -226,6 +229,18 @@ class DetectionRemoteDataSourceImpl implements DetectionRemoteDataSource {
   Future<void> saveDetection(DetectionEntity entity) async {
     final client = supabaseClient;
     if (client == null) return;
+
+    // Debounce / deduplikasi guard: mencegah penyimpanan ganda dalam rentang 4 detik
+    final cleanText = entity.text.trim();
+    if (_lastSavedText == cleanText &&
+        _lastSavedTime != null &&
+        DateTime.now().difference(_lastSavedTime!).inSeconds < 4) {
+      debugPrint('Debounce: Melewati duplikasi penyimpanan hasil deteksi.');
+      return;
+    }
+    _lastSavedText = cleanText;
+    _lastSavedTime = DateTime.now();
+
     final user = client.auth.currentUser;
     final title = entity.text.length > 50
         ? '${entity.text.substring(0, 50)}...'
