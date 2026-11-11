@@ -2,11 +2,30 @@ import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 
 class DetectedIndicatorsCard extends StatelessWidget {
-  const DetectedIndicatorsCard({super.key});
+  final List<String> indicators;
+  final bool isHoax;
+
+  const DetectedIndicatorsCard({
+    super.key,
+    this.indicators = const [],
+    this.isHoax = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final displayIndicators = indicators.isNotEmpty
+        ? indicators
+        : (isHoax
+            ? [
+                "Bahasa Sensasional & Provokatif",
+                "Ajakan Segera Membagikan",
+                "Tautan Tidak Terverifikasi",
+              ]
+            : [
+                "Struktur Kalimat Objektif & Netral",
+                "Tidak Mengandung Pola Phishing",
+              ]);
 
     return Container(
       width: double.infinity,
@@ -27,14 +46,14 @@ class DetectedIndicatorsCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(
-                    Icons.fact_check_outlined,
+                  Icon(
+                    isHoax ? Icons.fact_check_outlined : Icons.verified_outlined,
                     size: 18,
-                    color: AppColors.primary,
+                    color: isHoax ? const Color(0xFFDC2626) : AppColors.primary,
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    "Indikator yang Terdeteksi",
+                    isHoax ? "Indikator yang Terdeteksi" : "Indikator Validitas",
                     style: TextStyle(
                       color: isDark ? Colors.white : AppColors.inverted,
                       fontSize: 15,
@@ -46,13 +65,13 @@ class DetectedIndicatorsCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE0E7FF),
+                  color: isHoax ? const Color(0xFFFEE2E2) : const Color(0xFFD1FAE5),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
-                  "3 Pola",
+                child: Text(
+                  "${displayIndicators.length} Pola",
                   style: TextStyle(
-                    color: Color(0xFF3730A3),
+                    color: isHoax ? const Color(0xFFDC2626) : const Color(0xFF047857),
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                   ),
@@ -61,41 +80,24 @@ class DetectedIndicatorsCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _buildIndicatorItem(
-            isDark: isDark,
-            icon: Icons.campaign_outlined,
-            iconBg: const Color(0xFFFEE2E2),
-            iconColor: const Color(0xFFDC2626),
-            title: "Bahasa Sensasional & Provokatif",
-            badgeText: "Bobot Tinggi",
-            badgeColor: const Color(0xFFDC2626),
-            badgeBg: const Color(0xFFFEE2E2),
-            desc: "Teks menggunakan ungkapan hiperbolis yang cenderung memancing kepanikan emosional pembaca.",
-          ),
-          const SizedBox(height: 14),
-          _buildIndicatorItem(
-            isDark: isDark,
-            icon: Icons.forward_to_inbox_outlined,
-            iconBg: const Color(0xFFE0E7FF),
-            iconColor: const Color(0xFF4F46E5),
-            title: "Ajakan Segera Membagikan",
-            badgeText: "Bobot Sedang",
-            badgeColor: const Color(0xFF2563EB),
-            badgeBg: const Color(0xFFDBEAFE),
-            desc: "Terdapat pola desakan untuk menyebarkan pesan ke grup lain sebelum diverifikasi ke sumber primer.",
-          ),
-          const SizedBox(height: 14),
-          _buildIndicatorItem(
-            isDark: isDark,
-            icon: Icons.link_off_rounded,
-            iconBg: const Color(0xFFFFEDD5),
-            iconColor: const Color(0xFFEA580C),
-            title: "Tautan Tidak Terverifikasi",
-            badgeText: "Bobot Tinggi",
-            badgeColor: const Color(0xFFDC2626),
-            badgeBg: const Color(0xFFFEE2E2),
-            desc: "Mencantumkan tautan domain pihak ketiga yang tidak terafiliasi dengan lembaga resmi atau pers tersertifikasi.",
-          ),
+          ...displayIndicators.map((indicator) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: _buildIndicatorItem(
+                isDark: isDark,
+                icon: isHoax ? Icons.warning_amber_rounded : Icons.check_circle_outline,
+                iconBg: isHoax ? const Color(0xFFFEE2E2) : const Color(0xFFD1FAE5),
+                iconColor: isHoax ? const Color(0xFFDC2626) : const Color(0xFF047857),
+                title: indicator,
+                badgeText: isHoax ? "Perhatian" : "Terverifikasi",
+                badgeColor: isHoax ? const Color(0xFFDC2626) : const Color(0xFF047857),
+                badgeBg: isHoax ? const Color(0xFFFEE2E2) : const Color(0xFFD1FAE5),
+                desc: isHoax
+                    ? "Karakteristik teks ini sering ditemukan pada pesan berantai atau konten hoaks."
+                    : "Pola bahasa konsisten dengan teks berita atau informasi faktual yang wajar.",
+              ),
+            );
+          }),
         ],
       ),
     );

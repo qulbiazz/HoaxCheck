@@ -89,13 +89,14 @@ class _HistoryPageState extends State<HistoryPage> {
       builder:
           (context) => HistoryDeleteDialog(
             onDeleteAll: () async {
+              final messenger = ScaffoldMessenger.of(context);
               setState(() {
                 historyData.clear();
               });
               try {
                 await _historyRepository.clearAllHistory();
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  messenger.showSnackBar(
                     const SnackBar(
                       content: Text('Semua riwayat berhasil dihapus dari cloud.'),
                       backgroundColor: AppColors.primary,

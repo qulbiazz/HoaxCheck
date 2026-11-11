@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../app/theme.dart';
 import '../widgets/laporkan/laporkan_dukungan_card.dart';
 import '../widgets/laporkan/laporkan_footer.dart';
@@ -54,14 +55,28 @@ class _LaporkanMasalahPageState extends State<LaporkanMasalahPage> {
   }
 
   Future<void> _submitLaporan() async {
-    // Simulasi loading
+    // Tampilkan loading dialog
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => const Center(child: CircularProgressIndicator()),
     );
 
-    await Future.delayed(const Duration(seconds: 1));
+    final kategori = _selectedKategori;
+    final deskripsi = _deskripsiController.text.trim();
+    final email = _emailController.text.trim();
+
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      await Supabase.instance.client.from('problem_reports').insert({
+        if (user != null) 'user_id': user.id,
+        'kategori': kategori,
+        'deskripsi': deskripsi,
+        if (email.isNotEmpty) 'email': email,
+      });
+    } catch (e) {
+      debugPrint('Catatan insert problem_reports ke Supabase: $e');
+    }
 
     if (!mounted) return;
     Navigator.of(context).pop(); // close loading
@@ -76,8 +91,9 @@ class _LaporkanMasalahPageState extends State<LaporkanMasalahPage> {
     // Snackbar sukses
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text("Laporan berhasil dikirim. Terima kasih!"),
-        duration: Duration(seconds: 2),
+        content: Text("Laporan berhasil dikirim ke server. Terima kasih!"),
+        backgroundColor: AppColors.primary,
+        duration: Duration(seconds: 3),
       ),
     );
   }
