@@ -76,6 +76,25 @@ class TipModel {
       case 'link':
       case 'url':
         return Icons.link_rounded;
+      case 'lightbulb':
+      case 'tips':
+      case 'idea':
+        return Icons.lightbulb_outlined;
+      case 'menu_book':
+      case 'book':
+        return Icons.menu_book_outlined;
+      case 'security':
+      case 'shield':
+        return Icons.shield_outlined;
+      case 'warning':
+      case 'alert':
+        return Icons.warning_amber_rounded;
+      case 'help':
+      case 'quiz':
+        return Icons.help_outline_rounded;
+      case 'article':
+      case 'newspaper':
+        return Icons.newspaper_rounded;
       case 'fact_check':
       case 'fact_check_outlined':
       default:
