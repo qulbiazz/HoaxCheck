@@ -3,11 +3,24 @@ import '../../../../../app/theme.dart';
 import 'tentang_shared.dart';
 
 class TentangApaItuSection extends StatelessWidget {
-  const TentangApaItuSection({super.key});
+  final String? aboutText;
+  final List<String>? pills;
+
+  const TentangApaItuSection({
+    super.key,
+    this.aboutText,
+    this.pills,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final defaultText =
+        "Dirancang khusus untuk ekosistem literasi digital nusantara, HoaxCheck memadai struktur semantik, nuansa provokatif, serta konsistensi sintaksis pesan viral guna memetakan kemungkinan misinformasi secara objektif dalam hitungan detik.";
+
+    final defaultPills = ["Deteksi < 3 Detik", "Fokus Bahasa Indonesia"];
+    final pillsToDisplay = (pills != null && pills!.isNotEmpty) ? pills! : defaultPills;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,7 +61,7 @@ class TentangApaItuSection extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      "Dirancang khusus untuk ekosistem literasi digital nusantara, HoaxCheck memadai struktur semantik, nuansa provokatif, serta konsistensi sintaksis pesan viral guna memetakan kemungkinan misinformasi secara objektif dalam hitungan detik.",
+                      aboutText ?? defaultText,
                       style: TextStyle(
                         color: isDark ? Colors.white70 : AppColors.inverted,
                         fontSize: 12,
@@ -60,21 +73,18 @@ class TentangApaItuSection extends StatelessWidget {
               ),
               const SizedBox(height: 14),
               Row(
-                children: const [
-                  Expanded(
-                    child: TentangInfoPill(
-                      icon: Icons.speed,
-                      label: "Deteksi < 3 Detik",
+                children: pillsToDisplay.map((pill) {
+                  final isSpeed = pill.toLowerCase().contains('detik') || pill.toLowerCase().contains('cepat');
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: TentangInfoPill(
+                        icon: isSpeed ? Icons.speed : Icons.language,
+                        label: pill,
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: TentangInfoPill(
-                      icon: Icons.language,
-                      label: "Fokus Bahasa Indonesia",
-                    ),
-                  ),
-                ],
+                  );
+                }).toList(),
               ),
             ],
           ),
