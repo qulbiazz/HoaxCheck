@@ -226,6 +226,11 @@ CREATE POLICY "Anyone can view active tips"
 ON public.literacy_tips FOR SELECT 
 USING (is_active = true);
 
+DROP POLICY IF EXISTS "Admin full access for literacy_tips" ON public.literacy_tips;
+CREATE POLICY "Admin full access for literacy_tips" 
+ON public.literacy_tips FOR ALL 
+USING (true) WITH CHECK (true);
+
 -- Data Awal (Seed Data) Tips Literasi
 INSERT INTO public.literacy_tips (title, description, tip_number, icon_name, icon_bg_hex, icon_color_hex, order_index)
 VALUES 
@@ -279,6 +284,11 @@ CREATE POLICY "Anyone can view guide principles"
 ON public.guide_principles FOR SELECT 
 USING (true);
 
+DROP POLICY IF EXISTS "Admin full access for guide_principles" ON public.guide_principles;
+CREATE POLICY "Admin full access for guide_principles" 
+ON public.guide_principles FOR ALL 
+USING (true) WITH CHECK (true);
+
 -- Seed Data Prinsip Panduan
 INSERT INTO public.guide_principles (step_number, title, description, sub_points, order_index)
 VALUES 
@@ -322,6 +332,11 @@ CREATE POLICY "Anyone can view guide contents"
 ON public.guide_contents FOR SELECT 
 USING (true);
 
+DROP POLICY IF EXISTS "Admin full access for guide_contents" ON public.guide_contents;
+CREATE POLICY "Admin full access for guide_contents" 
+ON public.guide_contents FOR ALL 
+USING (true) WITH CHECK (true);
+
 -- Seed Data Konten Checklist & Kutipan
 INSERT INTO public.guide_contents (quote_text, checklist_title, checklist_subtitle, checklist_items)
 VALUES (
@@ -359,6 +374,11 @@ DROP POLICY IF EXISTS "Anyone can view app info" ON public.app_info;
 CREATE POLICY "Anyone can view app info" 
 ON public.app_info FOR SELECT 
 USING (true);
+
+DROP POLICY IF EXISTS "Admin full access for app_info" ON public.app_info;
+CREATE POLICY "Admin full access for app_info" 
+ON public.app_info FOR ALL 
+USING (true) WITH CHECK (true);
 
 -- Seed Data Tentang HoaxCheck
 INSERT INTO public.app_info (app_name, tagline, header_description, about_description, pills, steps, disclaimer_text, app_version)
