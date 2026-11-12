@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/history_item_model.dart';
 
@@ -16,22 +17,74 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
 
   @override
   Future<List<HistoryItemModel>> getUserHistories() async {
-    final response = await supabaseClient
-        .from('user_histories')
-        .select()
-        .order('tested_at', ascending: false);
+    final userId = supabaseClient.auth.currentUser?.id;
 
-    return (response as List)
-        .map((row) => HistoryItemModel.fromMap(row as Map<String, dynamic>))
-        .toList();
+    try {
+      List<dynamic> rows = [];
+
+      // 1. Coba ambil riwayat spesifik milik user yang sedang login jika ada
+      if (userId != null) {
+        try {
+          final response = await supabaseClient
+              .from('user_histories')
+              .select()
+              .eq('user_id', userId)
+              .order('tested_at', ascending: false);
+
+          if (response.isNotEmpty) {
+            rows = response;
+          }
+        } catch (_) {
+          // Kolom user_id belum ada di Supabase, fallback ambil semua data
+        }
+      }
+
+      // 2. Ambil semua data riwayat jika belum didapatkan
+      if (rows.isEmpty) {
+        final response = await supabaseClient
+            .from('user_histories')
+            .select()
+            .order('tested_at', ascending: false);
+        rows = response;
+      }
+
+      // 3. Deduplikasi cerdas: membersihkan riwayat kembar / duplikat
+      final List<HistoryItemModel> cleanItems = [];
+      for (final row in rows) {
+        final item = HistoryItemModel.fromMap(row);
+        final isDuplicate = cleanItems.any((existing) =>
+            existing.snippet.trim() == item.snippet.trim() &&
+            existing.isHoax == item.isHoax &&
+            (existing.time == item.time || (existing.id != null && existing.id == item.id)));
+
+        if (!isDuplicate) {
+          cleanItems.add(item);
+        }
+      }
+
+      return cleanItems;
+    } catch (e) {
+      debugPrint('Info HistoryRemoteDataSource: $e');
+      return [];
+    }
   }
 
   @override
   Future<void> saveHistory(HistoryItemModel item) async {
     final userId = supabaseClient.auth.currentUser?.id;
-    await supabaseClient
-        .from('user_histories')
-        .insert(item.toSupabaseMap(userId));
+    final map = item.toSupabaseMap(userId);
+
+    try {
+      await supabaseClient.from('user_histories').insert(map);
+    } catch (e) {
+      // Jika kolom user_id belum dibuat di database Supabase, fallback tanpa user_id
+      try {
+        final fallbackMap = Map<String, dynamic>.from(map)..remove('user_id');
+        await supabaseClient.from('user_histories').insert(fallbackMap);
+      } catch (innerError) {
+        debugPrint('Gagal simpan riwayat: $innerError');
+      }
+    }
   }
 
   @override
@@ -43,9 +96,11 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
   Future<void> clearAllHistory() async {
     final userId = supabaseClient.auth.currentUser?.id;
     if (userId != null) {
-      await supabaseClient.from('user_histories').delete().eq('user_id', userId);
-    } else {
-      await supabaseClient.from('user_histories').delete().neq('id', '0');
+      try {
+        await supabaseClient.from('user_histories').delete().eq('user_id', userId);
+        return;
+      } catch (_) {}
     }
+    await supabaseClient.from('user_histories').delete().neq('id', '0');
   }
 }

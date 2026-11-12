@@ -37,6 +37,8 @@ class ClipboardBanner extends StatelessWidget {
               children: [
                 const Text(
                   "TEKS TERDETEKSI DI CLIPBOARD",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: Color(0xFF2563EB), fontSize: 10, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),

@@ -22,6 +22,7 @@ class HistoryItem {
 
   Map<String, dynamic> toMap() {
     return {
+      if (id != null) 'id': id,
       'isHoax': isHoax,
       'confidence': confidence,
       'time': time,

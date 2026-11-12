@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
+import '../../../data/models/app_info_model.dart';
 import 'tentang_shared.dart';
 
 class TentangCaraKerjaSection extends StatelessWidget {
-  const TentangCaraKerjaSection({super.key});
+  final List<HowItWorksStepModel>? steps;
+
+  const TentangCaraKerjaSection({super.key, this.steps});
 
   @override
   Widget build(BuildContext context) {
+    final stepsToDisplay = (steps != null && steps!.isNotEmpty)
+        ? steps!
+        : AppInfoModel.defaultInfo.steps;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -15,32 +22,16 @@ class TentangCaraKerjaSection extends StatelessWidget {
           title: "Bagaimana Cara Kerjanya?",
         ),
         const SizedBox(height: 12),
-        _buildStep(
-          context,
-          number: "01",
-          icon: Icons.edit_note,
-          title: "Masukkan Teks",
-          desc:
-              "Masukkan atau tempel paragraf informasi, pesan berantai, atau kutipan berita yang ingin diperiksa.",
-        ),
-        const SizedBox(height: 12),
-        _buildStep(
-          context,
-          number: "02",
-          icon: Icons.psychology_outlined,
-          title: "Analisis Linguistik AI",
-          desc:
-              "Sistem menganalisis pola kalimat, sentimen ekstrim, dan karakteristik disinformasi menggunakan model Machine Learning terlatih.",
-        ),
-        const SizedBox(height: 12),
-        _buildStep(
-          context,
-          number: "03",
-          icon: Icons.fact_check_outlined,
-          title: "Hasil & Skor Kepercayaan",
-          desc:
-              "HoaxCheck menampilkan hasil indikasi beserta persentase confidence score secara lugas dan transparan.",
-        ),
+        ...stepsToDisplay.map((step) => Padding(
+          padding: const EdgeInsets.only(bottom: 12.0),
+          child: _buildStep(
+            context,
+            number: step.number,
+            icon: step.iconData,
+            title: step.title,
+            desc: step.description,
+          ),
+        )),
       ],
     );
   }
@@ -109,8 +100,7 @@ class TentangCaraKerjaSection extends StatelessWidget {
                 Text(
                   desc,
                   style: TextStyle(
-                    color:
-                        isDark ? AppDarkColors.textSecondary : AppColors.neutral,
+                    color: isDark ? Colors.white70 : AppColors.neutral,
                     fontSize: 11.5,
                     height: 1.45,
                   ),

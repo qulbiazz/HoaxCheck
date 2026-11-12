@@ -30,7 +30,7 @@ class AnalysisHeaderBar extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Text(
-              "HASIL EKSTRAKSI NLP",
+              "HASIL ANALISIS NAIVE BAYES",
               style: TextStyle(
                 color: isDark ? AppDarkColors.textSecondary : AppColors.neutral,
                 fontSize: 11,

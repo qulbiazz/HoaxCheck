@@ -25,6 +25,9 @@ class _HistoryPageState extends State<HistoryPage> {
   late final GetUserHistoryUseCase _getUserHistoryUseCase =
       GetUserHistoryUseCase(_historyRepository);
 
+  bool _isLoading = true;
+  List<Map<String, dynamic>> historyData = [];
+
   @override
   void initState() {
     super.initState();
@@ -34,54 +37,19 @@ class _HistoryPageState extends State<HistoryPage> {
   Future<void> _fetchHistoryFromSupabase() async {
     try {
       final items = await _getUserHistoryUseCase(const NoParams());
-      if (mounted && items.isNotEmpty) {
+      if (mounted) {
         setState(() {
           historyData = items.map((item) => item.toMap()).toList();
+          _isLoading = false;
         });
       }
     } catch (e) {
-      debugPrint('Info: Menggunakan data riwayat lokal ($e)');
+      debugPrint('Info: Gagal memuat riwayat: $e');
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
-
-  List<Map<String, dynamic>> historyData = [
-    {
-      'isHoax': true,
-      'confidence': '87%',
-      'time': 'Hari Ini, 10:42 WIB',
-      'text':
-          'Beredar pesan berantai mengklaim vaksinasi booster gratis dibatalkan pemerintah dan...',
-      'analysisType': 'Analisis NLP',
-      'source': 'WhatsApp Forward',
-    },
-    {
-      'isHoax': false,
-      'confidence': '94%',
-      'time': 'Kemarin, 15:20 WIB',
-      'text':
-          'BMKG merilis peringatan dini potensi hujan lebat disertai kilat di wilayah Jabodetabek pada...',
-      'analysisType': 'Terverifikasi Sumber',
-      'source': 'Portal Berita',
-    },
-    {
-      'isHoax': true,
-      'confidence': '91%',
-      'time': '14 Okt 2026, 09:15 WIB',
-      'text':
-          'Membagikan link subsidi kuota internet 100GB mengatasnamakan Kemendikbudristek melalui...',
-      'analysisType': 'Phishing / Manipulasi',
-      'source': 'Tautan URL',
-    },
-    {
-      'isHoax': false,
-      'confidence': '89%',
-      'time': '12 Okt 2026, 18:05 WIB',
-      'text':
-          'Kementerian Perhubungan mengumumkan penyesuaian tarif LRT Jabodebek per 1...',
-      'analysisType': 'Media Kredibel',
-      'source': 'Siaran Pers Resmi',
-    },
-  ];
 
   void _showDeleteDialog() {
     showDialog(
@@ -89,13 +57,14 @@ class _HistoryPageState extends State<HistoryPage> {
       builder:
           (context) => HistoryDeleteDialog(
             onDeleteAll: () async {
+              final messenger = ScaffoldMessenger.of(context);
               setState(() {
                 historyData.clear();
               });
               try {
                 await _historyRepository.clearAllHistory();
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  messenger.showSnackBar(
                     const SnackBar(
                       content: Text('Semua riwayat berhasil dihapus dari cloud.'),
                       backgroundColor: AppColors.primary,
@@ -112,6 +81,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final int allCount = historyData.length;
     final int hoaxCount = historyData.where((e) => e['isHoax'] == true).length;
     final int validCount =
@@ -276,20 +246,63 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                filteredList.isEmpty
+                _isLoading
                     ? const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 30),
-                      child: Center(
-                        child: Text(
-                          "Tidak ada riwayat ditemukan.",
-                          style: TextStyle(
-                            color: Color(0xFF94A3B8),
-                            fontSize: 12,
+                        padding: EdgeInsets.symmetric(vertical: 40),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.primary,
+                            ),
                           ),
                         ),
-                      ),
-                    )
-                    : Column(
+                      )
+                    : filteredList.isEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 36),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.history_toggle_off_rounded,
+                                    size: 46,
+                                    color: isDark
+                                        ? AppDarkColors.textSecondary
+                                        : const Color(0xFF94A3B8),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    searchQuery.isNotEmpty
+                                        ? "Tidak ada riwayat yang cocok"
+                                        : "Belum ada riwayat pemeriksaan",
+                                    style: TextStyle(
+                                      color: isDark
+                                          ? AppDarkColors.textPrimary
+                                          : AppColors.inverted,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    searchQuery.isNotEmpty
+                                        ? "Coba gunakan kata kunci pencarian yang lain."
+                                        : "Teks yang kamu periksa akan tersimpan di sini secara otomatis.",
+                                    style: TextStyle(
+                                      color: isDark
+                                          ? AppDarkColors.textSecondary
+                                          : const Color(0xFF94A3B8),
+                                      fontSize: 12,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : Column(
                       children:
                           filteredList.map((item) {
                             return HistoryCard(

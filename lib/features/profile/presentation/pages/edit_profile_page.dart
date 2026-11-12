@@ -1,12 +1,20 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../../app/theme.dart';
+import '../../../../core/widgets/user_avatar.dart';
 import '../../../auth/data/repositories/auth_repository_impl.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
 
 class EditProfilePage extends StatefulWidget {
   final AuthRepository? authRepository;
+  final ImagePicker? imagePicker;
 
-  const EditProfilePage({super.key, this.authRepository});
+  const EditProfilePage({
+    super.key,
+    this.authRepository,
+    this.imagePicker,
+  });
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
@@ -17,6 +25,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController _nameController;
   String _userEmail = "qulbi@hoaxcheck.id";
   String? _avatarUrl;
+  Uint8List? _selectedImageBytes;
+  String? _selectedFileName;
+  bool _isAvatarRemoved = false;
   bool _isLoading = false;
 
   @override
@@ -40,6 +51,170 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.dispose();
   }
 
+  Future<void> _showPhotoSourceBottomSheet() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? AppDarkColors.surface : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        final hasActiveAvatar = _selectedImageBytes != null ||
+            (!_isAvatarRemoved && _avatarUrl != null && _avatarUrl!.trim().isNotEmpty);
+
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white24 : Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  "Pilih Foto Profil",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppDarkColors.textPrimary : AppColors.inverted,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  "Pilih foto dari galeri atau ambil foto baru dengan kamera",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? AppDarkColors.textSecondary : AppColors.neutral,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.photo_library_outlined, color: AppColors.primary),
+                  ),
+                  title: Text(
+                    "Pilih dari Galeri",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? AppDarkColors.textPrimary : AppColors.inverted,
+                    ),
+                  ),
+                  subtitle: const Text("Pilih gambar dari galeri perangkat"),
+                  onTap: () {
+                    Navigator.of(ctx).pop();
+                    _pickImage(ImageSource.gallery);
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.camera_alt_outlined, color: AppColors.primary),
+                  ),
+                  title: Text(
+                    "Ambil dari Kamera",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? AppDarkColors.textPrimary : AppColors.inverted,
+                    ),
+                  ),
+                  subtitle: const Text("Gunakan kamera untuk mengambil foto"),
+                  onTap: () {
+                    Navigator.of(ctx).pop();
+                    _pickImage(ImageSource.camera);
+                  },
+                ),
+                if (hasActiveAvatar) ...[
+                  const Divider(height: 20),
+                  ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.danger.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.delete_outline, color: AppColors.danger),
+                    ),
+                    title: const Text(
+                      "Hapus Foto Profil",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.danger,
+                      ),
+                    ),
+                    subtitle: const Text("Kembalikan ke inisial / avatar default"),
+                    onTap: () {
+                      Navigator.of(ctx).pop();
+                      setState(() {
+                        _selectedImageBytes = null;
+                        _selectedFileName = null;
+                        _isAvatarRemoved = true;
+                      });
+                    },
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final picker = widget.imagePicker ?? ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: source,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+        final resolvedName = image.name.isNotEmpty
+            ? image.name
+            : (image.path.isNotEmpty
+                ? image.path.split('/').last.split('\\').last
+                : 'avatar.jpg');
+        setState(() {
+          _selectedImageBytes = bytes;
+          _selectedFileName = resolvedName.isNotEmpty ? resolvedName : 'avatar.jpg';
+          _isAvatarRemoved = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal memilih gambar: $e'),
+            backgroundColor: AppColors.danger,
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _handleSaveProfile() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
@@ -54,11 +229,28 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     setState(() => _isLoading = true);
     try {
-      await _authRepository.updateProfile(name: name);
+      String? newAvatarUrl = _avatarUrl;
+
+      // 1. Jika ada foto baru yang dipilih, unggah ke Supabase Storage bucket 'avatars'
+      if (_selectedImageBytes != null) {
+        newAvatarUrl = await _authRepository.uploadAvatar(
+          bytes: _selectedImageBytes!,
+          fileName: _selectedFileName ?? 'avatar.jpg',
+        );
+      } else if (_isAvatarRemoved) {
+        newAvatarUrl = '';
+      }
+
+      // 2. Simpan pembaruan profil pengguna ke Supabase
+      await _authRepository.updateProfile(
+        name: name,
+        avatarUrl: newAvatarUrl,
+      );
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Profil berhasil diperbarui'),
+            content: Text('Profil dan foto berhasil diperbarui'),
             backgroundColor: AppColors.primary,
           ),
         );
@@ -115,57 +307,67 @@ class _EditProfilePageState extends State<EditProfilePage> {
               Center(
                 child: Column(
                   children: [
-                    Stack(
-                      children: [
-                        Container(
-                          width: 90,
-                          height: 90,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isDark ? AppDarkColors.border : Colors.white,
-                              width: 3,
+                    InkWell(
+                      onTap: _isLoading ? null : _showPhotoSourceBottomSheet,
+                      borderRadius: BorderRadius.circular(50),
+                      child: Stack(
+                        children: [
+                          UserAvatar(
+                            avatarUrl: _isAvatarRemoved ? null : _avatarUrl,
+                            imageBytes: _selectedImageBytes,
+                            size: 90,
+                            borderWidth: 3,
+                            borderColor: isDark ? AppDarkColors.border : Colors.white,
+                            shadow: const BoxShadow(
+                              color: Color(0x0F000000),
+                              blurRadius: 8,
+                              offset: Offset(0, 2),
                             ),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color(0x0F000000),
-                                blurRadius: 8,
-                                offset: Offset(0, 2),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: const BoxDecoration(
+                                color: AppColors.primary,
+                                shape: BoxShape.circle,
                               ),
-                            ],
-                            image: DecorationImage(
-                              image: _avatarUrl != null
-                                  ? NetworkImage(_avatarUrl!) as ImageProvider
-                                  : const AssetImage('assets/images/img_profile.png'),
-                              fit: BoxFit.cover,
+                              child: const Icon(
+                                Icons.camera_alt_outlined,
+                                size: 14,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: const BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.camera_alt_outlined,
-                              size: 14,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      "Ubah Foto Profil",
-                      style: TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                    InkWell(
+                      onTap: _isLoading ? null : _showPhotoSourceBottomSheet,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(
+                              Icons.photo_camera_outlined,
+                              size: 16,
+                              color: AppColors.primary,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              "Ubah Foto Profil",
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],

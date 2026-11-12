@@ -437,7 +437,7 @@ class HistoryDetailPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // BUTTON: LIHAT RINCIAN ANALISIS MODEL NLP
+                    // BUTTON: LIHAT RINCIAN ANALISIS MACHINE LEARNING
                     InkWell(
                       onTap: () {
                         Navigator.of(context).push(
@@ -465,7 +465,7 @@ class HistoryDetailPage extends StatelessWidget {
                                 const Icon(Icons.manage_search, size: 18, color: Color(0xFF4F46E5)),
                                 const SizedBox(width: 8),
                                 Text(
-                                  "Lihat Rincian Analisis Model NLP",
+                                  "Lihat Rincian Analisis Machine Learning",
                                   style: TextStyle(
                                     color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF3730A3),
                                     fontSize: 12,

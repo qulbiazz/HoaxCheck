@@ -14,15 +14,21 @@ class AnalysisDetailPage extends StatelessWidget {
   final int confidence;
   final double analysisTimeSeconds;
   final bool isHoax;
+  final String text;
+  final List<String> indicators;
+  final String? explanation;
 
   const AnalysisDetailPage({
     super.key,
+    this.text = '',
     this.analysisId = "#HC-98234",
     this.classification = "Terindikasi Hoaks",
     this.confidence = 87,
     this.analysisTimeSeconds = 1.2,
     this.isHoax = true,
-    this.onNavigateToDetection, // Tambahkan baris ini
+    this.indicators = const [],
+    this.explanation,
+    this.onNavigateToDetection,
   });
 
   @override
@@ -75,11 +81,18 @@ class AnalysisDetailPage extends StatelessWidget {
                 statusBg: statusBg,
               ),
               const SizedBox(height: 20),
-              const DetectedIndicatorsCard(),
+              DetectedIndicatorsCard(
+                indicators: indicators,
+                isHoax: isHoax,
+              ),
               const SizedBox(height: 20),
-              const ModelInfoCard(),
+              ModelInfoCard(
+                text: text,
+                confidence: confidence,
+                isHoax: isHoax,
+              ),
               const SizedBox(height: 20),
-              const EducationCard(),
+              EducationCard(isHoax: isHoax),
               const SizedBox(height: 24),
               const AnalysisActionButtons(),
               const SizedBox(height: 20),
@@ -87,10 +100,9 @@ class AnalysisDetailPage extends StatelessWidget {
                 child: Text(
                   "Sistem deteksi berbasis pembelajaran mesin memiliki margin kesalahan statistik. Tetap lakukan konfirmasi manual melalui media massa terpercaya dan kanal pengecekan fakta independen (CekFakta/TurnBackHoax).",
                   style: TextStyle(
-                    color:
-                        isDark
-                            ? AppDarkColors.textSecondary
-                            : const Color(0xFF94A3B8),
+                    color: isDark
+                        ? AppDarkColors.textSecondary
+                        : const Color(0xFF94A3B8),
                     fontSize: 10,
                     height: 1.4,
                   ),

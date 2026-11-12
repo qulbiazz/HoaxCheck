@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/services/storage_service.dart';
 import '../../../auth/presentation/pages/login_page.dart';
 import '../widgets/onboarding_content.dart';
 import '../widgets/onboarding_indicator.dart';
@@ -18,6 +19,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   int _currentIndex = 0;
 
   void _onFinishOnboarding() {
+    StorageService.setHasSeenOnboarding(true);
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) => const LoginPage(),
@@ -192,7 +194,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       children: [
         Expanded(child: _buildVerticalFeatureCard('01', 'Tempel', 'Input teks', Icons.content_paste_outlined, const Color(0xFFD1FAE5), const Color(0xFF047857), isDark)),
         const SizedBox(width: 8),
-        Expanded(child: _buildVerticalFeatureCard('02', 'Analisis', 'Model NLP', Icons.psychology_outlined, const Color(0xFF047857), Colors.white, isDark, iconContainerBg: const Color(0xFF047857), subtitleColor: const Color(0xFF047857))),
+        Expanded(child: _buildVerticalFeatureCard('02', 'Analisis', 'Naive Bayes', Icons.psychology_outlined, const Color(0xFF047857), Colors.white, isDark, iconContainerBg: const Color(0xFF047857), subtitleColor: const Color(0xFF047857))),
         const SizedBox(width: 8),
         Expanded(child: _buildVerticalFeatureCard('03', 'Hasil', 'Skor akurasi', Icons.speed_outlined, const Color(0xFFE0F2FE), const Color(0xFF0284C7), isDark)),
       ],

@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_model.dart';
 
@@ -8,19 +9,35 @@ abstract class AuthRemoteDataSource {
   Future<void> signInWithGoogle({String? redirectTo});
   Future<void> signOut();
   Stream<UserModel?> get authStateChanges;
-  Future<UserModel> updateProfile({required String name});
+  Future<UserModel> updateProfile({String? name, String? avatarUrl});
+  Future<String> uploadAvatar({required Uint8List bytes, required String fileName});
   Future<void> sendPasswordResetEmail(String email);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final SupabaseClient supabaseClient;
+  final SupabaseClient? _client;
 
-  AuthRemoteDataSourceImpl({SupabaseClient? client})
-      : supabaseClient = client ?? Supabase.instance.client;
+  AuthRemoteDataSourceImpl({SupabaseClient? client}) : _client = client;
+
+  SupabaseClient get supabaseClient {
+    if (_client != null) return _client;
+    return Supabase.instance.client;
+  }
+
+  SupabaseClient? get _safeSupabaseClient {
+    if (_client != null) return _client;
+    try {
+      return Supabase.instance.client;
+    } catch (_) {
+      return null;
+    }
+  }
 
   @override
   UserModel? getCurrentUser() {
-    final user = supabaseClient.auth.currentUser;
+    final client = _safeSupabaseClient;
+    if (client == null) return null;
+    final user = client.auth.currentUser;
     if (user == null) return null;
     return UserModel.fromSupabase(user);
   }
@@ -69,21 +86,69 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Stream<UserModel?> get authStateChanges {
-    return supabaseClient.auth.onAuthStateChange.map((data) {
-      final user = data.session?.user ?? supabaseClient.auth.currentUser;
+    final client = _safeSupabaseClient;
+    if (client == null) return const Stream.empty();
+    return client.auth.onAuthStateChange.map((data) {
+      final user = data.session?.user ?? client.auth.currentUser;
       if (user == null) return null;
       return UserModel.fromSupabase(user);
     });
   }
 
   @override
-  Future<UserModel> updateProfile({required String name}) async {
+  Future<String> uploadAvatar({
+    required Uint8List bytes,
+    required String fileName,
+  }) async {
+    final user = supabaseClient.auth.currentUser;
+    if (user == null) {
+      throw const AuthException('Pengguna belum login.');
+    }
+
+    final ext = fileName.contains('.') ? fileName.split('.').last.toLowerCase() : 'jpg';
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final filePath = '${user.id}/avatar_$timestamp.$ext';
+
+    await supabaseClient.storage.from('avatars').uploadBinary(
+      filePath,
+      bytes,
+      fileOptions: FileOptions(
+        contentType: 'image/$ext',
+        upsert: true,
+      ),
+    );
+
+    final publicUrl = supabaseClient.storage.from('avatars').getPublicUrl(filePath);
+    return publicUrl;
+  }
+
+  @override
+  Future<UserModel> updateProfile({String? name, String? avatarUrl}) async {
+    final updateData = <String, dynamic>{};
+    if (name != null && name.trim().isNotEmpty) {
+      updateData['full_name'] = name.trim();
+    }
+    if (avatarUrl != null && avatarUrl.trim().isNotEmpty) {
+      updateData['avatar_url'] = avatarUrl.trim();
+    }
+
     final response = await supabaseClient.auth.updateUser(
-      UserAttributes(data: {'full_name': name}),
+      UserAttributes(data: updateData),
     );
     if (response.user == null) {
       throw const AuthException('Gagal memperbarui profil.');
     }
+
+    // Sinkronisasi data ke tabel profiles jika tabel tersedia di Supabase
+    try {
+      await supabaseClient.from('profiles').upsert({
+        'id': response.user!.id,
+        if (name != null && name.trim().isNotEmpty) 'full_name': name.trim(),
+        if (avatarUrl != null && avatarUrl.trim().isNotEmpty) 'avatar_url': avatarUrl.trim(),
+        'updated_at': DateTime.now().toIso8601String(),
+      });
+    } catch (_) {}
+
     return UserModel.fromSupabase(response.user!);
   }
 

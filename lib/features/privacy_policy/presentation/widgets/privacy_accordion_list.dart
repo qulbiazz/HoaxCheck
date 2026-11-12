@@ -32,9 +32,9 @@ class PrivacyAccordionList extends StatelessWidget {
       },
       {
         'id': '5',
-        'title': 'Pelatihan Model AI & NLP',
+        'title': 'Pelatihan Model Machine Learning',
         'icon': Icons.psychology_outlined,
-        'content': 'Kami menggunakan data teks pemeriksaan secara anonim tanpa atribut identitas untuk melatih dan menyempurnakan keandalan model pemrosesan bahasa alami (NLP). Tidak ada data pribadi yang dilibatkan dalam proses ini.'
+        'content': 'Kami menggunakan data teks pemeriksaan secara anonim tanpa atribut identitas untuk melatih dan menyempurnakan keandalan model Machine Learning (Naive Bayes). Tidak ada data pribadi yang dilibatkan dalam proses ini.'
       },
       {
         'id': '6',

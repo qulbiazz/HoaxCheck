@@ -2,8 +2,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../app/theme.dart';
+import '../../../../../core/services/storage_service.dart';
 import '../../../../../core/widgets/hoaxcheck_logo.dart';
 import '../../../../../navigation/main_navigation.dart';
 import '../../../privacy_policy/presentation/pages/privacy_policy_page.dart';
@@ -52,6 +53,7 @@ class _RegisterPageState extends State<RegisterPage> {
     try {
       _authSubscription = _authRepository.authStateChanges.listen((user) {
         if (mounted && user != null) {
+          StorageService.setHasLoggedIn(true);
           Navigator.of(context).pushReplacement(
             PageRouteBuilder(
               pageBuilder: (_, __, ___) => const MainNavigation(),
@@ -125,15 +127,31 @@ class _RegisterPageState extends State<RegisterPage> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Pendaftaran berhasil! Akun tersimpan di Supabase.'),
-          backgroundColor: AppColors.primary,
-        ),
-      );
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(pageBuilder: (_, __, ___) => const MainNavigation()),
-      );
+      final session = Supabase.instance.client.auth.currentSession;
+      if (session == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Pendaftaran berhasil! Cek email untuk verifikasi (atau aktifkan akun di Dashboard Supabase).',
+            ),
+            backgroundColor: AppColors.primary,
+            duration: Duration(seconds: 4),
+          ),
+        );
+        Navigator.of(context).pop();
+      } else {
+        await StorageService.setHasLoggedIn(true);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Pendaftaran berhasil! Selamat datang di HoaxCheck.'),
+            backgroundColor: AppColors.primary,
+          ),
+        );
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(pageBuilder: (_, __, ___) => const MainNavigation()),
+        );
+      }
     } on AuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

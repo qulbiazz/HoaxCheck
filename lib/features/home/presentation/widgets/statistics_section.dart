@@ -1,8 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:hoaxcheck_app/app/theme.dart';
+import '../../../history/data/repositories/history_repository_impl.dart';
 
-class StatisticsSection extends StatelessWidget {
+class StatisticsSection extends StatefulWidget {
   const StatisticsSection({super.key});
+
+  @override
+  State<StatisticsSection> createState() => _StatisticsSectionState();
+}
+
+class _StatisticsSectionState extends State<StatisticsSection> {
+  int _totalChecks = 0;
+  int _hoaxCount = 0;
+  int _validCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchStats();
+  }
+
+  Future<void> _fetchStats() async {
+    try {
+      final items = await HistoryRepositoryImpl().getUserHistories();
+      if (mounted) {
+        setState(() {
+          _totalChecks = items.length;
+          _hoaxCount = items.where((item) => item.isHoax).length;
+          _validCount = items.where((item) => !item.isHoax).length;
+        });
+      }
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +51,7 @@ class StatisticsSection extends StatelessWidget {
               ),
             ),
             const Text(
-              "30 Hari Terakhir",
+              "Real-Time Cloud",
               style: TextStyle(color: AppColors.neutral, fontSize: 12),
             ),
           ],
@@ -34,7 +63,7 @@ class StatisticsSection extends StatelessWidget {
             // KARTU 1: Total Uji
             _buildStatCard(
               title: "Total Uji",
-              value: "48",
+              value: _totalChecks.toString(),
               bgColor: isDark ? AppDarkColors.surface : AppColors.surface,
               textColor: isDark ? AppDarkColors.textPrimary : AppColors.inverted,
               bottomWidget: Row(
@@ -59,7 +88,7 @@ class StatisticsSection extends StatelessWidget {
             // KARTU 2: Hoaks
             _buildStatCard(
               title: "Hoaks",
-              value: "14",
+              value: _hoaxCount.toString(),
               bgColor: AppColors.danger.withValues(alpha: isDark ? 0.2 : 0.08),
               textColor: isDark ? const Color(0xFFFCA5A5) : AppColors.danger,
               bottomWidget: _buildBadge(
@@ -74,7 +103,7 @@ class StatisticsSection extends StatelessWidget {
             // KARTU 3: Valid
             _buildStatCard(
               title: "Valid",
-              value: "34",
+              value: _validCount.toString(),
               bgColor: AppColors.primary.withValues(alpha: isDark ? 0.2 : 0.15),
               textColor: isDark
                   ? const Color(0xFF6EE7B7)
@@ -106,17 +135,39 @@ class StatisticsSection extends StatelessWidget {
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: (bgColor == AppColors.surface || bgColor == AppDarkColors.surface)
-              ? const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]
+          boxShadow: (bgColor == AppColors.surface ||
+                  bgColor == AppDarkColors.surface)
+              ? const [
+                  BoxShadow(
+                    color: Color(0x08000000),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  )
+                ]
               : null,
         ),
         child: Column(
           children: [
-            Text(title, style: TextStyle(color: textColor.withValues(alpha: 0.8), fontSize: 12, fontWeight: FontWeight.w500)),
+            Text(
+              title,
+              style: TextStyle(
+                color: textColor.withValues(alpha: 0.8),
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(value, style: TextStyle(color: textColor, fontSize: 32, fontWeight: FontWeight.bold, height: 1.0)),
+            Text(
+              value,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                height: 1.0,
+              ),
+            ),
             const SizedBox(height: 12),
-            bottomWidget, // Widget bagian bawah dirender di sini
+            bottomWidget,
           ],
         ),
       ),
@@ -141,7 +192,14 @@ class StatisticsSection extends StatelessWidget {
         children: [
           Icon(icon, size: 12, color: textColor),
           const SizedBox(width: 4),
-          Text(text, style: TextStyle(color: textColor, fontSize: 10, fontWeight: FontWeight.bold)),
+          Text(
+            text,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );

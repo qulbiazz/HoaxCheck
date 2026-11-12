@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
+import '../../../../core/widgets/user_avatar.dart';
 import '../../../auth/data/repositories/auth_repository_impl.dart';
 import '../../../auth/domain/entities/user_entity.dart';
 import '../pages/edit_profile_page.dart';
@@ -54,12 +55,11 @@ class _ProfileInfoCardState extends State<ProfileInfoCard> {
       ),
       child: Column(
         children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-            backgroundImage: avatarUrl != null
-                ? NetworkImage(avatarUrl) as ImageProvider
-                : const AssetImage('assets/images/img_profile.png'),
+          UserAvatar(
+            avatarUrl: avatarUrl,
+            size: 80,
+            borderWidth: 2,
+            borderColor: isDark ? AppDarkColors.border : Colors.grey.shade200,
           ),
           const SizedBox(height: 16),
           Text(

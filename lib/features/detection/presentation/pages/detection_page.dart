@@ -60,7 +60,7 @@ class _DetectionPageState extends State<DetectionPage> {
               children: [
                 const AppHeader(title: "Deteksi"),
                 const Text(
-                  "Masukkan teks yang ingin kamu periksa dengan model AI & NLP terverifikasi.",
+                  "Masukkan teks yang ingin kamu periksa dengan model Machine Learning terverifikasi.",
                   style: TextStyle(
                     color: AppColors.neutral,
                     fontSize: 13,

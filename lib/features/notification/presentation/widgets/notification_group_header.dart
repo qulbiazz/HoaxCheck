@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme.dart';
 
 class NotificationGroupHeader extends StatelessWidget {
   final String title;
@@ -12,16 +13,27 @@ class NotificationGroupHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = isDark ? AppDarkColors.textSecondary : const Color(0xFF94A3B8);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF94A3B8), letterSpacing: 0.5),
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            color: color,
+            letterSpacing: 0.5,
+          ),
         ),
         Text(
           count,
-          style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
+          style: TextStyle(
+            fontSize: 11,
+            color: color,
+          ),
         ),
       ],
     );

@@ -39,10 +39,28 @@ class HistoryCard extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             onTap: () {
+              final parsedConfidence =
+                  int.tryParse(confidence.replaceAll('%', '').trim()) ?? 85;
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const AnalysisDetailPage(),
+                  builder: (context) => AnalysisDetailPage(
+                    text: text,
+                    classification: analysisType.isNotEmpty
+                        ? analysisType
+                        : (isHoax ? "Terindikasi Hoaks" : "Informasi Valid"),
+                    confidence: parsedConfidence,
+                    isHoax: isHoax,
+                    indicators: isHoax
+                        ? const [
+                            "Karakteristik teks berita tidak terverifikasi",
+                            "Pola pesan berantai terdeteksi",
+                          ]
+                        : const [
+                            "Struktur teks informatif dan objektif",
+                            "Tidak terdeteksi unsur fabrikasi informasi",
+                          ],
+                  ),
                 ),
               );
             },
