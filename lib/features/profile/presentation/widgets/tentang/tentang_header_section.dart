@@ -2,7 +2,16 @@ import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 
 class TentangHeaderSection extends StatelessWidget {
-  const TentangHeaderSection({super.key});
+  final String? appName;
+  final String? tagline;
+  final String? description;
+
+  const TentangHeaderSection({
+    super.key,
+    this.appName,
+    this.tagline,
+    this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +19,7 @@ class TentangHeaderSection extends StatelessWidget {
 
     return Column(
       children: [
-        // Logo (placeholder: icon di dalam lingkaran hijau)
+        // Logo
         Container(
           width: 90,
           height: 90,
@@ -56,7 +65,7 @@ class TentangHeaderSection extends StatelessWidget {
 
         // Judul
         Text(
-          "HoaxCheck",
+          appName ?? "HoaxCheck",
           style: TextStyle(
             color: isDark ? Colors.white : AppColors.inverted,
             fontSize: 26,
@@ -67,7 +76,7 @@ class TentangHeaderSection extends StatelessWidget {
 
         // Sub-judul
         Text(
-          "Bantu Kenali Informasi yang Meragukan",
+          tagline ?? "Bantu Kenali Informasi yang Meragukan",
           textAlign: TextAlign.center,
           style: TextStyle(
             color: isDark ? Colors.white70 : AppColors.inverted,
@@ -79,7 +88,8 @@ class TentangHeaderSection extends StatelessWidget {
 
         // Deskripsi
         Text(
-          "HoaxCheck adalah aplikasi yang membantu pengguna mendapatkan indikasi awal terhadap informasi yang berpotensi hoaks melalui analisis teks berbasis Machine Learning.",
+          description ??
+              "HoaxCheck adalah aplikasi yang membantu pengguna mendapatkan indikasi awal terhadap informasi yang berpotensi hoaks melalui analisis teks berbasis Machine Learning.",
           textAlign: TextAlign.center,
           style: TextStyle(
             color: isDark ? AppDarkColors.textSecondary : AppColors.neutral,
@@ -98,8 +108,20 @@ class TentangHeaderSection extends StatelessWidget {
           ),
           clipBehavior: Clip.hardEdge,
           child: Image.asset(
-            'assets/images/team_image.png', // Sesuaikan path asset gambarmu
+            'assets/images/tentang.png',
             fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                color: isDark ? AppDarkColors.surface : const Color(0xFFE2E8F0),
+                child: Center(
+                  child: Icon(
+                    Icons.image_outlined,
+                    size: 48,
+                    color: isDark ? Colors.white24 : Colors.black26,
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ],

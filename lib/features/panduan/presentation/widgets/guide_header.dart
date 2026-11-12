@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 
 class GuideHeader extends StatelessWidget implements PreferredSizeWidget {
-  const GuideHeader({super.key});
+  final VoidCallback? onRefresh;
+
+  const GuideHeader({super.key, this.onRefresh});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -10,7 +12,7 @@ class GuideHeader extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return AppBar(
       backgroundColor: isDark ? AppDarkColors.surface : Colors.white,
       elevation: 0,
@@ -26,6 +28,14 @@ class GuideHeader extends StatelessWidget implements PreferredSizeWidget {
           color: isDark ? AppDarkColors.textPrimary : const Color(0xFF0F172A),
         ),
       ),
+      actions: [
+        if (onRefresh != null)
+          IconButton(
+            icon: Icon(Icons.refresh_rounded, color: isDark ? AppDarkColors.textPrimary : const Color(0xFF0F172A)),
+            tooltip: 'Muat Ulang',
+            onPressed: onRefresh,
+          ),
+      ],
     );
   }
 }

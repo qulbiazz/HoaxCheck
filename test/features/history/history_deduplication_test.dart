@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hoaxcheck_app/features/history/data/datasources/history_remote_data_source.dart';
 import 'package:hoaxcheck_app/features/history/data/models/history_item_model.dart';
 
 void main() {

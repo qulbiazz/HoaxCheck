@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 
 class GuideQuoteBox extends StatelessWidget {
-  const GuideQuoteBox({super.key});
+  final String? quote;
+
+  const GuideQuoteBox({super.key, this.quote});
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +27,11 @@ class GuideQuoteBox extends StatelessWidget {
             child: const Icon(Icons.format_quote, color: Colors.white, size: 14),
           ),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Text(
-              'Berita yang kredibel dibangun atas fakta yang telah diuji ulang (cross-checked) ke sumber primer yang berwenang, bukan sekadar kutipan anonim atau rumor viral di lini masa.',
-              style: TextStyle(
+              quote ??
+                  'Berita yang kredibel dibangun atas fakta yang telah diuji ulang (cross-checked) ke sumber primer yang berwenang, bukan sekadar kutipan anonim atau rumor viral di lini masa.',
+              style: const TextStyle(
                 color: Color(0xFF0D652D),
                 fontSize: 13,
                 height: 1.45,

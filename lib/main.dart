@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/app.dart';
@@ -12,6 +13,7 @@ void main() async {
     try {
       await Supabase.initialize(
         url: SupabaseConfig.url,
+        // ignore: deprecated_member_use
         anonKey: SupabaseConfig.anonKey,
       );
       debugPrint('✓ Supabase berhasil terhubung!');

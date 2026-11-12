@@ -2,17 +2,30 @@ import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 
 class GuideChecklistBox extends StatelessWidget {
-  const GuideChecklistBox({super.key});
+  final String? title;
+  final String? subtitle;
+  final List<String>? checklistItems;
+
+  const GuideChecklistBox({
+    super.key,
+    this.title,
+    this.subtitle,
+    this.checklistItems,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    final List<String> checklistItems = [
+
+    final defaultItems = [
       'Apakah berita mengutip sumber pertama yang kompeten dan kredibel?',
       'Apakah ada bukti dokumen, rekaman utuh, atau data penunjang resmi?',
       'Jika masih meragukan, uji teks klaim ke HoaxCheck sebelum disebarkan.',
     ];
+
+    final itemsToDisplay = (checklistItems != null && checklistItems!.isNotEmpty)
+        ? checklistItems!
+        : defaultItems;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -25,22 +38,23 @@ class GuideChecklistBox extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
-              Icon(Icons.playlist_add_check_rounded, color: AppColors.primary, size: 22),
-              SizedBox(width: 8),
+            children: [
+              const Icon(Icons.playlist_add_check_rounded, color: AppColors.primary, size: 22),
+              const SizedBox(width: 8),
               Text(
-                'Hal yang Perlu Diperhatikan',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.primary),
+                title ?? 'Hal yang Perlu Diperhatikan',
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.primary),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
-            'Gunakan daftar periksa klaim ini sebelum membagikan ulang kabar ke grup percakapan atau media sosial.',
+            subtitle ??
+                'Gunakan daftar periksa klaim ini sebelum membagikan ulang kabar ke grup percakapan atau media sosial.',
             style: TextStyle(fontSize: 12, color: isDark ? AppDarkColors.textSecondary : const Color(0xFF64748B)),
           ),
           const SizedBox(height: 12),
-          ...checklistItems.map((item) => Padding(
+          ...itemsToDisplay.map((item) => Padding(
             padding: const EdgeInsets.only(bottom: 12.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
