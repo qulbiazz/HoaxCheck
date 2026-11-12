@@ -200,3 +200,216 @@ CREATE POLICY "Authenticated users can delete their avatars"
 ON storage.objects FOR DELETE 
 TO authenticated 
 USING (bucket_id = 'avatars');
+
+
+-- ==============================================================================
+-- 6. TABEL: literacy_tips (Tips Literasi di Beranda - Poin #1)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.literacy_tips (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    tip_number VARCHAR(50) NOT NULL DEFAULT 'Tips',
+    icon_name VARCHAR(50) NOT NULL DEFAULT 'fact_check',
+    icon_bg_hex VARCHAR(20) DEFAULT '#D1FAE5',
+    icon_color_hex VARCHAR(20) DEFAULT '#059669',
+    category VARCHAR(50) DEFAULT 'Umum',
+    order_index INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.literacy_tips ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Anyone can view active tips" ON public.literacy_tips;
+CREATE POLICY "Anyone can view active tips" 
+ON public.literacy_tips FOR SELECT 
+USING (is_active = true);
+
+DROP POLICY IF EXISTS "Admin full access for literacy_tips" ON public.literacy_tips;
+CREATE POLICY "Admin full access for literacy_tips" 
+ON public.literacy_tips FOR ALL 
+USING (true) WITH CHECK (true);
+
+-- Data Awal (Seed Data) Tips Literasi
+INSERT INTO public.literacy_tips (title, description, tip_number, icon_name, icon_bg_hex, icon_color_hex, order_index)
+VALUES 
+    (
+        'Periksa sumber informasi',
+        'Pastikan diterbitkan oleh portal berita resmi yang terverifikasi dan terdaftar di Dewan Pers.',
+        'Tips #1',
+        'fact_check',
+        '#D1FAE5',
+        '#059669',
+        1
+    ),
+    (
+        'Waspada judul',
+        'Jangan langsung percaya judul berita yang bombastis dan clickbait yang memicu emosi.',
+        'Tips #2',
+        'campaign',
+        '#FFE4E6',
+        '#E11D48',
+        2
+    ),
+    (
+        'Cek Tanggal & Konteks',
+        'Periksa tanggal rilis artikel untuk memastikan berita bukan daur ulang lama yang dipelintir.',
+        'Tips #3',
+        'date_range',
+        '#E0F2FE',
+        '#0284C7',
+        3
+    )
+ON CONFLICT DO NOTHING;
+
+
+-- ==============================================================================
+-- 7. TABEL: guide_principles & guide_contents (Panduan Literasi - Poin #2)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.guide_principles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    step_number VARCHAR(10) NOT NULL DEFAULT '1',
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    sub_points JSONB DEFAULT '[]'::jsonb,
+    order_index INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.guide_principles ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Anyone can view guide principles" ON public.guide_principles;
+CREATE POLICY "Anyone can view guide principles" 
+ON public.guide_principles FOR SELECT 
+USING (true);
+
+DROP POLICY IF EXISTS "Admin full access for guide_principles" ON public.guide_principles;
+CREATE POLICY "Admin full access for guide_principles" 
+ON public.guide_principles FOR ALL 
+USING (true) WITH CHECK (true);
+
+-- Seed Data Prinsip Panduan
+INSERT INTO public.guide_principles (step_number, title, description, sub_points, order_index)
+VALUES 
+    (
+        '1',
+        'Prinsip Uji Informasi (Check & Recheck)',
+        'Karya jurnalistik profesional dan komunikasi publik yang bertanggung jawab selalu memverifikasi kebenaran materi sebelum disebarkan kepada khalayak umum.',
+        '[
+            {"icon": "business", "text": "Menghubungi pihak berwenang atau narasumber primer secara langsung untuk konfirmasi keabsahan pernyataan."},
+            {"icon": "warning", "text": "Menghindari sensasionalisme atau konten provokatif tanpa menyertakan bukti material yang teruji."},
+            {"icon": "insights", "text": "Melakukan penelusuran ulang terhadap klaim statistik dan konteks waktu saat dokumen tersebut diterbitkan."}
+        ]'::jsonb,
+        1
+    ),
+    (
+        '2',
+        'Ciri Berita Memenuhi Standar Verifikasi',
+        'Saat membaca laporan berita atau tilikan informasi, cermati elemen akuntabilitas redaksional berikut:',
+        '[
+            {"icon": "person", "text": "Transparansi Penulis: Mencantumkan nama jurnalis dan susunan dewan redaksi yang jelas serta dapat ditelusuri rekam jejaknya."},
+            {"icon": "link", "text": "Rujukan Terbuka: Tautan atau lampiran dokumen resmi disertakan secara transparan dan bukan sekadar tangkapan layar terpotong."},
+            {"icon": "update", "text": "Pengakuan Keterbukaan: Secara jujur mengakui batasan informasi apabila konfirmasi dari pihak terkait masih berjalan."}
+        ]'::jsonb,
+        2
+    )
+ON CONFLICT DO NOTHING;
+
+CREATE TABLE IF NOT EXISTS public.guide_contents (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    quote_text TEXT NOT NULL,
+    checklist_title TEXT NOT NULL DEFAULT 'Hal yang Perlu Diperhatikan',
+    checklist_subtitle TEXT NOT NULL,
+    checklist_items JSONB DEFAULT '[]'::jsonb,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.guide_contents ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Anyone can view guide contents" ON public.guide_contents;
+CREATE POLICY "Anyone can view guide contents" 
+ON public.guide_contents FOR SELECT 
+USING (true);
+
+DROP POLICY IF EXISTS "Admin full access for guide_contents" ON public.guide_contents;
+CREATE POLICY "Admin full access for guide_contents" 
+ON public.guide_contents FOR ALL 
+USING (true) WITH CHECK (true);
+
+-- Seed Data Konten Checklist & Kutipan
+INSERT INTO public.guide_contents (quote_text, checklist_title, checklist_subtitle, checklist_items)
+VALUES (
+    'Berita yang kredibel dibangun atas fakta yang telah diuji ulang (cross-checked) ke sumber primer yang berwenang, bukan sekadar kutipan anonim atau rumor viral di lini masa.',
+    'Hal yang Perlu Diperhatikan',
+    'Gunakan daftar periksa klaim ini sebelum membagikan ulang kabar ke grup percakapan atau media sosial.',
+    '[
+        "Apakah berita mengutip sumber pertama yang kompeten dan kredibel?",
+        "Apakah ada bukti dokumen, rekaman utuh, atau data penunjang resmi?",
+        "Jika masih meragukan, uji teks klaim ke HoaxCheck sebelum disebarkan."
+    ]'::jsonb
+)
+ON CONFLICT DO NOTHING;
+
+
+-- ==============================================================================
+-- 8. TABEL: app_info (Tentang HoaxCheck, Visi, Cara Kerja - Poin #3)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.app_info (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    app_name VARCHAR(100) NOT NULL DEFAULT 'HoaxCheck',
+    tagline TEXT NOT NULL,
+    header_description TEXT NOT NULL,
+    about_description TEXT NOT NULL,
+    pills JSONB DEFAULT '["Deteksi < 3 Detik", "Fokus Bahasa Indonesia"]'::jsonb,
+    steps JSONB DEFAULT '[]'::jsonb,
+    disclaimer_text TEXT NOT NULL,
+    app_version VARCHAR(50) DEFAULT 'HoaxCheck v1.0.0',
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.app_info ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Anyone can view app info" ON public.app_info;
+CREATE POLICY "Anyone can view app info" 
+ON public.app_info FOR SELECT 
+USING (true);
+
+DROP POLICY IF EXISTS "Admin full access for app_info" ON public.app_info;
+CREATE POLICY "Admin full access for app_info" 
+ON public.app_info FOR ALL 
+USING (true) WITH CHECK (true);
+
+-- Seed Data Tentang HoaxCheck
+INSERT INTO public.app_info (app_name, tagline, header_description, about_description, pills, steps, disclaimer_text, app_version)
+VALUES (
+    'HoaxCheck',
+    'Bantu Kenali Informasi yang Meragukan',
+    'HoaxCheck adalah aplikasi yang membantu pengguna mendapatkan indikasi awal terhadap informasi yang berpotensi hoaks melalui analisis teks berbasis Machine Learning.',
+    'Dirancang khusus untuk ekosistem literasi digital nusantara, HoaxCheck memadai struktur semantik, nuansa provokatif, serta konsistensi sintaksis pesan viral guna memetakan kemungkinan misinformasi secara objektif dalam hitungan detik.',
+    '["Deteksi < 3 Detik", "Fokus Bahasa Indonesia"]'::jsonb,
+    '[
+        {
+            "number": "01",
+            "icon": "edit_note",
+            "title": "Masukkan Teks",
+            "description": "Masukkan atau tempel paragraf informasi, pesan berantai, atau kutipan berita yang ingin diperiksa."
+        },
+        {
+            "number": "02",
+            "icon": "psychology",
+            "title": "Analisis Linguistik AI",
+            "description": "Sistem menganalisis pola kalimat, sentimen ekstrim, dan karakteristik disinformasi menggunakan model Machine Learning terlatih."
+        },
+        {
+            "number": "03",
+            "icon": "fact_check",
+            "title": "Hasil & Skor Kepercayaan",
+            "description": "HoaxCheck menampilkan hasil indikasi beserta persentase confidence score secara lugas dan transparan."
+        }
+    ]'::jsonb,
+    'HoaxCheck merupakan alat bantu deteksi awal dan bukan alat fact-checking resmi lembaga pers. Hasil yang diberikan merupakan prediksi probabilistik model kecerdasan buatan dan tetap perlu diverifikasi ulang melalui portal berita bersertifikat Dewan Pers.',
+    'HoaxCheck v1.0.0'
+)
+ON CONFLICT DO NOTHING;
+

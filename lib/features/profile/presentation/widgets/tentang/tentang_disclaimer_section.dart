@@ -2,11 +2,21 @@ import 'package:flutter/material.dart';
 import '../../../../../app/theme.dart';
 
 class TentangDisclaimerSection extends StatelessWidget {
-  const TentangDisclaimerSection({super.key});
+  final String? disclaimerText;
+  final String? appVersion;
+
+  const TentangDisclaimerSection({
+    super.key,
+    this.disclaimerText,
+    this.appVersion,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final defaultDisclaimer =
+        "HoaxCheck merupakan alat bantu deteksi awal dan bukan alat fact-checking resmi lembaga pers. Hasil yang diberikan merupakan prediksi probabilistik model kecerdasan buatan dan tetap perlu diverifikasi ulang melalui portal berita bersertifikat Dewan Pers.";
 
     return Column(
       children: [
@@ -53,7 +63,7 @@ class TentangDisclaimerSection extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                "HoaxCheck merupakan alat bantu deteksi awal dan bukan alat fact-checking resmi lembaga pers. Hasil yang diberikan merupakan prediksi probabilistik model kecerdasan buatan dan tetap perlu diverifikasi ulang melalui portal berita bersertifikat Dewan Pers.",
+                disclaimerText ?? defaultDisclaimer,
                 style: TextStyle(
                   color: isDark ? Colors.white70 : const Color(0xFF1E40AF),
                   fontSize: 11.5,
@@ -63,11 +73,11 @@ class TentangDisclaimerSection extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
 
-        // Footer
+        // Versi & Lisensi
         Text(
-          "HoaxCheck v1.0.0 (Build 2026.1)",
+          appVersion ?? "HoaxCheck v1.0.0",
           style: TextStyle(
             color: isDark ? AppDarkColors.textSecondary : AppColors.neutral,
             fontSize: 11,
@@ -76,27 +86,11 @@ class TentangDisclaimerSection extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          "Dibuat untuk Literasi Digital Indonesia",
+          "Pengembangan Sistem PBL 2026",
           style: TextStyle(
-            color: isDark ? AppDarkColors.textSecondary : AppColors.neutral,
+            color: isDark ? AppDarkColors.textSecondary : const Color(0xFF94A3B8),
             fontSize: 10,
           ),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.favorite, size: 11, color: Color(0xFFEF4444)),
-            const SizedBox(width: 6),
-            Text(
-              "Bersama Jaga Ruang Siber Bersih",
-              style: TextStyle(
-                color: isDark ? AppDarkColors.textSecondary : AppColors.neutral,
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
         ),
       ],
     );
