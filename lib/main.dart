@@ -12,6 +12,7 @@ void main() async {
     try {
       await Supabase.initialize(
         url: SupabaseConfig.url,
+        // ignore: deprecated_member_use
         anonKey: SupabaseConfig.anonKey,
       );
       debugPrint('✓ Supabase berhasil terhubung!');
