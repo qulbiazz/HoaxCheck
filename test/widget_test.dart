@@ -9,8 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hoaxcheck_app/app/app.dart';
 
-// import 'package:hoaxcheck_app/main.dart';
-
 void main() {
   testWidgets('HomePage displays correct title', (WidgetTester tester) async {
     // Build our app and trigger a frame.
@@ -27,5 +25,5 @@ void main() {
     // Verify that our counter has incremented.
     expect(find.text('0'), findsNothing);
     expect(find.text('1'), findsOneWidget);
-  });
+  }); // testWidgets('HomePage displays correct title')
 }

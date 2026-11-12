@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:hoaxcheck_app/app/app.dart';
 import '../../../../app/theme.dart';
@@ -24,7 +25,7 @@ class ProfilePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Profile", 
+                      "Profile",
                       style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 20)
                     ),
                     Row(
@@ -40,26 +41,26 @@ class ProfilePage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 20),
-                
+
                 const ProfileInfoCard(),
                 const SizedBox(height: 24),
-                
+
                 const ProfileStatsCard(),
                 const SizedBox(height: 28),
-                
+
                 const Text("PREFERENSI", style: TextStyle(color: AppColors.neutral, fontSize: 11, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface, 
-                    borderRadius: BorderRadius.circular(16), 
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
                     boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]
                   ),
                   child: ValueListenableBuilder<ThemeMode>(
                     valueListenable: themeNotifier,
                     builder: (context, currentMode, child) {
                       final isDarkMode = currentMode == ThemeMode.dark;
-                      
+
                       return ProfileMenuItem(
                         icon: Icons.dark_mode_outlined,
                         title: "Mode Gelap",
@@ -67,12 +68,16 @@ class ProfilePage extends StatelessWidget {
                         trailing: Switch(
                           value: isDarkMode,
                           onChanged: (value) {
-                            themeNotifier.value = value ? ThemeMode.dark : ThemeMode.light;
+                            updateThemeMode(
+                              value ? ThemeMode.dark : ThemeMode.light,
+                            );
                           },
                           activeColor: AppColors.primary,
                         ),
                         onTap: () {
-                          themeNotifier.value = isDarkMode ? ThemeMode.light : ThemeMode.dark;
+                          updateThemeMode(
+                            isDarkMode ? ThemeMode.light : ThemeMode.dark,
+                          );
                         },
                       );
                     },
@@ -84,8 +89,8 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 12),
                 Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface, 
-                    borderRadius: BorderRadius.circular(16), 
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
                     boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]
                   ),
                   child: Column(
@@ -102,8 +107,8 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 12),
                 Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface, 
-                    borderRadius: BorderRadius.circular(16), 
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
                     boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]
                   ),
                   child: ProfileMenuItem(icon: Icons.flag_outlined, title: "Laporkan Masalah", onTap: () {}),
@@ -126,9 +131,9 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 const Center(child: Text("HoaxCheck v1.0.0", style: TextStyle(color: AppColors.neutral, fontSize: 10, fontWeight: FontWeight.bold))),
-                const SizedBox(height: 100), 
+                const SizedBox(height: 100),
               ],
             ),
           ),

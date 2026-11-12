@@ -18,7 +18,7 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Widget> _pages = [
     const HomePage(),
     const DetectionPage(),
-    const Center(child: Text('Halaman Riwayat')), // Gunakan HistoryPage() jika sudah siap
+    const HistoryPage(),
     const ProfilePage(),
   ];
 
