@@ -43,3 +43,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Supabase Local Credentials (Private)
+lib/core/config/supabase_config.dart
+
+# Document Planning (Local)
+*.xlsx
+Dokumen Perencanaan - HoaxCheck.xlsx

@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-import '../../onboarding/pages/onboarding_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../app/theme.dart';
+import '../../../../core/services/storage_service.dart';
+import '../../../../navigation/main_navigation.dart';
+import '../../auth/presentation/pages/login_page.dart';
+import '../../onboarding/presentation/pages/onboarding_page.dart';
+import '../widgets/splash_logo.dart';
+import '../widgets/splash_loading.dart';
+import '../widgets/splash_footer.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -9,243 +16,183 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _progressAnimation;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const OnboardingPage()),
-      );
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2600),
+    );
+
+    _progressAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.2, 0.9, curve: Curves.easeInOut),
+      ),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
+      ),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.4, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    _controller.forward();
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _navigateToNextScreen();
+      }
     });
+  }
+
+  Future<void> _navigateToNextScreen() async {
+    if (!mounted) return;
+
+    try {
+      final currentSession = Supabase.instance.client.auth.currentSession;
+      final hasEverLoggedIn = await StorageService.hasLoggedIn();
+      final hasSeenOnboarding = await StorageService.hasSeenOnboarding();
+
+      if (!mounted) return;
+
+      // 1. Jika masih memiliki sesi login aktif -> langsung ke halaman utama
+      if (currentSession != null) {
+        await StorageService.setHasLoggedIn(true);
+        if (!mounted) return;
+        _navigateWithFade(const MainNavigation());
+        return;
+      }
+
+      // 2. Jika user sudah pernah login sebelumnya (atau menyelesaikan onboarding) -> langsung ke Login Page
+      if (hasEverLoggedIn || hasSeenOnboarding) {
+        if (!mounted) return;
+        _navigateWithFade(const LoginPage());
+        return;
+      }
+    } catch (e) {
+      debugPrint('Routing error pada SplashPage: $e');
+    }
+
+    // 3. Pengguna baru (belum pernah login/onboarding) -> tampilkan Onboarding
+    if (!mounted) return;
+    _navigateWithFade(const OnboardingPage());
+  }
+
+  void _navigateWithFade(Widget destination) {
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => destination,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 600),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = isDark ? AppDarkColors.primary : const Color(0xFF006B4D);
+    final backgroundColor = isDark ? AppDarkColors.neutral : const Color(0xFFFAFCFB);
+
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          constraints: const BoxConstraints.expand(),
-          color: const Color(0xFFFFFFFF),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Container(
-                  color: const Color(0xFFF9F9FF),
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.only(bottom: 48, left: 17, right: 17),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 290, left: 19, right: 19),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.only(top: 37),
-                                            margin: const EdgeInsets.only(bottom: 2),
-                                            width: double.infinity,
-                                            child: Column(
-                                              children: [
-                                                InkWell(
-                                                  onTap: () {},
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(12),
-                                                      color: const Color(0xFF00694C),
-                                                    ),
-                                                    padding: const EdgeInsets.all(18),
-                                                    margin: const EdgeInsets.only(bottom: 15),
-                                                    child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        SizedBox(
-                                                          width: 32,
-                                                          height: 36,
-                                                          child: Image.network(
-                                                            "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/ysr4wGraxe/nysq57ef_expires_30_days.png",
-                                                            fit: BoxFit.fill,
-                                                            errorBuilder: (_, __, ___) => const Icon(
-                                                              Icons.fact_check_rounded,
-                                                              color: Colors.white,
-                                                              size: 32,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  margin: const EdgeInsets.only(bottom: 32, left: 40, right: 40),
-                                                  width: double.infinity,
-                                                  child: Column(
-                                                    children: [
-                                                      Container(
-                                                        margin: const EdgeInsets.only(bottom: 4),
-                                                        child: const Text(
-                                                          "HoaxCheck",
-                                                          style: TextStyle(
-                                                            color: Color(0xFF151C27),
-                                                            fontSize: 28,
-                                                            fontWeight: FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 183,
-                                                        child: Text(
-                                                          "Bantu Kenali Informasi yang\nMeragukan",
-                                                          style: TextStyle(
-                                                            color: Color(0xFF3D4A43),
-                                                            fontSize: 14,
-                                                          ),
-                                                          textAlign: TextAlign.center,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                  children: [
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(9999),
-                                                        color: const Color(0xFFE7EEFE),
-                                                      ),
-                                                      width: 200,
-                                                      height: 4,
-                                                      alignment: Alignment.centerLeft,
-                                                      child: Container(
-                                                        decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(9999),
-                                                          color: const Color(0xFF00694C),
-                                                        ),
-                                                        width: 136,
-                                                        height: 4,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Container(
-                                                          decoration: BoxDecoration(
-                                                            borderRadius: BorderRadius.circular(9999),
-                                                            color: const Color(0xFF00694C),
-                                                          ),
-                                                          margin: const EdgeInsets.only(right: 4),
-                                                          width: 6,
-                                                          height: 6,
-                                                        ),
-                                                        const Text(
-                                                          "Sinkronisasi basis data fakta...",
-                                                          style: TextStyle(
-                                                            color: Color(0xFF3D4A43),
-                                                            fontSize: 11,
-                                                            fontWeight: FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(9999),
-                                              color: const Color(0x99E7EEFE),
-                                            ),
-                                            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 23),
-                                            margin: const EdgeInsets.symmetric(horizontal: 32),
-                                            width: double.infinity,
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(9999),
-                                                    color: const Color(0xFFF0F3FF),
-                                                    boxShadow: const [
-                                                      BoxShadow(
-                                                        color: Color(0x0D000000),
-                                                        blurRadius: 2,
-                                                        offset: Offset(0, 1),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                                                  margin: const EdgeInsets.only(bottom: 4),
-                                                  width: double.infinity,
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: const [
-                                                      Icon(
-                                                        Icons.verified_user_outlined,
-                                                        size: 14,
-                                                        color: Color(0xFF00694C),
-                                                      ),
-                                                      SizedBox(width: 6),
-                                                      Text(
-                                                        "Didukung NLP & Verifikasi Publik",
-                                                        style: TextStyle(
-                                                          color: Color(0xFF3D4A43),
-                                                          fontSize: 11,
-                                                          fontWeight: FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                const Text(
-                                                  "Versi 1.0.0",
-                                                  style: TextStyle(
-                                                    color: Color(0xFF6D7A73),
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+      backgroundColor: backgroundColor,
+      body: Stack(
+        children: [
+          // Background Gradient Glow at the Top
+          Positioned(
+            top: -80,
+            left: 0,
+            right: 0,
+            height: 380,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.topCenter,
+                  radius: 1.2,
+                  colors: isDark
+                      ? [
+                          primaryColor.withValues(alpha: 0.25),
+                          backgroundColor.withValues(alpha: 0.0),
+                        ]
+                      : [
+                          const Color(0xFFD8F3EA),
+                          const Color(0xFFEEF9F5),
+                          backgroundColor.withValues(alpha: 0.0),
+                        ],
+                  stops: const [0.0, 0.5, 1.0],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+
+          // Main Content Centered
+          SafeArea(
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _fadeAnimation.value,
+                  child: Transform.scale(
+                    scale: _scaleAnimation.value,
+                    child: child,
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  children: [
+                    const Spacer(flex: 4),
+                    SplashLogo(
+                      isDark: isDark,
+                      primaryColor: primaryColor,
+                    ),
+                    const SizedBox(height: 48),
+                    SplashLoading(
+                      progressAnimation: _progressAnimation,
+                      isDark: isDark,
+                      primaryColor: primaryColor,
+                    ),
+                    const SizedBox(height: 28),
+                    SplashFooter(
+                      isDark: isDark,
+                      primaryColor: primaryColor,
+                    ),
+                    const Spacer(flex: 3),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
-
-// Backward compatibility alias
-typedef Splashscreen = SplashPage;

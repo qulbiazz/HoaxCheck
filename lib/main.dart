@@ -1,11 +1,28 @@
 
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/app.dart';
+import 'core/config/supabase_config.dart';
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await loadThemePreference();
+  // Inisialisasi Supabase otomatis saat kredensial sudah kamu isi
+  if (SupabaseConfig.url != 'MASUKKAN_SUPABASE_URL_DI_SINI' &&
+      SupabaseConfig.anonKey != 'MASUKKAN_ANON_KEY_DI_SINI') {
+    try {
+      await Supabase.initialize(
+        url: SupabaseConfig.url,
+        // ignore: deprecated_member_use
+        anonKey: SupabaseConfig.anonKey,
+      );
+      debugPrint('✓ Supabase berhasil terhubung!');
+    } catch (e) {
+      debugPrint('Gagal inisialisasi Supabase: $e');
+    }
+  }
 
-  runApp(const HoaxCheckApp());
+  final tab = int.tryParse(Uri.base.queryParameters['tab'] ?? '0') ?? 0;
+  final page = Uri.base.queryParameters['page'];
+  runApp(HoaxCheckApp(initialIndex: tab, initialPage: page));
 }

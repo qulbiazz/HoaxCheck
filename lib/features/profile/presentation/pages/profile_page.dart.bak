@@ -1,0 +1,186 @@
+import 'package:flutter/material.dart';
+import 'package:hoaxcheck_app/app/app.dart';
+import '../../../../../app/theme.dart';
+import '../../../../app/app_header.dart';
+import '../../../../core/usecases/usecase.dart';
+import '../../../auth/data/repositories/auth_repository_impl.dart';
+import '../../../auth/domain/usecases/sign_out_usecase.dart';
+import '../../../auth/presentation/pages/login_page.dart';
+import 'tentang_hoaxcheck_page.dart';
+import 'kebijakan_privasi_page.dart';
+import 'laporkan_masalah_page.dart';
+
+import '../widgets/profile_info_card.dart';
+import '../widgets/profile_stats_card.dart';
+import '../widgets/profile_menu_item.dart';
+
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppHeader(title: "Profile"),
+                const SizedBox(height: 20),
+                const ProfileInfoCard(),
+                const SizedBox(height: 24),
+                const ProfileStatsCard(),
+                const SizedBox(height: 28),
+                const Text("PREFERENSI", style: TextStyle(color: AppColors.neutral, fontSize: 11, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface, 
+                    borderRadius: BorderRadius.circular(16), 
+                    boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]
+                  ),
+                  child: ValueListenableBuilder<ThemeMode>(
+                    valueListenable: themeNotifier,
+                    builder: (context, currentMode, child) {
+                      final isDarkMode = currentMode == ThemeMode.dark;
+                      
+                      return ProfileMenuItem(
+                        icon: Icons.dark_mode_outlined,
+                        title: "Mode Gelap",
+                        subtitle: "Tampilan redup untuk mata",
+                        trailing: Switch(
+                          value: isDarkMode,
+                          onChanged: (value) {
+                            themeNotifier.value = value ? ThemeMode.dark : ThemeMode.light;
+                          },
+                          activeColor: AppColors.primary,
+                        ),
+                        onTap: () {
+                          themeNotifier.value = isDarkMode ? ThemeMode.light : ThemeMode.dark;
+                        },
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text("TENTANG APLIKASI", style: TextStyle(color: AppColors.neutral, fontSize: 11, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface, 
+                    borderRadius: BorderRadius.circular(16), 
+                    boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]
+                  ),
+                  child: Column(
+                    children: [
+                      ProfileMenuItem(
+                        icon: Icons.info_outline,
+                        title: "Tentang HoaxCheck",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const TentangHoaxCheckPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      const Divider(height: 1, color: Color(0xFFF3F4F6), indent: 64),
+                      ProfileMenuItem(
+                        icon: Icons.lock_outline,
+                        title: "Kebijakan Privasi",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const KebijakanPrivasiPage(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text("BANTUAN", style: TextStyle(color: AppColors.neutral, fontSize: 11, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface, 
+                    borderRadius: BorderRadius.circular(16), 
+                    boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))]
+                  ),
+                  child: ProfileMenuItem(
+                    icon: Icons.flag_outlined,
+                    title: "Laporkan Masalah",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LaporkanMasalahPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 32),
+                 SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () => _handleSignOut(context),
+                    icon: const Icon(Icons.logout, size: 18, color: AppColors.danger),
+                    label: const Text("Keluar Akun", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.danger.withOpacity(0.08),
+                      foregroundColor: AppColors.danger,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Center(child: Text("HoaxCheck v1.0.0", style: TextStyle(color: AppColors.neutral, fontSize: 10, fontWeight: FontWeight.bold))),
+                const SizedBox(height: 100), 
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleSignOut(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Keluar Akun'),
+        content: const Text('Apakah Anda yakin ingin keluar dari akun ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Keluar', style: TextStyle(color: AppColors.danger)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await SignOutUseCase(AuthRepositoryImpl())(const NoParams());
+      } catch (_) {}
+      if (context.mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginPage()),
+          (route) => false,
+        );
+      }
+    }
+  }
+}
