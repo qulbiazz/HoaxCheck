@@ -55,7 +55,7 @@ class ProfilePage extends StatelessWidget {
                           onChanged: (value) {
                             themeNotifier.value = value ? ThemeMode.dark : ThemeMode.light;
                           },
-                          activeThumbColor: AppColors.primary,
+                          activeColor: AppColors.primary,
                         ),
                         onTap: () {
                           themeNotifier.value = isDarkMode ? ThemeMode.light : ThemeMode.dark;
