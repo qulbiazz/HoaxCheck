@@ -203,7 +203,35 @@ USING (bucket_id = 'avatars');
 
 
 -- ==============================================================================
--- 6. TABEL: literacy_tips (Tips Literasi di Beranda - Poin #1)
+-- 6. TABEL: app_policies (Kebijakan Privasi & Syarat Ketentuan)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.app_policies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    type VARCHAR(50) NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.app_policies ENABLE ROW LEVEL SECURITY;
+
+-- Semua orang (termasuk yang belum login) boleh membaca kebijakan
+DROP POLICY IF EXISTS "Anyone can read app policies" ON public.app_policies;
+CREATE POLICY "Anyone can read app policies" 
+ON public.app_policies
+FOR SELECT 
+USING (true);
+
+-- Hanya sistem/admin yang bisa insert/update (opsional, buat jaga-jaga)
+DROP POLICY IF EXISTS "Authenticated users can manage app policies" ON public.app_policies;
+CREATE POLICY "Authenticated users can manage app policies" 
+ON public.app_policies
+FOR ALL 
+TO authenticated 
+USING (true);
+
+-- ==============================================================================
+-- 7. TABEL: literacy_tips (Tips Literasi di Beranda - Poin #1)
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.literacy_tips (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -225,6 +253,11 @@ DROP POLICY IF EXISTS "Anyone can view active tips" ON public.literacy_tips;
 CREATE POLICY "Anyone can view active tips" 
 ON public.literacy_tips FOR SELECT 
 USING (is_active = true);
+
+DROP POLICY IF EXISTS "Admin full access for literacy_tips" ON public.literacy_tips;
+CREATE POLICY "Admin full access for literacy_tips" 
+ON public.literacy_tips FOR ALL 
+USING (true) WITH CHECK (true);
 
 -- Data Awal (Seed Data) Tips Literasi
 INSERT INTO public.literacy_tips (title, description, tip_number, icon_name, icon_bg_hex, icon_color_hex, order_index)
@@ -260,7 +293,7 @@ ON CONFLICT DO NOTHING;
 
 
 -- ==============================================================================
--- 7. TABEL: guide_principles & guide_contents (Panduan Literasi - Poin #2)
+-- 8. TABEL: guide_principles & guide_contents (Panduan Literasi - Poin #2)
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.guide_principles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -278,6 +311,11 @@ DROP POLICY IF EXISTS "Anyone can view guide principles" ON public.guide_princip
 CREATE POLICY "Anyone can view guide principles" 
 ON public.guide_principles FOR SELECT 
 USING (true);
+
+DROP POLICY IF EXISTS "Admin full access for guide_principles" ON public.guide_principles;
+CREATE POLICY "Admin full access for guide_principles" 
+ON public.guide_principles FOR ALL 
+USING (true) WITH CHECK (true);
 
 -- Seed Data Prinsip Panduan
 INSERT INTO public.guide_principles (step_number, title, description, sub_points, order_index)
@@ -322,6 +360,11 @@ CREATE POLICY "Anyone can view guide contents"
 ON public.guide_contents FOR SELECT 
 USING (true);
 
+DROP POLICY IF EXISTS "Admin full access for guide_contents" ON public.guide_contents;
+CREATE POLICY "Admin full access for guide_contents" 
+ON public.guide_contents FOR ALL 
+USING (true) WITH CHECK (true);
+
 -- Seed Data Konten Checklist & Kutipan
 INSERT INTO public.guide_contents (quote_text, checklist_title, checklist_subtitle, checklist_items)
 VALUES (
@@ -338,7 +381,7 @@ ON CONFLICT DO NOTHING;
 
 
 -- ==============================================================================
--- 8. TABEL: app_info (Tentang HoaxCheck, Visi, Cara Kerja - Poin #3)
+-- 9. TABEL: app_info (Tentang HoaxCheck, Visi, Cara Kerja - Poin #3)
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.app_info (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -359,6 +402,11 @@ DROP POLICY IF EXISTS "Anyone can view app info" ON public.app_info;
 CREATE POLICY "Anyone can view app info" 
 ON public.app_info FOR SELECT 
 USING (true);
+
+DROP POLICY IF EXISTS "Admin full access for app_info" ON public.app_info;
+CREATE POLICY "Admin full access for app_info" 
+ON public.app_info FOR ALL 
+USING (true) WITH CHECK (true);
 
 -- Seed Data Tentang HoaxCheck
 INSERT INTO public.app_info (app_name, tagline, header_description, about_description, pills, steps, disclaimer_text, app_version)
