@@ -46,6 +46,7 @@ class SplashLoading extends StatelessWidget {
         const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 6,
@@ -56,12 +57,17 @@ class SplashLoading extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Text(
-              'Sinkronisasi basis data fakta...',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: isDark ? AppDarkColors.textSecondary : const Color(0xFF334155),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  'Sinkronisasi basis data fakta...',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? AppDarkColors.textSecondary : const Color(0xFF334155),
+                  ),
+                ),
               ),
             ),
           ],

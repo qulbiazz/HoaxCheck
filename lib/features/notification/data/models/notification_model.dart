@@ -127,6 +127,8 @@ class NotificationModel {
       return Icons.mark_chat_read_outlined;
     } else if (lowerTag.contains('literasi') || lowerTag.contains('tips') || lowerTag.contains('edukasi')) {
       return Icons.lightbulb_outline;
+    } else if (lowerTag.contains('update') || lowerTag.contains('sistem') || lowerTag.contains('model')) {
+      return Icons.auto_awesome_rounded;
     }
     return Icons.notifications_outlined;
   }
@@ -141,6 +143,8 @@ class NotificationModel {
       return const Color(0xFF2563EB);
     } else if (lowerTag.contains('literasi') || lowerTag.contains('tips') || lowerTag.contains('edukasi')) {
       return const Color(0xFFD97706);
+    } else if (lowerTag.contains('update') || lowerTag.contains('sistem') || lowerTag.contains('model')) {
+      return const Color(0xFF7C3AED);
     }
     return const Color(0xFF475569);
   }
@@ -155,6 +159,8 @@ class NotificationModel {
       return const Color(0xFFDBEAFE);
     } else if (lowerTag.contains('literasi') || lowerTag.contains('tips') || lowerTag.contains('edukasi')) {
       return const Color(0xFFFEF3C7);
+    } else if (lowerTag.contains('update') || lowerTag.contains('sistem') || lowerTag.contains('model')) {
+      return const Color(0xFFEDE9FE);
     }
     return const Color(0xFFF1F5F9);
   }

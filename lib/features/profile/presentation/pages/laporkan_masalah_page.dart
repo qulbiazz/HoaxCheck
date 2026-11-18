@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/services/notification_service.dart';
 import '../widgets/laporkan/laporkan_dukungan_card.dart';
 import '../widgets/laporkan/laporkan_footer.dart';
 import '../widgets/laporkan/laporkan_form.dart';
@@ -137,6 +138,35 @@ class _LaporkanMasalahPageState extends State<LaporkanMasalahPage> {
     Navigator.of(context).pop(); // close loading
 
     if (success) {
+      // Catat juga ke tabel notifications untuk tanggapan tim (Poin #3)
+      try {
+        final user = Supabase.instance.client.auth.currentUser;
+        await Supabase.instance.client.from('notifications').insert({
+          if (user != null) 'user_id': user.id,
+          'title': 'Laporan Masalah Terkirim',
+          'description':
+              'Laporan kendala "$kategori" telah kami terima dan sedang ditinjau tim pengembang.',
+          'time_label': 'Baru saja',
+          'tag_label': 'Tanggapan Tim',
+          'is_unread': true,
+        });
+      } catch (notifErr) {
+        debugPrint('Catatan insert notification masalah: $notifErr');
+      }
+
+      // Tampilkan notifikasi di status bar HP
+      try {
+        await NotificationService.instance.showSupportNotification(
+          title: 'Laporan Masalah Terkirim',
+          body:
+              'Terima kasih! Kendala "$kategori" berhasil dikirim dan sedang ditinjau tim HoaxCheck.',
+        );
+      } catch (e) {
+        debugPrint('Catatan pemicu notifikasi HP: $e');
+      }
+
+      if (!mounted) return;
+
       // Reset form
       setState(() {
         _selectedKategori = null;

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/config/ml_config.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../domain/entities/detection_entity.dart';
 
 abstract class DetectionRemoteDataSource {
@@ -227,6 +228,27 @@ class DetectionRemoteDataSourceImpl implements DetectionRemoteDataSource {
 
   @override
   Future<void> saveDetection(DetectionEntity entity) async {
+    final title = entity.text.length > 50
+        ? '${entity.text.substring(0, 50)}...'
+        : entity.text;
+    final notifTitle = entity.isHoax
+        ? 'Hasil Analisis: Terindikasi Hoaks'
+        : 'Hasil Analisis: Informasi Valid';
+    final confidencePercent = '${(entity.confidenceScore * 100).toInt()}%';
+    final notifDesc =
+        'Pemeriksaan teks "$title" selesai: ${entity.status} ($confidencePercent).';
+
+    // Munculkan notifikasi status bar di HP pengguna
+    try {
+      await NotificationService.instance.showDetectionNotification(
+        title: notifTitle,
+        body: notifDesc,
+        payload: entity.analysisId,
+      );
+    } catch (e) {
+      debugPrint('Catatan pemicu notifikasi HP: $e');
+    }
+
     final client = supabaseClient;
     if (client == null) return;
 
@@ -242,9 +264,6 @@ class DetectionRemoteDataSourceImpl implements DetectionRemoteDataSource {
     _lastSavedTime = DateTime.now();
 
     final user = client.auth.currentUser;
-    final title = entity.text.length > 50
-        ? '${entity.text.substring(0, 50)}...'
-        : entity.text;
 
     final payloadWithUser = {
       if (user != null) 'user_id': user.id,
@@ -272,13 +291,6 @@ class DetectionRemoteDataSourceImpl implements DetectionRemoteDataSource {
 
     // Otomatis catat ke tabel notifications untuk Verifikasi Teks (Poin #2)
     try {
-      final notifTitle = entity.isHoax
-          ? 'Hasil Analisis: Terindikasi Hoaks'
-          : 'Hasil Analisis: Informasi Valid';
-      final confidencePercent = '${(entity.confidenceScore * 100).toInt()}%';
-      final notifDesc =
-          'Pemeriksaan teks "$title" selesai: ${entity.status} ($confidencePercent).';
-
       await client.from('notifications').insert({
         if (user != null) 'user_id': user.id,
         'title': notifTitle,

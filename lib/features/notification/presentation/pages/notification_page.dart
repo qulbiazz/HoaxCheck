@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../data/models/notification_model.dart';
 import '../../data/repositories/notification_repository_impl.dart';
 import '../widgets/notification_summary_card.dart';
@@ -239,6 +240,129 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
         ),
         actions: [
+          PopupMenuButton<String>(
+            icon: Icon(
+              Icons.notifications_active_outlined,
+              color: isDark ? Colors.white70 : AppColors.inverted,
+              size: 20,
+            ),
+            tooltip: "Uji Notifikasi HP",
+            onSelected: (value) async {
+              if (value == 'detection') {
+                await NotificationService.instance.showDetectionNotification(
+                  title: 'Hasil Analisis: Terindikasi Hoaks',
+                  body:
+                      'Pemeriksaan teks berita bansos selesai: Terindikasi Hoaks (Akurasi 88%).',
+                );
+              } else if (value == 'alert') {
+                await NotificationService.instance.showAlertNotification(
+                  title: '⚠️ Waspada Hoaks Bansos Beredar',
+                  body:
+                      'Beredar pesan berantai manipulatif tentang bansos. Pastikan cek keabsahan sumber.',
+                );
+              } else if (value == 'support') {
+                await NotificationService.instance.showSupportNotification(
+                  title: 'Laporan Masalah Ditanggapi',
+                  body:
+                      'Terima kasih! Kendala yang kamu laporkan telah ditinjau dan diselesaikan.',
+                );
+              } else if (value == 'tips') {
+                await NotificationService.instance.showTipsNotification(
+                  title: 'Tips Cek Fakta: Waspadai Judul Sensasional',
+                  body:
+                      'Berita hoaks sering memakai kata mendesak dan sensasional. Selalu verifikasi ke sumber resmi!',
+                );
+              } else if (value == 'system') {
+                await NotificationService.instance.showSystemUpdateNotification(
+                  title: 'Model AI HoaxCheck Diperbarui',
+                  body:
+                      'Model NLP Naive Bayes diperbarui dengan kosakata hoaks terkini untuk akurasi lebih tajam.',
+                );
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'detection',
+                child: Row(
+                  children: [
+                    Icon(Icons.verified_outlined,
+                        color: Color(0xFF059669), size: 18),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Uji Notif Deteksi',
+                        style: TextStyle(fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'alert',
+                child: Row(
+                  children: [
+                    Icon(Icons.warning_amber_rounded,
+                        color: Color(0xFFDC2626), size: 18),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Uji Notif Hoaks Viral',
+                        style: TextStyle(fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'support',
+                child: Row(
+                  children: [
+                    Icon(Icons.mark_chat_read_outlined,
+                        color: Color(0xFF2563EB), size: 18),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Uji Notif Tanggapan Tim',
+                        style: TextStyle(fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'tips',
+                child: Row(
+                  children: [
+                    Icon(Icons.lightbulb_outline,
+                        color: Color(0xFFD97706), size: 18),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Uji Tips Literasi',
+                        style: TextStyle(fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'system',
+                child: Row(
+                  children: [
+                    Icon(Icons.auto_awesome_rounded,
+                        color: Color(0xFF7C3AED), size: 18),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Uji Update Model AI',
+                        style: TextStyle(fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
           IconButton(
             icon: Icon(
               Icons.refresh_rounded,

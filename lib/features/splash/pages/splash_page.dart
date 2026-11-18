@@ -165,29 +165,43 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                   ),
                 );
               },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  children: [
-                    const Spacer(flex: 4),
-                    SplashLogo(
-                      isDark: isDark,
-                      primaryColor: primaryColor,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: IntrinsicHeight(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: Column(
+                            children: [
+                              const Spacer(flex: 4),
+                              SplashLogo(
+                                isDark: isDark,
+                                primaryColor: primaryColor,
+                              ),
+                              const SizedBox(height: 48),
+                              SplashLoading(
+                                progressAnimation: _progressAnimation,
+                                isDark: isDark,
+                                primaryColor: primaryColor,
+                              ),
+                              const SizedBox(height: 28),
+                              SplashFooter(
+                                isDark: isDark,
+                                primaryColor: primaryColor,
+                              ),
+                              const Spacer(flex: 3),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 48),
-                    SplashLoading(
-                      progressAnimation: _progressAnimation,
-                      isDark: isDark,
-                      primaryColor: primaryColor,
-                    ),
-                    const SizedBox(height: 28),
-                    SplashFooter(
-                      isDark: isDark,
-                      primaryColor: primaryColor,
-                    ),
-                    const Spacer(flex: 3),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ),

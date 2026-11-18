@@ -5,10 +5,11 @@ import '../features/history/presentation/pages/history_detail_page.dart';
 import '../features/detection/presentation/pages/analysis_detail_page.dart';
 import '../features/splash/pages/splash_page.dart';
 import 'theme.dart';
-import '../features/splash/pages/splash_page.dart';
 
 final ValueNotifier<ThemeMode> themeNotifier =
     ValueNotifier(ThemeMode.light);
+
+final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 
 class HoaxCheckApp extends StatelessWidget {
   final int initialIndex;
@@ -36,6 +37,7 @@ class HoaxCheckApp extends StatelessWidget {
         }
 
         return MaterialApp(
+          navigatorKey: appNavigatorKey,
           debugShowCheckedModeBanner: false,
           title: 'HoaxCheck',
           theme: AppTheme.lightTheme,

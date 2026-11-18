@@ -95,6 +95,34 @@ void main() {
       final model = NotificationModel.fromJson(json);
       expect(model.icon, Icons.mark_chat_read_outlined);
     });
+
+    test('parsing tag Literasi Digital menghasilkan ikon tips/bohlam', () {
+      final json = {
+        'id': 'notif-4',
+        'title': 'Tips Cek Fakta',
+        'description': 'Waspadai judul sensasional.',
+        'tag_label': 'Literasi Digital',
+        'is_unread': true,
+      };
+
+      final model = NotificationModel.fromJson(json);
+      expect(model.icon, Icons.lightbulb_outline);
+      expect(model.iconColor, const Color(0xFFD97706));
+    });
+
+    test('parsing tag Update Sistem menghasilkan ikon auto awesome / AI', () {
+      final json = {
+        'id': 'notif-5',
+        'title': 'Model AI Diperbarui',
+        'description': 'Model Naive Bayes diperbarui.',
+        'tag_label': 'Update Sistem',
+        'is_unread': true,
+      };
+
+      final model = NotificationModel.fromJson(json);
+      expect(model.icon, Icons.auto_awesome_rounded);
+      expect(model.iconColor, const Color(0xFF7C3AED));
+    });
   });
 
   group('NotificationPage Widget Tests', () {
@@ -147,6 +175,31 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Belum Ada Pemberitahuan'), findsOneWidget);
+    });
+
+    testWidgets('menampilkan popup menu uji coba notifikasi HP dan opsi-opsinya', (tester) async {
+      final fakeRepo = FakeNotificationRepository([]);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: NotificationPage(repository: fakeRepo),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Tap icon uji notifikasi
+      final ujiIcon = find.byIcon(Icons.notifications_active_outlined);
+      expect(ujiIcon, findsOneWidget);
+
+      await tester.tap(ujiIcon);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Uji Notif Deteksi'), findsOneWidget);
+      expect(find.text('Uji Notif Hoaks Viral'), findsOneWidget);
+      expect(find.text('Uji Notif Tanggapan Tim'), findsOneWidget);
+      expect(find.text('Uji Tips Literasi'), findsOneWidget);
+      expect(find.text('Uji Update Model AI'), findsOneWidget);
     });
   });
 }

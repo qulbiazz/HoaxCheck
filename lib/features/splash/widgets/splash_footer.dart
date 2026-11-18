@@ -35,12 +35,17 @@ class SplashFooter extends StatelessWidget {
                 color: primaryColor,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Didukung Machine Learning & Verifikasi Publik',
-                style: TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? AppDarkColors.textPrimary : const Color(0xFF334155),
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'Didukung Machine Learning & Verifikasi Publik',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? AppDarkColors.textPrimary : const Color(0xFF334155),
+                    ),
+                  ),
                 ),
               ),
             ],
