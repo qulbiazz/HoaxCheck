@@ -4,6 +4,7 @@ import '../widgets/analysis_header_bar.dart';
 import '../widgets/prediction_hero_card.dart';
 import '../widgets/detected_indicators_card.dart';
 import '../widgets/model_info_card.dart';
+import '../widgets/google_fact_check_card.dart';
 import '../widgets/education_card.dart';
 import '../widgets/analysis_action_buttons.dart';
 
@@ -83,6 +84,11 @@ class AnalysisDetailPage extends StatelessWidget {
               const SizedBox(height: 20),
               DetectedIndicatorsCard(
                 indicators: indicators,
+                isHoax: isHoax,
+              ),
+              const SizedBox(height: 20),
+              GoogleFactCheckCard(
+                queryText: text,
                 isHoax: isHoax,
               ),
               const SizedBox(height: 20),
