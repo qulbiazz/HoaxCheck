@@ -5,11 +5,14 @@ import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/config/ml_config.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../history/data/models/history_item_model.dart';
 import '../../domain/entities/detection_entity.dart';
 
 abstract class DetectionRemoteDataSource {
   Future<DetectionEntity> analyzeText(String text);
   Future<void> saveDetection(DetectionEntity entity);
+  Future<HistoryItemModel?> checkDuplicateDetection(String text);
+  Future<void> deleteHistoryById(String id);
 }
 
 class DetectionRemoteDataSourceImpl implements DetectionRemoteDataSource {
@@ -301,6 +304,88 @@ class DetectionRemoteDataSourceImpl implements DetectionRemoteDataSource {
       });
     } catch (notifErr) {
       debugPrint('Catatan insert notification otomatis ke Supabase: $notifErr');
+    }
+  }
+
+  @override
+  Future<HistoryItemModel?> checkDuplicateDetection(String text) async {
+    final client = supabaseClient;
+    if (client == null) return null;
+
+    final cleanInput = text.trim();
+    if (cleanInput.isEmpty) return null;
+
+    final user = client.auth.currentUser;
+    final now = DateTime.now();
+    final thirtyDaysAgo = now.subtract(const Duration(days: 30));
+
+    try {
+      // 1. Ambil riwayat pengguna dalam rentang 30 hari terakhir
+      // (Riwayat yang sudah dihapus pengguna dari tabel tidak akan terambil)
+      List<dynamic> rows = [];
+      try {
+        var filter = client
+            .from('user_histories')
+            .select()
+            .gte('tested_at', thirtyDaysAgo.toIso8601String());
+
+        if (user != null) {
+          filter = filter.eq('user_id', user.id);
+        } else {
+          filter = filter.isFilter('user_id', null);
+        }
+        rows = await filter.order('tested_at', ascending: false);
+      } catch (_) {
+        // Fallback jika pemfilteran user_id isFilter gagal
+        rows = await client
+            .from('user_histories')
+            .select()
+            .gte('tested_at', thirtyDaysAgo.toIso8601String())
+            .order('tested_at', ascending: false);
+      }
+
+      final normalizedInput = _normalizeText(cleanInput);
+
+      for (final row in rows) {
+        if (row is! Map<String, dynamic>) continue;
+        final item = HistoryItemModel.fromMap(row);
+        final normalizedSnippet = _normalizeText(item.snippet);
+        final normalizedTitle = _normalizeText(item.title);
+
+        final bool isMatch = (normalizedSnippet.isNotEmpty && normalizedSnippet == normalizedInput) ||
+            (normalizedTitle.isNotEmpty && normalizedTitle == normalizedInput) ||
+            (normalizedSnippet.length >= 60 &&
+                normalizedInput.length >= 60 &&
+                (normalizedSnippet.contains(normalizedInput) || normalizedInput.contains(normalizedSnippet)));
+
+        if (isMatch) {
+          final testedAt = item.testedAt ?? now;
+          final diff = now.difference(testedAt);
+          // Belum kehapus dan belum lewat 30 hari
+          if (diff.inDays < 30) {
+            return item;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Catatan pengecekan duplikasi riwayat 30 hari: $e');
+    }
+
+    return null;
+  }
+
+  String _normalizeText(String input) {
+    return input.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
+  }
+
+  @override
+  Future<void> deleteHistoryById(String id) async {
+    final client = supabaseClient;
+    if (client == null) return;
+    try {
+      await client.from('user_histories').delete().eq('id', id);
+    } catch (e) {
+      debugPrint('Catatan deleteHistoryById: $e');
     }
   }
 }

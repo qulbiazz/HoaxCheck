@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../../app/theme.dart';
 import '../../../detection/presentation/pages/analysis_detail_page.dart';
+import '../../data/repositories/history_repository_impl.dart';
 
 class HistoryDetailPage extends StatelessWidget {
+  final String? id;
   final String title;
   final String text;
   final String time;
@@ -13,6 +15,7 @@ class HistoryDetailPage extends StatelessWidget {
 
   const HistoryDetailPage({
     super.key,
+    this.id,
     this.title = "Pesan Berantai WhatsApp",
     this.text =
         "Beredar pesan berantai mengklaim vaksinasi booster gratis dibatalkan pemerintah dan diganti biaya mandiri mulai minggu depan dengan mendaftar di tautan tidak resmi bit.ly/booster-mandiri-update2026 sebelum kuota ditutup malam ini. Mohon sebarkan...",
@@ -517,14 +520,23 @@ class HistoryDetailPage extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Item dihapus dari riwayat."),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                    Navigator.of(context).pop();
+                  onPressed: () async {
+                    if (id != null) {
+                      try {
+                        await HistoryRepositoryImpl().deleteHistory(id!);
+                      } catch (e) {
+                        debugPrint("Gagal menghapus riwayat dari detail: $e");
+                      }
+                    }
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Item dihapus dari riwayat."),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      Navigator.of(context).pop();
+                    }
                   },
                   icon: const Icon(Icons.delete_outline, size: 18, color: Color(0xFFDC2626)),
                   label: const Text(

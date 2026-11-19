@@ -1,3 +1,4 @@
+import '../../../history/domain/entities/history_item.dart';
 import '../../domain/entities/detection_entity.dart';
 import '../../domain/repositories/detection_repository.dart';
 import '../datasources/detection_remote_data_source.dart';
@@ -17,5 +18,15 @@ class DetectionRepositoryImpl implements DetectionRepository {
   @override
   Future<void> saveDetectionToCloud(DetectionEntity entity) async {
     await remoteDataSource.saveDetection(entity);
+  }
+
+  @override
+  Future<HistoryItem?> checkDuplicateDetection(String text) async {
+    return await remoteDataSource.checkDuplicateDetection(text);
+  }
+
+  @override
+  Future<void> deleteHistoryById(String id) async {
+    await remoteDataSource.deleteHistoryById(id);
   }
 }

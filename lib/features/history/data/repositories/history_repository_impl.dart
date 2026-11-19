@@ -25,6 +25,7 @@ class HistoryRepositoryImpl implements HistoryRepository {
       analysisType: item.analysisType,
       source: item.source,
       time: item.time,
+      testedAt: item.testedAt,
     );
     await remoteDataSource.saveHistory(model);
   }

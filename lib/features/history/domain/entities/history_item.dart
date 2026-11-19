@@ -8,6 +8,7 @@ class HistoryItem {
   final String analysisType;
   final String source;
   final String time;
+  final DateTime? testedAt;
 
   const HistoryItem({
     this.id,
@@ -18,6 +19,7 @@ class HistoryItem {
     required this.analysisType,
     required this.source,
     required this.time,
+    this.testedAt,
   });
 
   Map<String, dynamic> toMap() {
@@ -29,6 +31,7 @@ class HistoryItem {
       'text': snippet.isNotEmpty ? snippet : title,
       'analysisType': analysisType,
       'source': source,
+      if (testedAt != null) 'testedAt': testedAt!.toIso8601String(),
     };
   }
 }

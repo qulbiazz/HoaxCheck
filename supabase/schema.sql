@@ -52,6 +52,10 @@ ON public.user_histories
 FOR DELETE 
 USING (auth.uid() = user_id OR user_id IS NULL);
 
+-- Indeks untuk optimasi validasi batas 30 hari dan deduplikasi riwayat
+CREATE INDEX IF NOT EXISTS idx_user_histories_tested_at ON public.user_histories(tested_at);
+CREATE INDEX IF NOT EXISTS idx_user_histories_user_tested ON public.user_histories(user_id, tested_at);
+
 
 -- ==============================================================================
 -- 2. TABEL: problem_reports (Laporan Masalah / Bug dari Halaman Profil)
@@ -79,6 +83,11 @@ CREATE POLICY "Users can view their own problem reports"
 ON public.problem_reports
 FOR SELECT 
 USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Admin full access for problem_reports" ON public.problem_reports;
+CREATE POLICY "Admin full access for problem_reports" 
+ON public.problem_reports FOR ALL 
+USING (true) WITH CHECK (true);
 
 
 -- ==============================================================================
@@ -114,6 +123,11 @@ CREATE POLICY "Users can update their notifications"
 ON public.notifications
 FOR UPDATE 
 USING (auth.uid() = user_id OR user_id IS NULL);
+
+DROP POLICY IF EXISTS "Admin full access for notifications" ON public.notifications;
+CREATE POLICY "Admin full access for notifications" 
+ON public.notifications FOR ALL 
+USING (true) WITH CHECK (true);
 
 
 -- ==============================================================================

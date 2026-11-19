@@ -11,9 +11,17 @@ class HistoryItemModel extends HistoryItem {
     required super.analysisType,
     required super.source,
     required super.time,
+    super.testedAt,
   });
 
   factory HistoryItemModel.fromMap(Map<String, dynamic> map) {
+    DateTime? parsedTestedAt;
+    if (map['tested_at'] != null) {
+      try {
+        parsedTestedAt = DateTime.parse(map['tested_at'].toString()).toLocal();
+      } catch (_) {}
+    }
+
     return HistoryItemModel(
       id: map['id']?.toString(),
       title: map['title'] ?? map['snippet'] ?? '',
@@ -23,6 +31,7 @@ class HistoryItemModel extends HistoryItem {
       analysisType: map['classification'] ?? 'Machine Learning',
       source: map['source'] ?? 'Cloud DB',
       time: _formatTime(map['tested_at']),
+      testedAt: parsedTestedAt,
     );
   }
 
@@ -58,6 +67,7 @@ class HistoryItemModel extends HistoryItem {
       'confidence_str': confidence,
       'classification': analysisType,
       'source': source,
+      if (testedAt != null) 'tested_at': testedAt!.toIso8601String(),
     };
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../app/theme.dart';
 import '../../data/datasources/tips_remote_data_source.dart';
 import '../../data/models/tip_model.dart';
@@ -16,12 +17,40 @@ class _TipsSectionState extends State<TipsSection> {
   late final TipsRemoteDataSource _dataSource;
   List<TipModel> _tips = TipModel.defaultTips;
   bool _isLoading = true;
+  RealtimeChannel? _realtimeChannel;
 
   @override
   void initState() {
     super.initState();
     _dataSource = widget.remoteDataSource ?? TipsRemoteDataSourceImpl();
     _loadTips();
+    _startRealtimeListener();
+  }
+
+  void _startRealtimeListener() {
+    try {
+      final client = Supabase.instance.client;
+      _realtimeChannel = client
+          .channel('public:literacy_tips:realtime')
+          .onPostgresChanges(
+            event: PostgresChangeEvent.all,
+            schema: 'public',
+            table: 'literacy_tips',
+            callback: (payload) {
+              debugPrint('✓ Realtime tips change (${payload.eventType}): memuat ulang tips.');
+              _loadTips();
+            },
+          )
+          .subscribe();
+    } catch (e) {
+      debugPrint('Catatan realtime listener tips: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _realtimeChannel?.unsubscribe();
+    super.dispose();
   }
 
   Future<void> _loadTips() async {

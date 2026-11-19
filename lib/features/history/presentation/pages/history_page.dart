@@ -79,6 +79,55 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
+  void _deleteSingleHistory(String id) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          "Hapus Riwayat Ini?",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        content: const Text(
+          "Item riwayat ini akan dihapus permanen. Setelah dihapus, berita ini dapat dideteksi kembali.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text("Batal", style: TextStyle(color: AppColors.neutral)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFDC2626),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: const Text("Hapus", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      setState(() {
+        historyData.removeWhere((item) => item['id'] == id);
+      });
+      try {
+        await _historyRepository.deleteHistory(id);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Riwayat berhasil dihapus."),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } catch (e) {
+        debugPrint("Gagal menghapus riwayat: $e");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -144,7 +193,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                   children: [
                                     const SizedBox(height: 4),
                                     const Text(
-                                      "- Data riwayat pemeriksaan akan hilang setelah 30 hari.\n - Arsip analisis teks yang pernah kamu lakukan.",
+                                      "- Data riwayat pemeriksaan akan tersimpan selama 30 hari.\n- Berita dalam riwayat tidak dapat dideteksi ulang sebelum 30 hari atau sebelum dihapus.",
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Color(0xFF64748B),
@@ -303,18 +352,23 @@ class _HistoryPageState extends State<HistoryPage> {
                             ),
                           )
                         : Column(
-                      children:
-                          filteredList.map((item) {
-                            return HistoryCard(
-                              isHoax: item['isHoax'],
-                              confidence: item['confidence'],
-                              time: item['time'],
-                              text: item['text'],
-                              analysisType: item['analysisType'],
-                              source: item['source'],
-                            );
-                          }).toList(),
-                    ),
+                            children:
+                                filteredList.map((item) {
+                              final itemId = item['id']?.toString();
+                              return HistoryCard(
+                                id: itemId,
+                                isHoax: item['isHoax'],
+                                confidence: item['confidence'],
+                                time: item['time'],
+                                text: item['text'],
+                                analysisType: item['analysisType'],
+                                source: item['source'],
+                                onDelete: itemId != null
+                                    ? () => _deleteSingleHistory(itemId)
+                                    : null,
+                              );
+                            }).toList(),
+                          ),
                 const SizedBox(height: 8),
                 const HistoryTipsBanner(),
                 const SizedBox(height: 100),

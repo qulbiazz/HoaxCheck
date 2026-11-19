@@ -3,21 +3,25 @@ import '../../../../../app/theme.dart';
 import '../../../detection/presentation/pages/analysis_detail_page.dart';
 
 class HistoryCard extends StatelessWidget {
+  final String? id;
   final bool isHoax;
   final String confidence;
   final String time;
   final String text;
   final String analysisType;
   final String source;
+  final VoidCallback? onDelete;
 
   const HistoryCard({
     super.key,
+    this.id,
     required this.isHoax,
     required this.confidence,
     required this.time,
     required this.text,
     required this.analysisType,
     required this.source,
+    this.onDelete,
   });
 
   @override
@@ -100,7 +104,27 @@ class HistoryCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Text(time, style: const TextStyle(color: AppColors.neutral, fontSize: 10)),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(time, style: const TextStyle(color: AppColors.neutral, fontSize: 10)),
+                          if (onDelete != null) ...[
+                            const SizedBox(width: 6),
+                            InkWell(
+                              onTap: onDelete,
+                              borderRadius: BorderRadius.circular(12),
+                              child: const Padding(
+                                padding: EdgeInsets.all(2),
+                                child: Icon(
+                                  Icons.delete_outline,
+                                  size: 15,
+                                  color: Color(0xFF94A3B8),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),

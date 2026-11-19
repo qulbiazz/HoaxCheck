@@ -20,6 +20,15 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
     final userId = supabaseClient.auth.currentUser?.id;
 
     try {
+      // Auto-cleanup data riwayat yang telah melampaui masa retensi 30 hari
+      final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
+      try {
+        await supabaseClient
+            .from('user_histories')
+            .delete()
+            .lt('tested_at', thirtyDaysAgo.toIso8601String());
+      } catch (_) {}
+
       List<dynamic> rows = [];
 
       // 1. Coba ambil riwayat spesifik milik user yang sedang login jika ada
@@ -29,6 +38,7 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
               .from('user_histories')
               .select()
               .eq('user_id', userId)
+              .gte('tested_at', thirtyDaysAgo.toIso8601String())
               .order('tested_at', ascending: false);
 
           if (response.isNotEmpty) {
@@ -44,6 +54,7 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
         final response = await supabaseClient
             .from('user_histories')
             .select()
+            .gte('tested_at', thirtyDaysAgo.toIso8601String())
             .order('tested_at', ascending: false);
         rows = response;
       }
