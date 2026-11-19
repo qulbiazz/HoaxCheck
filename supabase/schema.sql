@@ -217,7 +217,35 @@ USING (bucket_id = 'avatars');
 
 
 -- ==============================================================================
--- 6. TABEL: literacy_tips (Tips Literasi di Beranda - Poin #1)
+-- 6. TABEL: app_policies (Kebijakan Privasi & Syarat Ketentuan)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.app_policies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    type VARCHAR(50) NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.app_policies ENABLE ROW LEVEL SECURITY;
+
+-- Semua orang (termasuk yang belum login) boleh membaca kebijakan
+DROP POLICY IF EXISTS "Anyone can read app policies" ON public.app_policies;
+CREATE POLICY "Anyone can read app policies" 
+ON public.app_policies
+FOR SELECT 
+USING (true);
+
+-- Hanya sistem/admin yang bisa insert/update (opsional, buat jaga-jaga)
+DROP POLICY IF EXISTS "Authenticated users can manage app policies" ON public.app_policies;
+CREATE POLICY "Authenticated users can manage app policies" 
+ON public.app_policies
+FOR ALL 
+TO authenticated 
+USING (true);
+
+-- ==============================================================================
+-- 7. TABEL: literacy_tips (Tips Literasi di Beranda - Poin #1)
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.literacy_tips (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -279,7 +307,7 @@ ON CONFLICT DO NOTHING;
 
 
 -- ==============================================================================
--- 7. TABEL: guide_principles & guide_contents (Panduan Literasi - Poin #2)
+-- 8. TABEL: guide_principles & guide_contents (Panduan Literasi - Poin #2)
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.guide_principles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -367,7 +395,7 @@ ON CONFLICT DO NOTHING;
 
 
 -- ==============================================================================
--- 8. TABEL: app_info (Tentang HoaxCheck, Visi, Cara Kerja - Poin #3)
+-- 9. TABEL: app_info (Tentang HoaxCheck, Visi, Cara Kerja - Poin #3)
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.app_info (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

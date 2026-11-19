@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme.dart';
+import '../../data/datasources/policy_remote_data_source.dart';
+import '../../data/models/policy_model.dart';
 import '../widgets/kebijakan/kebijakan_chip_nav.dart';
 import '../widgets/kebijakan/kebijakan_data_disimpan.dart';
 import '../widgets/kebijakan/kebijakan_hero_card.dart';
@@ -18,12 +20,44 @@ class KebijakanPrivasiPage extends StatefulWidget {
 }
 
 class _KebijakanPrivasiPageState extends State<KebijakanPrivasiPage> {
-  // GlobalKey untuk tiap section → dipakai auto-scroll dari chip navigasi
+  // GlobalKey untuk auto-scroll dari chip navigasi
   final GlobalKey _keyDataDisimpan = GlobalKey();
   final GlobalKey _keyPenggunaan = GlobalKey();
   final GlobalKey _keyKeamanan = GlobalKey();
 
-  /// Auto-scroll ke section berdasarkan GlobalKey
+  // State untuk data dari Supabase
+  bool _isLoading = true;
+  String? _errorMessage;
+  PolicyModel? _privacyPolicy;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPolicyData();
+  }
+
+  // Fungsi untuk mengambil data dari Supabase
+  Future<void> _fetchPolicyData() async {
+    try {
+      final dataSource = PolicyRemoteDataSourceImpl();
+      final result = await dataSource.getPolicyByType('privacy');
+
+      if (mounted) {
+        setState(() {
+          _privacyPolicy = result;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString();
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   void _scrollToSection(GlobalKey key) {
     final context = key.currentContext;
     if (context != null) {
@@ -63,61 +97,108 @@ class _KebijakanPrivasiPageState extends State<KebijakanPrivasiPage> {
         centerTitle: false,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Hero card
-              const KebijakanHeroCard(),
-              const SizedBox(height: 16),
+        child: _isLoading
+            // 1. Tampilan saat loading
+            ? const Center(child: CircularProgressIndicator())
+            // 2. Tampilan saat error (misal tabel belum dibuat)
+            : _errorMessage != null
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text(
+                        'Gagal memuat data:\n$_errorMessage',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: AppColors.danger),
+                      ),
+                    ),
+                  )
+                // 3. Tampilan utama jika data berhasil diambil
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Hero card
+                        const KebijakanHeroCard(),
+                        const SizedBox(height: 16),
 
-              // Chip navigasi (auto-scroll)
-              KebijakanChipNav(
-                onTapDataDisimpan: () => _scrollToSection(_keyDataDisimpan),
-                onTapPenggunaan: () => _scrollToSection(_keyPenggunaan),
-                onTapKeamanan: () => _scrollToSection(_keyKeamanan),
-              ),
-              const SizedBox(height: 24),
+                        // Chip navigasi (auto-scroll)
+                        KebijakanChipNav(
+                          onTapDataDisimpan: () => _scrollToSection(_keyDataDisimpan),
+                          onTapPenggunaan: () => _scrollToSection(_keyPenggunaan),
+                          onTapKeamanan: () => _scrollToSection(_keyKeamanan),
+                        ),
+                        const SizedBox(height: 24),
 
-              // Section 1 — Data yang Disimpan
-              Container(
-                key: _keyDataDisimpan,
-                child: const KebijakanDataDisimpan(),
-              ),
-              const SizedBox(height: 24),
+                        // ========================================================
+                        // BAGIAN DINAMIS DARI SUPABASE
+                        // ========================================================
+                        Container(
+                          key: _keyDataDisimpan,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _privacyPolicy?.title ?? "Kebijakan Privasi",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark ? Colors.white : AppColors.inverted,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: isDark ? AppDarkColors.surface : AppColors.surface,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: isDark ? Colors.transparent : const Color(0xFFE2E8F0),
+                                  ),
+                                ),
+                                child: Text(
+                                  _privacyPolicy?.content ?? 
+                                    "Data tidak ditemukan di database. Silakan hubungi admin untuk mengisi teks kebijakan privasi.",
+                                  style: TextStyle(
+                                    color: isDark ? Colors.white70 : AppColors.inverted,
+                                    fontSize: 12.5,
+                                    height: 1.55,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        // ========================================================
 
-              // Section 2 — Riwayat Pemeriksaan
-              const KebijakanRiwayat(),
-              const SizedBox(height: 24),
+                        // Widget statis (desain lama tetap dipertahankan)
+                        const KebijakanRiwayat(),
+                        const SizedBox(height: 24),
 
-              // Section 3 — Penggunaan Data (target chip "Penggunaan")
-              Container(
-                key: _keyPenggunaan,
-                child: const KebijakanPenggunaanData(),
-              ),
-              const SizedBox(height: 24),
+                        Container(
+                          key: _keyPenggunaan,
+                          child: const KebijakanPenggunaanData(),
+                        ),
+                        const SizedBox(height: 24),
 
-              // Section 4 — Keamanan Data (target chip "Keamanan")
-              Container(
-                key: _keyKeamanan,
-                child: const KebijakanKeamananData(),
-              ),
-              const SizedBox(height: 24),
+                        Container(
+                          key: _keyKeamanan,
+                          child: const KebijakanKeamananData(),
+                        ),
+                        const SizedBox(height: 24),
 
-              // Section 5 — Penghapusan Data
-              const KebijakanPenghapusanData(),
-              const SizedBox(height: 24),
+                        const KebijakanPenghapusanData(),
+                        const SizedBox(height: 24),
 
-              // Section 6 — Perubahan Kebijakan
-              const KebijakanPerubahan(),
-              const SizedBox(height: 24),
+                        const KebijakanPerubahan(),
+                        const SizedBox(height: 24),
 
-              // Section 7 + Footer
-              const KebijakanKontak(),
-            ],
-          ),
-        ),
+                        const KebijakanKontak(),
+                      ],
+                    ),
+                  ),
       ),
     );
   }
