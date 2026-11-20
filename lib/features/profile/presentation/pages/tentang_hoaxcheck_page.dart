@@ -70,6 +70,16 @@ class _TentangHoaxCheckPageState extends State<TentangHoaxCheckPage> {
           ),
         ),
         centerTitle: false,
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.refresh_rounded,
+              color: isDark ? Colors.white : AppColors.inverted,
+            ),
+            tooltip: "Muat Ulang",
+            onPressed: _loadAppInfo,
+          ),
+        ],
       ),
       body: SafeArea(
         child: RefreshIndicator(

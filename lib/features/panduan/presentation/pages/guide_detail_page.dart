@@ -61,7 +61,7 @@ class _GuideDetailPageState extends State<GuideDetailPage> {
 
     return Scaffold(
       backgroundColor: isDark ? AppDarkColors.neutral : const Color(0xFFF8FAFC),
-      appBar: const GuideHeader(),
+      appBar: GuideHeader(onRefresh: _loadGuideData),
       body: SafeArea(
         child: RefreshIndicator(
           color: AppColors.primary,
