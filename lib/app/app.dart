@@ -5,7 +5,6 @@ import '../features/history/presentation/pages/history_detail_page.dart';
 import '../features/detection/presentation/pages/analysis_detail_page.dart';
 import '../features/splash/pages/splash_page.dart';
 import 'theme.dart';
-import '../features/splash/pages/splash_page.dart';
 
 final ValueNotifier<ThemeMode> themeNotifier =
     ValueNotifier(ThemeMode.light);
