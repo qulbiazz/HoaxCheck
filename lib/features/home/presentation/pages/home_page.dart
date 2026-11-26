@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/app_header.dart';
 import '../../../../app/theme.dart';
 import '../../../panduan/presentation/pages/guide_detail_page.dart';
+import '../../../history/data/datasources/history_remote_data_source.dart';
 import '../widgets/greeting_section.dart';
 import '../widgets/detection_banner.dart';
 import '../widgets/quick_actions.dart';
@@ -27,10 +28,11 @@ class _HomePageState extends State<HomePage> {
   Key _refreshKey = UniqueKey();
 
   Future<void> _handleRefresh() async {
+    HistoryRemoteDataSourceImpl.invalidateCache();
     setState(() {
       _refreshKey = UniqueKey();
     });
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 400));
   }
 
   @override

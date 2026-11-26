@@ -10,7 +10,7 @@ class FakeNotificationRepository implements NotificationRepository {
   FakeNotificationRepository(this.fakeItems);
 
   @override
-  Future<List<NotificationModel>> getNotifications() async => fakeItems;
+  Future<List<NotificationModel>> getNotifications({bool forceRefresh = false}) async => fakeItems;
 
   @override
   Future<void> markAsRead(String id) async {

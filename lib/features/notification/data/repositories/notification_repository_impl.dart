@@ -2,7 +2,7 @@ import '../datasources/notification_remote_data_source.dart';
 import '../models/notification_model.dart';
 
 abstract class NotificationRepository {
-  Future<List<NotificationModel>> getNotifications();
+  Future<List<NotificationModel>> getNotifications({bool forceRefresh = false});
   Future<void> markAsRead(String id);
   Future<void> markAllAsRead();
   Future<void> addNotification({
@@ -21,8 +21,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
       : remoteDataSource = remoteDataSource ?? NotificationRemoteDataSourceImpl();
 
   @override
-  Future<List<NotificationModel>> getNotifications() {
-    return remoteDataSource.getNotifications();
+  Future<List<NotificationModel>> getNotifications({bool forceRefresh = false}) {
+    return remoteDataSource.getNotifications(forceRefresh: forceRefresh);
   }
 
   @override

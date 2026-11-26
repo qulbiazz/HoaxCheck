@@ -30,10 +30,10 @@ class _NotificationPageState extends State<NotificationPage> {
     _loadNotifications();
   }
 
-  Future<void> _loadNotifications() async {
+  Future<void> _loadNotifications({bool forceRefresh = false}) async {
     setState(() => _isLoading = true);
     try {
-      final items = await _repository.getNotifications();
+      final items = await _repository.getNotifications(forceRefresh: forceRefresh);
       if (mounted) {
         setState(() {
           _notifications = items;
@@ -375,7 +375,7 @@ class _NotificationPageState extends State<NotificationPage> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: _loadNotifications,
+        onRefresh: () => _loadNotifications(forceRefresh: true),
         color: AppColors.primary,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),

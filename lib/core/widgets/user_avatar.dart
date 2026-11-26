@@ -47,6 +47,8 @@ class UserAvatar extends StatelessWidget {
         avatarUrl!.trim(),
         width: size,
         height: size,
+        cacheWidth: (size * 2.5).round().clamp(48, 512),
+        cacheHeight: (size * 2.5).round().clamp(48, 512),
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) => _buildDefaultAvatar(isDark),
         loadingBuilder: (context, child, loadingProgress) {

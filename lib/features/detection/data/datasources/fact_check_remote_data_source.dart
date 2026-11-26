@@ -14,8 +14,15 @@ abstract class FactCheckRemoteDataSource {
 class FactCheckRemoteDataSourceImpl implements FactCheckRemoteDataSource {
   final http.Client httpClient;
 
+  // In-memory cache pencarian cek fakta (mengurangi latensi jaringan dan konsumsi kuota)
+  static final Map<String, _FactCheckCacheEntry> _searchCache = {};
+  static const Duration cacheDuration = Duration(minutes: 5);
+
   FactCheckRemoteDataSourceImpl({http.Client? client})
       : httpClient = client ?? http.Client();
+
+  /// Utility untuk membersihkan cache (berguna untuk testing atau refresh manual)
+  static void clearCache() => _searchCache.clear();
 
   @override
   Future<List<FactCheckModel>> searchClaims(
@@ -28,6 +35,13 @@ class FactCheckRemoteDataSourceImpl implements FactCheckRemoteDataSource {
     }
 
     final lang = languageCode ?? GoogleFactCheckConfig.defaultLanguageCode;
+    final cacheKey = '$cleanQuery:$lang';
+
+    // Cek apakah hasil query sudah tersimpan dalam cache yang valid
+    final cachedEntry = _searchCache[cacheKey];
+    if (cachedEntry != null && !cachedEntry.isExpired) {
+      return List<FactCheckModel>.from(cachedEntry.results);
+    }
 
     // 1. Jika API Key Google tersedia atau mencoba akses publik API
     try {
@@ -59,7 +73,9 @@ class FactCheckRemoteDataSourceImpl implements FactCheckRemoteDataSource {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
         final claims = data['claims'] as List<dynamic>?;
         if (claims != null && claims.isNotEmpty) {
-          return FactCheckModel.fromClaimsJsonList(claims);
+          final models = FactCheckModel.fromClaimsJsonList(claims);
+          _searchCache[cacheKey] = _FactCheckCacheEntry(models, DateTime.now());
+          return models;
         }
       } else {
         debugPrint(
@@ -71,7 +87,9 @@ class FactCheckRemoteDataSourceImpl implements FactCheckRemoteDataSource {
     }
 
     // 2. Fallback cerdas: Pencarian dari database arsip cek fakta terverifikasi (Mafindo / Kompas / CekFakta)
-    return _getFallbackFactChecks(cleanQuery);
+    final fallbackList = _getFallbackFactChecks(cleanQuery);
+    _searchCache[cacheKey] = _FactCheckCacheEntry(fallbackList, DateTime.now());
+    return fallbackList;
   }
 
   /// Ekstraksi kata kunci penting dari query (jika teks berupa paragraf panjang)
@@ -216,5 +234,16 @@ class FactCheckRemoteDataSourceImpl implements FactCheckRemoteDataSource {
 
     return matches;
   }
+}
+
+class _FactCheckCacheEntry {
+  final List<FactCheckModel> results;
+  final DateTime timestamp;
+
+  _FactCheckCacheEntry(this.results, this.timestamp);
+
+  bool get isExpired =>
+      DateTime.now().difference(timestamp) >
+      FactCheckRemoteDataSourceImpl.cacheDuration;
 }
 

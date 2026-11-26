@@ -7,7 +7,7 @@ class GetUserHistoryUseCase implements UseCase<List<HistoryItem>, NoParams> {
   GetUserHistoryUseCase(this.repository);
 
   @override
-  Future<List<HistoryItem>> call(NoParams params) {
-    return repository.getUserHistories();
+  Future<List<HistoryItem>> call(NoParams params, {bool forceRefresh = false}) {
+    return repository.getUserHistories(forceRefresh: forceRefresh);
   }
 }

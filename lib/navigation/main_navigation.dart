@@ -15,24 +15,25 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   late int _selectedIndex;
+  late final List<Widget> _pages;
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
+    _pages = [
+      HomePage(
+        onNavigateToDetection: () => _onItemTapped(1),
+        onNavigateToHistory: () => _onItemTapped(2),
+      ), // Tab 0: Home (Kirim callback)
+      const DetectionPage(), // Tab 1: Deteksi
+      const HistoryPage(), // Tab 2: Riwayat
+      const ProfilePage(), // Tab 3: Profile
+    ];
   }
 
-  List<Widget> get _pages => [
-    HomePage(
-      onNavigateToDetection: () => _onItemTapped(1),
-      onNavigateToHistory: () => _onItemTapped(2),
-    ), // Tab 0: Home (Kirim callback)
-    const DetectionPage(), // Tab 1: Deteksi
-    const HistoryPage(), // Tab 2: Riwayat
-    const ProfilePage(), // Tab 3: Profile
-  ];
-
   void _onItemTapped(int index) {
+    if (_selectedIndex == index) return;
     setState(() {
       _selectedIndex = index;
     });
@@ -46,7 +47,10 @@ class _MainNavigationState extends State<MainNavigation> {
       extendBody: true,
       body: Stack(
         children: [
-          _pages[_selectedIndex],
+          IndexedStack(
+            index: _selectedIndex,
+            children: _pages,
+          ),
 
           Align(
             alignment: Alignment.bottomCenter,

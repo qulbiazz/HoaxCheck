@@ -10,7 +10,19 @@ abstract class GuideRemoteDataSource {
 class GuideRemoteDataSourceImpl implements GuideRemoteDataSource {
   final SupabaseClient? _client;
 
+  // In-memory cache untuk panduan
+  static List<GuidePrincipleModel>? _cachedPrinciples;
+  static GuideContentModel? _cachedContent;
+  static DateTime? _cacheTimestamp;
+  static const Duration _cacheDuration = Duration(minutes: 10);
+
   GuideRemoteDataSourceImpl({SupabaseClient? client}) : _client = client;
+
+  static void invalidateCache() {
+    _cachedPrinciples = null;
+    _cachedContent = null;
+    _cacheTimestamp = null;
+  }
 
   SupabaseClient? get _supabaseClient {
     if (_client != null) return _client;
@@ -23,6 +35,12 @@ class GuideRemoteDataSourceImpl implements GuideRemoteDataSource {
 
   @override
   Future<List<GuidePrincipleModel>> getPrinciples() async {
+    if (_cachedPrinciples != null &&
+        _cacheTimestamp != null &&
+        DateTime.now().difference(_cacheTimestamp!) < _cacheDuration) {
+      return List<GuidePrincipleModel>.from(_cachedPrinciples!);
+    }
+
     final client = _supabaseClient;
     if (client == null) {
       return GuidePrincipleModel.defaultPrinciples;
@@ -35,9 +53,12 @@ class GuideRemoteDataSourceImpl implements GuideRemoteDataSource {
           .order('order_index', ascending: true);
 
       if (response.isNotEmpty) {
-        return response
+        final principles = response
             .map((item) => GuidePrincipleModel.fromJson(item))
             .toList();
+        _cachedPrinciples = List<GuidePrincipleModel>.from(principles);
+        _cacheTimestamp = DateTime.now();
+        return principles;
       }
     } catch (e) {
       debugPrint('Catatan GuideRemoteDataSource getPrinciples: $e. Menggunakan prinsip default.');
@@ -48,6 +69,12 @@ class GuideRemoteDataSourceImpl implements GuideRemoteDataSource {
 
   @override
   Future<GuideContentModel> getGuideContent() async {
+    if (_cachedContent != null &&
+        _cacheTimestamp != null &&
+        DateTime.now().difference(_cacheTimestamp!) < _cacheDuration) {
+      return _cachedContent!;
+    }
+
     final client = _supabaseClient;
     if (client == null) {
       return GuideContentModel.defaultContent;
@@ -61,7 +88,10 @@ class GuideRemoteDataSourceImpl implements GuideRemoteDataSource {
           .maybeSingle();
 
       if (response != null) {
-        return GuideContentModel.fromJson(response);
+        final content = GuideContentModel.fromJson(response);
+        _cachedContent = content;
+        _cacheTimestamp = DateTime.now();
+        return content;
       }
     } catch (e) {
       debugPrint('Catatan GuideRemoteDataSource getGuideContent: $e. Menggunakan konten default.');

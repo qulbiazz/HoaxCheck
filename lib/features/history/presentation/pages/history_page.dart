@@ -28,15 +28,40 @@ class _HistoryPageState extends State<HistoryPage> {
   bool _isLoading = true;
   List<Map<String, dynamic>> historyData = [];
 
+  // Optimasi Lazy Loading & Pagination
+  final ScrollController _scrollController = ScrollController();
+  int _displayedLimit = 15;
+  static const int _pageSize = 15;
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _fetchHistoryFromSupabase();
   }
 
-  Future<void> _fetchHistoryFromSupabase() async {
+  void _onScroll() {
+    if (_scrollController.hasClients &&
+        _scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 250) {
+      if (_displayedLimit < historyData.length) {
+        setState(() {
+          _displayedLimit += _pageSize;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchHistoryFromSupabase({bool forceRefresh = false}) async {
     try {
-      final items = await _getUserHistoryUseCase(const NoParams());
+      final items = await _getUserHistoryUseCase(const NoParams(), forceRefresh: forceRefresh);
       if (mounted) {
         setState(() {
           historyData = items.map((item) => item.toMap()).toList();
@@ -160,12 +185,18 @@ class _HistoryPageState extends State<HistoryPage> {
     }
 
     final filteredList = getFilteredData();
+    final displayedList = filteredList.take(_displayedLimit).toList();
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
+        child: RefreshIndicator(
+          color: AppColors.primary,
+          onRefresh: () => _fetchHistoryFromSupabase(forceRefresh: true),
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 20.0,
               vertical: 16.0,
@@ -254,6 +285,7 @@ class _HistoryPageState extends State<HistoryPage> {
                     onChanged: (value) {
                       setState(() {
                         searchQuery = value.trim();
+                        _displayedLimit = _pageSize;
                       });
                     },
                     decoration: const InputDecoration(
@@ -351,9 +383,31 @@ class _HistoryPageState extends State<HistoryPage> {
                               ),
                             ),
                           )
-                        : Column(
-                            children:
-                                filteredList.map((item) {
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: displayedList.length +
+                                (filteredList.length > displayedList.length ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (index >= displayedList.length) {
+                                return const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  child: Center(
+                                    child: SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                          AppColors.primary,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              final item = displayedList[index];
                               final itemId = item['id']?.toString();
                               return HistoryCard(
                                 id: itemId,
@@ -367,7 +421,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                     ? () => _deleteSingleHistory(itemId)
                                     : null,
                               );
-                            }).toList(),
+                            },
                           ),
                 const SizedBox(height: 8),
                 const HistoryTipsBanner(),
@@ -375,6 +429,7 @@ class _HistoryPageState extends State<HistoryPage> {
               ],
             ),
           ),
+        ),
         ),
       ),
     );
@@ -387,6 +442,7 @@ class _HistoryPageState extends State<HistoryPage> {
       onTap: () {
         setState(() {
           selectedFilter = label;
+          _displayedLimit = _pageSize;
         });
       },
       child: AnimatedContainer(

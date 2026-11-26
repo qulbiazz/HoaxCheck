@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/notification_model.dart';
 
 abstract class NotificationRemoteDataSource {
-  Future<List<NotificationModel>> getNotifications();
+  Future<List<NotificationModel>> getNotifications({bool forceRefresh = false});
   Future<void> markAsRead(String id);
   Future<void> markAllAsRead();
   Future<void> addNotification({
@@ -18,11 +18,28 @@ abstract class NotificationRemoteDataSource {
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   final SupabaseClient supabaseClient;
 
+  // In-memory cache notifikasi
+  static List<NotificationModel>? _cachedNotifications;
+  static DateTime? _cacheTimestamp;
+  static const Duration _cacheDuration = Duration(seconds: 30);
+
   NotificationRemoteDataSourceImpl({SupabaseClient? client})
       : supabaseClient = client ?? Supabase.instance.client;
 
+  static void invalidateCache() {
+    _cachedNotifications = null;
+    _cacheTimestamp = null;
+  }
+
   @override
-  Future<List<NotificationModel>> getNotifications() async {
+  Future<List<NotificationModel>> getNotifications({bool forceRefresh = false}) async {
+    if (!forceRefresh &&
+        _cachedNotifications != null &&
+        _cacheTimestamp != null &&
+        DateTime.now().difference(_cacheTimestamp!) < _cacheDuration) {
+      return List<NotificationModel>.from(_cachedNotifications!);
+    }
+
     try {
       final user = supabaseClient.auth.currentUser;
       dynamic response;
@@ -44,14 +61,17 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       }
 
       if (response is List) {
-        return response
+        final list = response
             .map((item) => NotificationModel.fromJson(item as Map<String, dynamic>))
             .toList();
+        _cachedNotifications = List<NotificationModel>.from(list);
+        _cacheTimestamp = DateTime.now();
+        return list;
       }
       return [];
     } catch (e) {
       debugPrint('Error fetch notifications dari Supabase: $e');
-      return [];
+      return _cachedNotifications != null ? List<NotificationModel>.from(_cachedNotifications!) : [];
     }
   }
 

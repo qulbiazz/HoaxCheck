@@ -10,8 +10,8 @@ class HistoryRepositoryImpl implements HistoryRepository {
       : remoteDataSource = remoteDataSource ?? HistoryRemoteDataSourceImpl();
 
   @override
-  Future<List<HistoryItem>> getUserHistories() async {
-    return await remoteDataSource.getUserHistories();
+  Future<List<HistoryItem>> getUserHistories({bool forceRefresh = false}) async {
+    return await remoteDataSource.getUserHistories(forceRefresh: forceRefresh);
   }
 
   @override

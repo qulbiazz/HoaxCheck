@@ -9,7 +9,17 @@ abstract class TipsRemoteDataSource {
 class TipsRemoteDataSourceImpl implements TipsRemoteDataSource {
   final SupabaseClient? _client;
 
+  // In-memory cache tips edukasi literasi
+  static List<TipModel>? _cachedTips;
+  static DateTime? _cacheTimestamp;
+  static const Duration _cacheDuration = Duration(minutes: 5);
+
   TipsRemoteDataSourceImpl({SupabaseClient? client}) : _client = client;
+
+  static void invalidateCache() {
+    _cachedTips = null;
+    _cacheTimestamp = null;
+  }
 
   SupabaseClient? get _supabaseClient {
     if (_client != null) return _client;
@@ -22,6 +32,12 @@ class TipsRemoteDataSourceImpl implements TipsRemoteDataSource {
 
   @override
   Future<List<TipModel>> getTips() async {
+    if (_cachedTips != null &&
+        _cacheTimestamp != null &&
+        DateTime.now().difference(_cacheTimestamp!) < _cacheDuration) {
+      return List<TipModel>.from(_cachedTips!);
+    }
+
     final client = _supabaseClient;
     if (client == null) {
       return TipModel.defaultTips;
@@ -35,9 +51,12 @@ class TipsRemoteDataSourceImpl implements TipsRemoteDataSource {
           .order('order_index', ascending: true);
 
       if (response.isNotEmpty) {
-        return response
+        final tips = response
             .map((item) => TipModel.fromJson(item))
             .toList();
+        _cachedTips = List<TipModel>.from(tips);
+        _cacheTimestamp = DateTime.now();
+        return tips;
       }
     } catch (e) {
       debugPrint('Catatan TipsRemoteDataSource: $e. Menggunakan fallback tips bawaan.');
