@@ -36,6 +36,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.29.0'
           channel: 'stable'
           cache: true
 
@@ -70,6 +71,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.29.0'
           channel: 'stable'
           cache: true
 
@@ -85,6 +87,7 @@ jobs:
       - name: Build Split-per-ABI APKs
         run: |
           flutter build apk --split-per-abi \
+            --android-skip-build-dependency-validation \
             --dart-define=GOOGLE_FACT_CHECK_API_KEY="${{ secrets.GOOGLE_FACT_CHECK_API_KEY }}" \
             --dart-define=SUPABASE_URL="${{ secrets.SUPABASE_URL }}" \
             --dart-define=SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}" \
