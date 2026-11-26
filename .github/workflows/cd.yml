@@ -44,20 +44,7 @@ jobs:
           cache: true
 
       - name: Setup Supabase Config
-        run: |
-          mkdir -p lib/core/config
-          cat << 'EOF' > lib/core/config/supabase_config.dart
-          class SupabaseConfig {
-            static const String url = String.fromEnvironment(
-              'SUPABASE_URL',
-              defaultValue: 'MASUKKAN_SUPABASE_URL_DI_SINI',
-            );
-            static const String anonKey = String.fromEnvironment(
-              'SUPABASE_ANON_KEY',
-              defaultValue: 'MASUKKAN_ANON_KEY_DI_SINI',
-            );
-          }
-          EOF
+        run: cp lib/core/config/supabase_config.example.dart lib/core/config/supabase_config.dart
 
       - name: Install Dependencies
         run: flutter pub get
@@ -66,7 +53,7 @@ jobs:
         run: flutter test
 
       - name: Make Gradle Wrapper Executable
-        run: chmod +x android/gradlew || true
+        run: chmod +x android/gradlew
 
       - name: Build Split-per-ABI Release APKs
         run: |
