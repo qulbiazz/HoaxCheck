@@ -214,13 +214,13 @@ flutter analyze
 
 ## Build
 
-Android APK:
+Android APK (Split-per-ABI - Ukuran Ringan ~16-20 MB):
 
 ```bash
-flutter build apk
+flutter build apk --split-per-abi
 ```
 
-Android App Bundle:
+Android App Bundle (.aab untuk Google Play Store):
 
 ```bash
 flutter build appbundle
@@ -237,6 +237,26 @@ Windows:
 ```bash
 flutter build windows
 ```
+
+## CI/CD Pipeline (GitHub Actions)
+
+Proyek ini telah dilengkapi dengan pipeline automasi CI/CD:
+
+1. **Continuous Integration (`.github/workflows/ci.yml`):**
+   - Berjalan otomatis saat ada `push` atau `pull_request` ke branch `develop`, `main`, dan branch `fix/**` / `feat/**`.
+   - Menjalankan analisis statis (`flutter analyze`), pengujian otomatis (`flutter test`), serta verifikasi build APK.
+   - Mengunggah artefak APK preview ke GitHub Actions Artifacts untuk pengujian instan.
+
+2. **Continuous Deployment & Release (`.github/workflows/cd.yml`):**
+   - Dipicu otomatis saat membuat Git Tag rilis (misal `git tag v1.0.0 && git push origin v1.0.0`) atau dijalankan manual via menu **Run workflow** di GitHub Actions.
+   - Mem-build Release Split APK dan Android App Bundle (`.aab`).
+   - Otomatis membuat rilis di GitHub Release dan melampirkan file APK siap unduh.
+
+### Repository Secrets (Opsional)
+Dapat ditambahkan di menu **Settings > Secrets and variables > Actions** di GitHub:
+- `GOOGLE_FACT_CHECK_API_KEY`: Kunci API Google Fact Check Tools.
+- `SUPABASE_URL` & `SUPABASE_ANON_KEY`: Kredensial cloud Supabase.
+- `ML_API_URL`: URL endpoint model Machine Learning.
 
 ## Catatan Penting
 
